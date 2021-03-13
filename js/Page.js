@@ -1,10 +1,28 @@
 var pageData = {};
 function onLoad(){
 	let url = window.location.search;
+	testttt();
+	return;
 	if (url.indexOf("?") > -1) {
 		loadPage(url.substr(1));
 	} else {
 		window.location.href = "./page404.html";
+	}
+}
+
+function testttt() {
+	let url = "https://www.shutterstock.com/zh/home";
+	let request = new XMLHttpRequest();
+	request.open("get", url);
+	request.send(null);
+	request.onload = function () {
+		if (request.status == 200) {
+			console.log(request.responseText);
+			document.getElementById('markdownContents').innerHTML = marked(request.responseText);
+
+		} else {
+			window.location.href = "./page404.html";
+		}
 	}
 }
 
