@@ -1,31 +1,16 @@
 var pageData = {};
+//args format ?<json-name>#<id>
 function onLoad(){
 	let url = window.location.search;
-	testttt();
-	return;
 	if (url.indexOf("?") > -1) {
-		loadPage(url.substr(1));
+		let datas = url.substr(1).split("#");
+		loadPage(datas[1] + ".json", datas[1]);
 	} else {
 		window.location.href = "./page404.html";
 	}
 }
 
-function testttt() {
-	let url = "https://www.shutterstock.com/zh/home";
-	let request = new XMLHttpRequest();
-	request.open("get", url);
-	request.send(null);
-	request.onload = function () {
-		if (request.status == 200) {
-			console.log(request.responseText);
-			document.getElementById('markdownContents').innerHTML = marked(request.responseText);
-
-		} else {
-			window.location.href = "./page404.html";
-		}
-	}
-}
-
+//配置取读成功, 开始加载页面
 function init(pageData){
 	var rendererMD = new marked.Renderer();
     marked.setOptions({
@@ -48,15 +33,20 @@ function init(pageData){
 	showMarkdown(pageData.markdown);
 }
 
-function loadPage(page) {
-	let url = "./pages/" + page + ".json";
+//取读页面信息
+function loadPage(jsonName, id) {
+	let url = "./pages/jsons/" + jsonName;
 	let request = new XMLHttpRequest();
 	request.open("get", url);
 	request.send(null);
 	request.onload = function () {
 		if (request.status == 200) {
 			pageData = JSON.parse(request.responseText);
-			init(pageData);
+			try {
+				init(pageData[id]);				
+			} catch (e) {
+				window.location.href = "./page404.html";
+			}
 		} else {
 			window.location.href = "./page404.html";
 		}
