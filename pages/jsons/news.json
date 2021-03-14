@@ -5,35 +5,35 @@
 	},
 	{
 		"title": "旋转数组",
-		"url": "./page.html?初级算法=2"
+		"url": "page.html?初级算法=2"
 	},
 	{
 		"title": "测试页面",
-		"url": "./page.html?初级算法=test"
+		"url": "page.html?初级算法=test"
 	},
 	{
 		"title": "只出现一次的数字",
-		"url": "./page.html?初级算法=3"
+		"url": "page.html?初级算法=3"
 	},
 	{
 		"title": "存在重复元素",
-		"url": "./page.html?初级算法=4"
+		"url": "page.html?初级算法=4"
 	},
 	{
 		"title": "两个数组的交集 II",
-		"url": "./page.html?初级算法=5"
+		"url": "page.html?初级算法=5"
 	},
 	{
 		"title": "两数之和",
-		"url": "./page.html?初级算法=6"
+		"url": "page.html?初级算法=6"
 	},
 	{
 		"title": "加一",
-		"url": "./page.html?初级算法=7"
+		"url": "page.html?初级算法=7"
 	},
 	{
 		"title": "移动0",
-		"url": "./page.html?初级算法=8"
+		"url": "page.html?初级算法=8"
 	}
 	
 ]

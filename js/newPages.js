@@ -19,8 +19,8 @@ function loadNews() {
 
 function generateNews(news) {
 	let str = "";
-	for (obj in news) {
-		str += "<p><a href='" + rootUrl + news[obj].url + "'>" + news[obj].title + "</a></p>";
+	for (let i = news.length - 1; i >= 0; --i) {
+		str += "<p><a href='" + rootUrl + news[i].url + "'>" + news[i].title + "</a></p>";
 	}
 	newsPoster.innerHTML = str;
 }
