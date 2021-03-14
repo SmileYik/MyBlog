@@ -62,7 +62,6 @@ function showMarkdown(fileName){
 	request.onload = function () {
 		// 返回状态为200，即为数据获取成功
 		if (request.status == 200) {
-			console.log(request.responseText);
 			document.getElementById('markdownContents').innerHTML = marked(request.responseText);
 		}
 	}
