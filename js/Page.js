@@ -3,8 +3,8 @@ var pageData = {};
 function onLoad(){
 	let url = window.location.search;
 	if (url.indexOf("?") > -1) {
-		let datas = url.substr(1).split("#");
-		loadPage(datas[1] + ".json", datas[1]);
+		let datas = url.substr(1).split("=");
+		loadPage(datas[0] + ".json", datas[1]);
 	} else {
 		window.location.href = "./page404.html";
 	}
@@ -45,11 +45,11 @@ function loadPage(jsonName, id) {
 			try {
 				init(pageData[id]);				
 			} catch (e) {
-				//window.location.href = "./page404.html";
+				window.location.href = "./page404.html";
 				console.log(e);
 			}
 		} else {
-			//window.location.href = "./page404.html";
+			window.location.href = "./page404.html";
 		}
 	}
 }
