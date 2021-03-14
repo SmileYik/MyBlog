@@ -45,10 +45,11 @@ function loadPage(jsonName, id) {
 			try {
 				init(pageData[id]);				
 			} catch (e) {
-				window.location.href = "./page404.html";
+				//window.location.href = "./page404.html";
+				console.log(e);
 			}
 		} else {
-			window.location.href = "./page404.html";
+			//window.location.href = "./page404.html";
 		}
 	}
 }
