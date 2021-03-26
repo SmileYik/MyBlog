@@ -1,0 +1,10 @@
+{
+  "postJsonList": [
+    {
+      "name": "初级算法",
+      "link": "./pages/jsons/初级算法.json",
+      "arg": "初级算法"
+    }
+  ],
+  "maxItem": 5
+}

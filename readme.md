@@ -1,1 +1,0 @@
-[click]("./page.html?a")
