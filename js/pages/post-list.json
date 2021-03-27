@@ -1,10 +1,1 @@
-{
-  "postJsonList": [
-    {
-      "name": "初级算法",
-      "link": "./pages/jsons/初级算法.json",
-      "arg": "初级算法"
-    }
-  ],
-  "maxItem": 5
-}
+{"postJsonList":[{"arg":"初级算法","name":"初级算法","link":"./pages/jsons/初级算法.json"},{"arg":"AlgorithmsBeginningOfString","name":"算法入門: 字符串","link":"./pages/jsons/AlgorithmsBeginningOfString.json"},{"arg":"AlgorithmsBeginningOfArray","name":"算法入門: 數組","link":"./pages/jsons/AlgorithmsBeginningOfArray.json"}],"maxItem":5}
