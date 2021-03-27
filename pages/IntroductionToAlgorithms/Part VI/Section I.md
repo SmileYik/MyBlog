@@ -20,13 +20,17 @@
 
 ### 6.1-2
 
-$$ \sum_{i=1}^{h} 2^{i-1} $$ = n
+$$ \sum_{i=1}^{h} 2^{i-1} = n $$
 
-$$$Rightarrow$$ $$2^{h}$$-1 = n
+$$\Rightarrow 2^{h} - 1 = n $$
 
-$$$Rightarrow$$ $$2^{h}$$ = n+1
+$$\Rightarrow 2^{h} = n + 1 $$
 
-$$$Rightarrow$$ h = $$\lg^{n+1}$$
+$$\Rightarrow h = \lg^{n+1}$$
 
-$$$Rightarrow$$ h = [$$\lg^{n}$$],(向下取整)
+$$\Rightarrow h = [$$\lg^{n}$$],(向下取整)
 
+
+### 6.1-3
+
+因为
