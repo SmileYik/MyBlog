@@ -28,7 +28,7 @@ $$\Rightarrow 2^{h} = n + 1 $$
 
 $$\Rightarrow h = \lg^{n+1}$$
 
-$$\Rightarrow h = [$$\lg^{n}$$],(向下取整)
+$$\Rightarrow h = [\lg^{n}],(向下取整)$$
 
 
 ### 6.1-3
