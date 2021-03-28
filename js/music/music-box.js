@@ -103,6 +103,7 @@ function MB_changeMode() {
 
 function MB_loadLyrics(id) {
     MB_musicLyrics.innerText = "";
+    MB_useLyrics = false;
     let url = "./js/music/lyrics/" + id + ".lrc";
     let request = new XMLHttpRequest();
     request.open("get", url);
