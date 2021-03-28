@@ -1,5 +1,4 @@
 const MB_musicUrlFormat = "https://music.163.com/song/media/outer/url?id={id}.mp3";
-const MB_lyricsFormat = "http://music.163.com/api/song/media?id={id}";
 let MB_musics = {
     "musicIds": [],
     "musics": {
@@ -11,7 +10,6 @@ let MB_musics = {
     }
 };
 let MB_index = 0;
-// TODO mode = 0 : 顺序 | 1 随机 | 2 单曲循环
 let MB_mode = 0;
 let MB_pastTime = 0;
 let MB_useLyrics = false;
