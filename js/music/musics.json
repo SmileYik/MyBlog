@@ -1,0 +1,18 @@
+{
+  "musicIds": [
+    "19078759",
+    "33913841"
+  ],
+  "musics": {
+    "33913841": {
+      "title": "Satellite Rendezvous",
+      "author": "Vivienne",
+      "lyrics": "no"
+    },
+    "19078759": {
+      "title": "Cruisin",
+      "author": "Sioen",
+      "lyrics": "no"
+    }
+  }
+}

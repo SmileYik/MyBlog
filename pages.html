@@ -146,16 +146,23 @@
 
                 <aside class="widget-area" role="complementary" aria-label="页脚">
                     <div class="widget-column footer-widget-1">
-                        <section id="custom_html-3" class="widget_text widget widget_custom_html"><h2
-                                class="widget-title">music</h2>
+                        <section id="custom_html-3" class="widget_text widget widget_custom_html">
+                            <h2 class="widget-title">music</h2>
                             <div class="textwidget custom-html-widget">
-                                <audio controls="controls" autoplay="autoplay" height="100" width="100">
-                                    <source src="http://music.163.com/song/media/outer/url?id=438981043.mp3"
-                                            type="audio/mp3">
-                                    <embed height="100" type="audio/midi" width="100"
-                                           src="http://music.163.com/song/media/outer/url?id=438981043.mp3" loop="true"
-                                           autostart="true">
-                                </audio>
+                                <audio controls="controls" autoplay="autoplay" height="100" width="100" id="MB_audio"></audio>
+                                <p style="text-indent: 5.8em">
+                                    <a onclick="MB_startPlay()" id="MB_Button_Start">播放</a> &nbsp;&nbsp;&nbsp;
+                                    <a onclick="MB_changeMode()" id="MB_Button_ChangeMode">循环</a> &nbsp;&nbsp;&nbsp;
+                                    <a onclick="MB_nextMusic()">下一首</a> </p>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="widget-column footer-widget-2">
+                        <section id="custom_html-4" class="widget_text widget widget_custom_html">
+                            <br />
+                            <div class="textwidget custom-html-widget">
+                                <h2 class="widget-title" id="MB_musicTitle"></h2>
+                                <p id="MB_musicLyrics"></p>
                             </div>
                         </section>
                     </div>
@@ -183,6 +190,10 @@
 <script src="./js/highlight.min.js"></script>
 <script src="./js/pages/preview-post.js"></script>
 <script src="./js/pages/post-side.js"></script>
+<script type="application/javascript" src = "./js/music/music-box.js"></script>
+<script type="application/javascript">
+    MB_onMusicBoxInit();
+</script>
 <script>
     hljs.initHighlightingOnLoad();
     loadNews();
