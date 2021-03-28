@@ -55,7 +55,7 @@ function MB_onMusicBoxInitNow() {
 
     let musicId = MB_musics.musicIds[MB_index % MB_musics.musicIds.length];
     MB_audio.src = MB_musicUrlFormat.replace("{id}", musicId);
-    MB_audio.fastSeek(MB_pastTime);
+    MB_audio.currentTime = MB_pastTime;
     MB_setModeStatus();
 
     MB_audio.ontimeupdate = function (e) {
