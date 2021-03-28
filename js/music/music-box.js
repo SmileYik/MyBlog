@@ -59,6 +59,7 @@ function MB_onMusicBoxInitNow() {
 
     MB_audio.ontimeupdate = function (e) {
         MB_setCookie(MB_COOKIE_NAMES.pastTime, MB_audio.currentTime);
+        MB_setCookie(MB_COOKIE_NAMES.index, MB_index);
         MB_updateLyric(MB_audio.currentTime);
     }
 
@@ -96,6 +97,7 @@ function MB_updateMusicInfo() {
 
 function MB_changeMode() {
     MB_mode = (MB_mode + 1) % 3;
+    MB_setCookie(MB_COOKIE_NAMES.mode, MB_mode);
     MB_setModeStatus();
 }
 
