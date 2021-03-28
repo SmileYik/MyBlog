@@ -1,18 +1,1 @@
-{
-  "musicIds": [
-    "19078759",
-    "33913841"
-  ],
-  "musics": {
-    "33913841": {
-      "title": "Satellite Rendezvous",
-      "author": "Vivienne",
-      "lyrics": "no"
-    },
-    "19078759": {
-      "title": "Cruisin",
-      "author": "Sioen",
-      "lyrics": "no"
-    }
-  }
-}
+{"musics":{"33913841":{"author":"Vivienne","title":"Satellite Rendezvous","lyrics":""},"19078759":{"author":"Sioen","title":"Cruisin","lyrics":"[00:28.700]Staring bright through the window\n[00:31.820]You're bending over to me\n[00:35.220]A sentimental forsaken\n[00:41.990]You're trying hard yet to comfort\n[00:45.270]But you're waving me goodbye\n[00:48.680]A sentimental forsaken\n[01:09.360]You're looking around you are hasted\n[01:12.390]You're supervising my chief\n[01:14.890]My heart is tikking, let it on\n[01:22.620]Looks like you're dying to say\n[01:25.690]But now you turn your head away\n[01:28.060]Get out and leave me, let it on\n[01:36.420]But when it's going to be ok\n[01:43.270]I'm cruisin' on a train\n[01:50.970]I've got to fear no holiday\n[01:57.830]Fear is where I'm in\n[02:19.910]You're staring bright through the window\n[02:23.210]you're moving closer to me\n[02:26.520]A sentimental forsaken\n[02:33.320]You're trying hard yet to comfort\n[02:36.210]But now you're waving me goodbye\n[02:38.940]Get out and leave me, let it on\n[02:47.020]But when it's going to be ok\n[02:54.080]I'm cruisin' on a train\n[03:01.610]I've got to fear no holiday\n[03:08.520]Fear is where I'm in."}},"musicIds":["19078759","33913841"]}

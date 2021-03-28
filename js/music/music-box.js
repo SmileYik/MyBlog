@@ -54,6 +54,7 @@ function MB_onMusicBoxInitNow() {
     }
 
     let musicId = MB_musics.musicIds[MB_index % MB_musics.musicIds.length];
+    MB_loadLyrics(musicId);
     MB_audio.src = MB_musicUrlFormat.replace("{id}", musicId);
     MB_audio.currentTime = MB_pastTime;
     MB_setModeStatus();
@@ -65,7 +66,6 @@ function MB_onMusicBoxInitNow() {
 
     MB_audio.oncanplay = function (e) {
         MB_audio.play();
-        MB_loadLyrics(musicId);
     }
 
     MB_audio.onpause = function (e) {
@@ -104,31 +104,24 @@ function MB_changeMode() {
 function MB_loadLyrics(id) {
     MB_musicLyrics.innerText = "";
     MB_useLyrics = false;
-    let url = "./js/music/lyrics/" + id + ".lrc";
-    let request = new XMLHttpRequest();
-    request.open("get", url);
-    request.send(null);
-    request.onload = function () {
-        if (request.status === 200) {
-            MB_Lyrics = {};
-            let array = request.responseText.split("\n");
-            for (let index in array) {
-                let line = array[index];
-                if (line.length > 1 && line.charAt(0) === '[' && line.charAt(1) === '0') {
-                    let data = line.split("]");
-                    data[0] = data[0].replace("[", "");
-                    let timeString = data[0].split(":");
-                    let time = Number(timeString[0]) * 60 + Number(timeString[1]);
-                    time = Math.floor(time * 1000);
-                    MB_Lyrics[time] = data[1];
-                }
-            }
-            console.log(MB_Lyrics);
-            MB_useLyrics = true;
-        } else {
-
+    let str = MB_musics.musics[id].lyrics;
+    if (str == "") {
+        return;
+    }
+    MB_Lyrics = {};
+    let array = str.split("\n");
+    for (let index in array) {
+        let line = array[index];
+        if (line.length > 1 && line.charAt(0) === '[' && line.charAt(1) === '0') {
+            let data = line.split("]");
+            data[0] = data[0].replace("[", "");
+            let timeString = data[0].split(":");
+            let time = Number(timeString[0]) * 60 + Number(timeString[1]);
+            time = Math.floor(time * 1000);
+            MB_Lyrics[time] = data[1];
         }
     }
+    MB_useLyrics = true;
 }
 
 function MB_updateLyric(time) {
