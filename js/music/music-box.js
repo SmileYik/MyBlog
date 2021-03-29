@@ -50,7 +50,6 @@ function MB_onMusicBoxInitNow() {
     if (MB_hasCookie(MB_COOKIE_NAMES.pastTime)) {
         MB_pastTime = Number(MB_getCookie(MB_COOKIE_NAMES.pastTime));
     }
-
     let musicId = MB_musics.musicIds[MB_index % MB_musics.musicIds.length];
     MB_loadLyrics(musicId);
     MB_audio.src = MB_musicUrlFormat.replace("{id}", musicId);
@@ -59,7 +58,6 @@ function MB_onMusicBoxInitNow() {
 
     MB_audio.ontimeupdate = function (e) {
         MB_setCookie(MB_COOKIE_NAMES.pastTime, MB_audio.currentTime);
-        MB_setCookie(MB_COOKIE_NAMES.index, MB_index);
         MB_updateLyric(MB_audio.currentTime);
     }
 
@@ -78,7 +76,6 @@ function MB_onMusicBoxInitNow() {
     MB_audio.addEventListener('ended', function () {
         MB_nextMusic();
     }, false);
-    console.log("musicStart");
 }
 
 function MB_startPlay() {
@@ -105,7 +102,7 @@ function MB_loadLyrics(id) {
     MB_musicLyrics.innerText = "";
     MB_useLyrics = false;
     let str = MB_musics.musics[id].lyrics;
-    if (str == "") {
+    if (str === "") {
         return;
     }
     MB_Lyrics = {};
@@ -162,6 +159,7 @@ function MB_nextMusic() {
         MB_index = Math.floor(Math.random() * MB_musics.musicIds.length);
     }
     MB_setCookie(MB_COOKIE_NAMES.index, MB_index);
+    MB_getCookie(MB_COOKIE_NAMES.index);
     let musicId = MB_musics.musicIds[MB_index];
     MB_audio.src = MB_musicUrlFormat.replace("{id}", musicId);
     MB_audio.play();
@@ -177,7 +175,7 @@ function MB_getCookie(key) {
     let cookies = document.cookie.split(";");
     for (let index in cookies) {
         let data = cookies[index].split("=");
-        if (data[0].indexOf(key) === 1) {
+        if (data[0].indexOf(key) >= 0) {
             return data[1];
         }
     }
