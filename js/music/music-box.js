@@ -23,7 +23,8 @@ const MB_musicLyrics = document.getElementById("MB_musicLyrics");
 const MB_COOKIE_NAMES = {
     "mode": "MB_mode",
     "pastTime": "MB_pastTime",
-    "index": "MB_index"
+    "index": "MB_index",
+    "play": "MB_play"
 };
 function MB_onMusicBoxInit() {
     let url = "./js/music/musics.json";
@@ -62,7 +63,9 @@ function MB_onMusicBoxInitNow() {
     }
 
     MB_audio.oncanplay = function (e) {
-        MB_audio.play();
+        if (MB_getCookie(MB_COOKIE_NAMES.play) === "1") {
+            MB_audio.play();
+        }
     }
 
     MB_audio.onpause = function (e) {
@@ -81,7 +84,9 @@ function MB_onMusicBoxInitNow() {
 function MB_startPlay() {
     if (MB_audio.paused === true) {
         MB_audio.play();
+        MB_setCookie(MB_COOKIE_NAMES.play, 1);
     } else {
+        MB_setCookie(MB_COOKIE_NAMES.play, 0);
         MB_audio.pause();
     }
 }
