@@ -1,0 +1,16 @@
+# robots.txt
+User-agent: Googlebot
+Disallow: 
+User-agent: MSNBot
+Disallow: 
+User-agent: Slurp
+Disallow: 
+User-agent: baiduspider
+Disallow: 
+User-agent: *
+Disallow: 
+Disallow: /js/
+Disallow: /css/
+Disallow: /imgs/
+Disallow: /pages/
+Sitemap: sitemap.xml
