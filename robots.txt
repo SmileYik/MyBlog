@@ -1,14 +1,14 @@
 # robots.txt
 User-agent: Googlebot
-Disallow: 
+Allow: /
 User-agent: MSNBot
-Disallow: 
+Allow: /
 User-agent: Slurp
-Disallow: 
+Allow: /
 User-agent: baiduspider
-Disallow: 
+Allow: /
 User-agent: *
-Disallow: 
+Allow: /
 Disallow: /js/
 Disallow: /css/
 Disallow: /imgs/
