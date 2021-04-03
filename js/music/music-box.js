@@ -57,6 +57,12 @@ function MB_onMusicBoxInitNow() {
     MB_audio.currentTime = MB_pastTime;
     MB_setModeStatus();
 
+    if (MB_hasCookie(MB_COOKIE_NAMES.play)) {
+        if (MB_getCookie(MB_COOKIE_NAMES.play) !== "1") {
+            MB_audio.pause();
+        }
+    }
+
     MB_audio.ontimeupdate = function (e) {
         MB_setCookie(MB_COOKIE_NAMES.pastTime, MB_audio.currentTime);
         MB_updateLyric(MB_audio.currentTime);
