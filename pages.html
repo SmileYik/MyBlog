@@ -16,7 +16,6 @@
     <meta name="robots" content="max-image-preview:large">
 
     <link rel="stylesheet" id="wp-block-library-css" href="./css/style.min.css" media="all">
-    <link href="./css/monokai_sublime.min.css" rel="stylesheet">
     <link rel="stylesheet" id="wp-block-library-theme-css" href="./css/theme.min.css"
           media="all">
     <link rel="stylesheet" id="twentyseventeen-style-css" href="./css/style.css" media="all">
@@ -24,6 +23,7 @@
           media="all">
     <link rel="stylesheet" id="twentyseventeen-colors-dark-css" href="./css/colors-dark.css"
           media="all">
+    <link href="https://cdn.bootcdn.net/ajax/libs/highlight.js/10.6.0/styles/night-owl.min.css" rel="stylesheet">
     <link rel="icon" href="./imgs/ico/cropped-5b7261fff016f339-32x32.jpg"
           sizes="32x32">
     <link rel="icon" href="./imgs/ico/cropped-5b7261fff016f339-192x192.jpg"
@@ -190,20 +190,20 @@
 <script src="./js/jquery.scrollTo.js" id="jquery-scrollto-js"></script>
 <script src="./js/wp-embed.min.js" id="wp-embed-js"></script>
 <script src="./js/marked.min.js"></script>
-<script src="./js/highlight.min.js"></script>
 <script src="./js/pages/preview-post.js"></script>
 <script src="./js/pages/post-side.js"></script>
 <script type="application/javascript" src = "./js/music/music-box.js"></script>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
 <script type="application/javascript">
     MB_onMusicBoxInit();
 </script>
 <script>
-    hljs.initHighlightingOnLoad();
     loadNews();
     generatePostSideStart();
     generatePostListStart();
     showPostJsonList();
+    hljs.highlightAll();
 </script>
 </body>
 </html>
