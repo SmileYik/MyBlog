@@ -18,10 +18,12 @@ function generatePreviewPost(posts) {
     let main = document.getElementById("main");
     let str = "";
     for (let index in posts) {
-        str  += previewPostFormat.replaceAll("%url%", posts[index].url)
-                      .replaceAll("%time%", posts[index].time)
-                      .replaceAll("%title%", posts[index].title)
-                      .replaceAll("%content%", marked(posts[index].markdown));
+        str  += previewPostFormat.replace("%url%", posts[index].url)
+                      .replace("%url%", posts[index].url)
+                      .replace("%time%", posts[index].time)
+                      .replace("%time%", posts[index].time)
+                      .replace("%title%", posts[index].title)
+                      .replace("%content%", marked(posts[index].markdown));
     }
     main.innerHTML = str;
 }
