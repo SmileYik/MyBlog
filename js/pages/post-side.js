@@ -45,9 +45,9 @@ function generatePostSide(posts) {
     let postSide = document.getElementById("postSide");
     let str = "<ul>";
     for (let index in posts) {
-        str += postSideFormat.replaceAll("%url%", posts[index].url)
-            .replaceAll("%time%", posts[index].time)
-            .replaceAll("%title%", posts[index].title);
+        str += postSideFormat.replace("%url%", posts[index].url)
+            .replace("%time%", posts[index].time)
+            .replace("%title%", posts[index].title);
     }
     postSide.innerHTML = str + "</ul>";
 }
@@ -85,9 +85,9 @@ function showPostItem() {
     let skipIndex = 0;
 
     for (let idIndex in nowShowJson) {
-        str += postSideFormat.replaceAll("%url%", "./post.html?" + postList.postJsonList[nowShowJsonDataIndex].arg + "=" + idIndex)
-            .replaceAll("%time%", nowShowJson[idIndex].postTime)
-            .replaceAll("%title%", nowShowJson[idIndex].postTitle);
+        str += postSideFormat.replace("%url%", "./post.html?" + postList.postJsonList[nowShowJsonDataIndex].arg + "=" + idIndex)
+            .replace("%time%", nowShowJson[idIndex].postTime)
+            .replace("%title%", nowShowJson[idIndex].postTitle);
         ++showedItem;
         ++postItemIndex;
     }
