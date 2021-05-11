@@ -1,0 +1,12 @@
+{
+  "1": {
+    "name": "首页",
+    "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
+    "href": "index.html"
+  },
+  "2": {
+    "name": "笔记",
+    "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    "href": "note-pages.html"
+  }
+}

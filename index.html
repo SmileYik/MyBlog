@@ -33,7 +33,7 @@
     <title>首页 - miSkYle's Blog</title>
     
     <script id="twentyseventeen-skip-link-focus-fix-js-extra">
-      var twentyseventeenScreenReaderText = {
+      let twentyseventeenScreenReaderText = {
           "quote": "<svg class=\"icon icon-quote-right\" aria-hidden=\"true\" role=\"img\"> <use href=\"#icon-quote-right\" xlink:href=\"#icon-quote-right\"><\/use> <\/svg>",
           "expand": "\u5c55\u5f00\u5b50\u83dc\u5355",
           "collapse": "\u6298\u53e0\u5b50\u83dc\u5355",
@@ -91,14 +91,7 @@
                     </button>
 
                     <div class="menu-%e9%a1%b6%e9%83%a8%e8%8f%9c%e5%8d%95-container">
-                        <ul id="top-menu" class="menu">
-                            <li id="menu-item-21"
-                                class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-21">
-                                <a href="./index.html" aria-current="page">首页</a></li>
-                            <li id="menu-item-23"
-                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-23"><a
-                                    href="./pages.html">博客</a></li>
-                        </ul>
+                        <ul id="top-menu" class="menu"></ul>
                     </div>
                     <a href="#content" class="menu-scroll-down">
                         <svg class="icon icon-arrow-right" aria-hidden="true" role="img">
@@ -177,13 +170,12 @@
         </footer><!-- #colophon -->
     </div><!-- .site-content-contain -->
 </div><!-- #page -->
-<script src="js/comment.js" id="smms-comment-js-js"></script>
+<script src="js/menu/top-menu.js"></script>
 <script src="js/skip-link-focus-fix.js"
         id="twentyseventeen-skip-link-focus-fix-js"></script>
 <script src="js/navigation.js" id="twentyseventeen-navigation-js"></script>
 <script src="js/global.js" id="twentyseventeen-global-js"></script>
 <script src="js/jquery.scrollTo.js" id="jquery-scrollto-js"></script>
-<script src="js/wp-embed.min.js" id="wp-embed-js"></script>
 <script type="application/javascript" src = "./js/music/music-box.js"></script>
 <script type="application/javascript">
     MB_onMusicBoxInit();

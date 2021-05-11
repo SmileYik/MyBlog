@@ -133,6 +133,10 @@ samp {
 	font-size: 1em;
 }
 
+code {
+	padding: 2px 5px;
+}
+
 dfn {
 	font-style: italic;
 }
@@ -535,6 +539,23 @@ pre {
 	max-width: 100%;
 	overflow: auto;
 	padding: 1.6em;
+}
+
+pre::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+}
+
+pre::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	background: rgba(255,255,255,0.2);
+}
+
+pre::-webkit-scrollbar-track {
+	border-radius: 10px;
+	background: rgba(0,0,0,0.1);
+	-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
 }
 
 code,

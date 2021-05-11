@@ -1,15 +1,37 @@
+let showPageRootPath = {
+    "json": "./pages/jsons/",
+    "markdown": "./pages/"
+};
 
-//args format ?<json-name>#<id>
+let blogId = {
+    "1": {
+        "json": "./pages/Notes/jsons/",
+        "markdown": "./pages/Notes/"
+    }
+}
+
+let nowShowBlogId = 0;
+
+//args format ?<json-name>=<id>=<blog id>
 function onPageLoad(){
     let url = window.location.search;
     if (url.indexOf("?") > -1) {
         let datas = url.substr(1).split("=");
+        if (blogId[datas[2]] == null) {
+            window.location.href = "./page404.html";
+            return;
+        }
+        nowShowBlogId = datas[2];
+        showPageRootPath = blogId[datas[2]];
         loadPage(datas[0] + ".json", datas[1]);
     } else {
         window.location.href = "./page404.html";
     }
 }
 
+function getBlogId() {
+    return nowShowBlogId;
+}
 
 //配置取读成功, 开始加载页面
 function initMarkdown(){
@@ -33,7 +55,7 @@ function initMarkdown(){
 
 //取读页面信息
 function loadPage(jsonName, id) {
-    let url = "./pages/jsons/" + jsonName;
+    let url = showPageRootPath.json + jsonName;
     let request = new XMLHttpRequest();
     request.open("get", url);
     request.send(null);
@@ -62,7 +84,7 @@ function modifyHtmlPage(pageData) {
 }
 
 function showMarkdown(fileName){
-    let url = "./pages/" + fileName;
+    let url = showPageRootPath.markdown + fileName;
     let request = new XMLHttpRequest();
     request.open("get", url);
     request.send(null);
