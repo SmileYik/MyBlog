@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="./js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			#box {
+				height: 445px;
+				width: 640px;
+				border: 5px groove rgba(0, 0, 0, 0.5);
+				background-color: white;
+				margin: 100px auto 0px;
+			}
+
+			#pic {
+				font-family: 宋体, sans-serif;
+				width: 99%;
+				margin: auto auto;
+			}
+
+			#boxControls {
+				width: 640px;
+				height: 65px;
+				margin: 0px auto 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<pre id="pic"></pre>
+		</div>
+		<div id="boxControls">
+			<br>
+			<p style="width: 650px; height: 20px; margin: auto auto;text-align: center;">
+				<button onclick="start()">开 始</button>
+				<button onclick="stop()">停 止</button>
+			</p>
+			<audio id="bgm" controls hidden></audio>
+		</div>
+		<p id="info" style="width: 650px; height: 20px; margin: auto auto;text-align: center;"></p>
+		<script type="text/javascript">
+			let index = 0;
+			let badAppleTicks = {};
+			let timer;
+
+			$.ajax({
+				url: "./badAppleTick.json",
+				async: false,
+				dataType: "json",
+				success: function(res) {
+					badAppleTicks = res;
+					$("#info").text("准备完毕!");
+				}
+			});
+
+			function start() {
+				timer = setInterval("badAppleTick()", 33.32826);
+				if (index === 0) {
+					$("#bgm")[0].src = "./bgm/BadApple.wav";
+				}
+				$("#bgm")[0].play();
+				$("#info").text("本作品为东方Project同人创作, 字符画引用b站用户丶Nice所制作的字符画.");
+			}
+
+			function stop() {
+				if (timer != null) {
+					clearInterval(timer);
+					$("#bgm")[0].pause();
+				}
+			}
+
+			function badAppleTick() {
+				if (index > 6570) {
+					index = 0;
+					$("#bgm")[0].src = "./bgm/BadApple.wav";
+					$("#bgm")[0].play();
+				}
+				$("#pic")[0].innerText = badAppleTicks[index++];
+			}
+
+		</script>
+	</body>
+</html>

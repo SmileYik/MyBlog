@@ -8,5 +8,10 @@
     "name": "笔记",
     "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     "href": "note-pages.html"
+  },
+  "3": {
+    "name": "BadApple 字符画",
+    "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    "href": "./badapple/badApple.html"
   }
 }
