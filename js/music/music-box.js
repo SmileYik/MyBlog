@@ -152,6 +152,7 @@ function MB_updateLyric(time) {
         }
         preTime = temp;
     }
+    MB_musicLyrics.innerText = MB_Lyrics[preTime];
 }
 
 function MB_setModeStatus() {
