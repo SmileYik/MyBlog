@@ -33,6 +33,7 @@
 		<div id="boxControls">
 			<br>
 			<p style="width: 650px; height: 20px; margin: auto auto;text-align: center;">
+				<button onclick="testA()">缓存测试</button>
 				<button onclick="start()">开 始</button>
 				<button onclick="stop()">停 止</button>
 			</p>
@@ -75,6 +76,11 @@
 					$("#bgm")[0].play();
 				}
 				$("#pic")[0].innerText = badAppleTicks[index++];
+			}
+
+			function testA() {
+				$("#bgm")[0].play();
+				$("#bgm")[0].stop();
 			}
 
 		</script>
