@@ -39,11 +39,11 @@
 		<div id="boxControls">
 			<br>
 			<p style="width: 650px; height: 20px; margin: auto auto;text-align: center;">
-				<button onclick="testA()">缓存测试</button>
+				
 				<button onclick="start()">开 始</button>
 				<button onclick="stop()">停 止</button>
 			</p>
-			<audio id="bgm" controls hidden></audio>
+			<audio id="bgm" src="./bgm/BadApple.wav" controls hidden preload="preload"></audio>
 		</div>
 		<p id="info" style="width: 650px; height: 20px; margin: auto auto;text-align: center;"></p>
 		<script type="text/javascript">
@@ -57,13 +57,16 @@
 				dataType: "json",
 				success: function(res) {
 					badAppleTicks = res;
-					$("#bgm")[0].src = "./bgm/BadApple.wav";
 					$("#info").text("准备完毕!");
 				}
 			});
 
 			function start() {
 				timer = setInterval("badAppleTick()", 33.32826);
+                                if (index === 0) {
+                                    $("#bgm")[0].fastSeek(0);
+
+                                }
 				$("#bgm")[0].play();
 				$("#info").text("本作品为东方Project同人创作, 字符画引用b站用户丶Nice所制作的字符画.");
 			}
@@ -78,7 +81,7 @@
 			function badAppleTick() {
 				if (index > 6570) {
 					index = 0;
-					$("#bgm")[0].src = "./bgm/BadApple.wav";
+					$("#bgm")[0].fastSeek(0);
 					$("#bgm")[0].play();
 				}
 				$("#pic")[0].innerText = badAppleTicks[index++];
