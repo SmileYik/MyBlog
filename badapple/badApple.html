@@ -50,15 +50,13 @@
 				dataType: "json",
 				success: function(res) {
 					badAppleTicks = res;
+					$("#bgm")[0].src = "./bgm/BadApple.wav";
 					$("#info").text("准备完毕!");
 				}
 			});
 
 			function start() {
 				timer = setInterval("badAppleTick()", 33.32826);
-				if (index === 0) {
-					$("#bgm")[0].src = "./bgm/BadApple.wav";
-				}
 				$("#bgm")[0].play();
 				$("#info").text("本作品为东方Project同人创作, 字符画引用b站用户丶Nice所制作的字符画.");
 			}
