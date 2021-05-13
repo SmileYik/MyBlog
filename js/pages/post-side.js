@@ -1,14 +1,5 @@
 let postSideFormat = "<li><a href=\"%url%\">%title%</a><span class=\"post-date\">%time%</span></li>";
-let postList = {
-    "postJsonList": [
-        {
-            "name": "name",
-            "link": "link",
-            "arg": "arg"
-        }
-    ],
-    "maxItem": 5
-};
+let postList = {};
 
 let postSizeRootPath = {
     "preJson": "./js/pages/preview-post.json",

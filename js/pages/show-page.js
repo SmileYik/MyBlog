@@ -76,7 +76,7 @@ function loadPage(jsonName, id) {
 
 function modifyHtmlPage(pageData) {
     document.getElementById("title").innerHTML = pageData.title + "- miSkYle's Blog";
-    document.getElementById("postTime1").innerHTML = pageData.postTime;
+    document.getElementById("postTime1").innerHTML = pageData.createTime;
     document.getElementById("postTime2").innerHTML = pageData.postTime;
     document.getElementById("postTitle").innerHTML = pageData.postTitle;
     document.getElementById("postAuthor").innerHTML = pageData.postAuthor;
@@ -92,6 +92,7 @@ function showMarkdown(fileName){
         // 返回状态为200，即为数据获取成功
         if (request.status == 200) {
             document.getElementById('postContent').innerHTML = marked(request.responseText);
+            MathJax.startup.defaultReady();
         }
     }
 }

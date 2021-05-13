@@ -32,6 +32,16 @@
           content="./imgs/ico/cropped-5b7261fff016f339-270x270.jpg">
     <title id="title">阅览文章 - miSkYle's Blog</title>
     <script src="./js/jquery.min.js" id="jquery-js"></script>
+    <script>
+        MathJax = {
+            tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+            skipHtmlTags: [
+                'script', 'noscript', 'style', 'textarea', 'pre',
+                'code', 'annotation', 'annotation-xml'
+            ]
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 
 <body class="post-template-default single single-post postid-69 single-format-standard wp-custom-logo wp-embed-responsive has-header-image has-sidebar colors-dark">
@@ -102,15 +112,22 @@
                         <article id="post-69"
                                  class="post-69 post type-post status-publish format-standard hentry category-uncategorized">
                             <header class="entry-header">
-                                <div class="entry-meta"><span class="posted-on">
-                                    <span class="screen-reader-text">发布于</span>
-                                    <a href="#" rel="bookmark">
-                                        <time class="entry-date published" id="postTime1"></time>
-                                        <time class="updated" id="postTime2"></time>
-                                    </a>
+                                <div class="entry-meta">
+                                    <span class="posted-on">
+                                        <span>发布于</span>
+                                        <a href="#" rel="bookmark">
+                                            <time class="entry-date published" id="postTime1"></time>
+                                        </a>
                                     </span>
-                                    <span class="byline"> 由 <span class="author vcard"><a class="url fn n"
-                                                                                       href="#" id="postAuthor">miSkYle</a></span></span>
+                                    <br>
+                                    <span class="posted-on">
+                                        <span>更新于</span>
+                                        <a href="#" rel="bookmark">
+                                            <time class="entry-date" id="postTime2"></time>
+                                        </a>
+                                    </span>
+                                    <br>
+                                    <span class="byline"> 由 <span class="author vcard"><a class="url fn n" href="#" id="postAuthor">miSkYle</a> 编辑</span></span>
                                 </div><!-- .entry-meta -->
                                 <h1 class="entry-title" id="postTitle"></h1>
                             </header>

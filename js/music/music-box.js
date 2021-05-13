@@ -1,14 +1,5 @@
 const MB_musicUrlFormat = "https://music.163.com/song/media/outer/url?id={id}.mp3";
-let MB_musics = {
-    "musicIds": [],
-    "musics": {
-        "562598184": {
-            "title": "Rendezvous",
-            "author": "Vivienne",
-            "lyrics": "no"
-        }
-    }
-};
+let MB_musics = {};
 let MB_index = 0;
 let MB_mode = 0;
 let MB_pastTime = 0;

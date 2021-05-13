@@ -1,10 +1,9 @@
-let previewPostFormat = "<article><header class=\"entry-header\"><div class=\"entry-meta\"><span class=\"screen-reader-text\">发布于</span><a href=\"%url%\" rel=\"bookmark\"><time class=\"entry-date published\">%time%</time><time class=\"updated\">%time%</time></a></div><h2 class=\"entry-title\"><a href=\"%url%\" rel=\"bookmark\">%title%</a></h2></header><div class=\"entry-content\">%content%</div></article>"
+let previewPostFormat = "<article><header class=\"entry-header\"><div class=\"entry-meta\"><span>发布于 </span><a href=\"%url%\" rel=\"bookmark\"><time class=\"entry-date published\">%time%</time><time class=\"updated\">%time%</time></a></div><h2 class=\"entry-title\"><a href=\"%url%\" rel=\"bookmark\">%title%</a></h2></header><div class=\"entry-content\">%content%</div></article>"
 let previewPostLoadJsonPath = "./js/pages/preview-post.json";
 
 function previewPostSetLoadJsonPath(path) {
     previewPostLoadJsonPath = path;
 }
-
 
 function loadNews() {
     let request = new XMLHttpRequest();
@@ -32,6 +31,5 @@ function generatePreviewPost(posts) {
                       .replace("%content%", marked(posts[index].markdown));
     }
     main.innerHTML = str;
+    MathJax.startup.defaultReady();
 }
-
-//						<article><header class="entry-header"><div class="entry-meta"><span class="screen-reader-text">发布于</span><a href="http://localhost/wordpress/?p=69" rel="bookmark"><time class="entry-date published">2020-12-07</time><time class="updated">2020-12-07</time></a></div><h2 class="entry-title"><a href="http://localhost/wordpress/?p=69" rel="bookmark">CorpPlus – 让你的服务器能够自定义作物</a></h2></header><div class="entry-content"></div></article>
