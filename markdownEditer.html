@@ -16,23 +16,18 @@
     <meta name="robots" content="max-image-preview:large">
 
     <link rel="stylesheet" id="wp-block-library-css" href="css/style.min.css" media="all">
-    <link rel="stylesheet" id="wp-block-library-theme-css" href="css/theme.min.css"
-          media="all">
+    <link rel="stylesheet" id="wp-block-library-theme-css" href="css/theme.min.css" media="all">
     <link rel="stylesheet" id="twentyseventeen-style-css" href="css/style.css" media="all">
-    <link rel="stylesheet" id="twentyseventeen-block-style-css" href="css/blocks.css"
-          media="all">
-    <link rel="stylesheet" id="twentyseventeen-colors-dark-css" href="css/colors-dark.css"
-          media="all">
+    <link rel="stylesheet" id="twentyseventeen-block-style-css" href="css/blocks.css" media="all">
+    <link rel="stylesheet" id="twentyseventeen-colors-dark-css" href="css/colors-dark.css" media="all">
     <link href="https://cdn.bootcdn.net/ajax/libs/highlight.js/10.6.0/styles/night-owl.min.css" rel="stylesheet">
-    <link rel="icon" href="imgs/ico/cropped-5b7261fff016f339-32x32.jpg"
-          sizes="32x32">
-    <link rel="icon" href="imgs/ico/cropped-5b7261fff016f339-192x192.jpg"
-          sizes="192x192">
-    <link rel="apple-touch-icon"
-          href="imgs/ico/cropped-5b7261fff016f339-180x180.jpg">
+    <link rel="icon" href="imgs/ico/cropped-5b7261fff016f339-32x32.jpg" sizes="32x32">
+    <link rel="icon" href="imgs/ico/cropped-5b7261fff016f339-192x192.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" href="imgs/ico/cropped-5b7261fff016f339-180x180.jpg">
+    <link rel="stylesheet" href="css/markdownEdit/markdownEdit.css" media="all">
     <meta name="msapplication-TileImage"
           content="./imgs/ico/cropped-5b7261fff016f339-270x270.jpg">
-    <title>笔记 - miSkYle's Blog</title>
+    <title>Markdown 编辑器 - miSkYle's Blog</title>
     <script src="js/jquery.min.js" id="jquery-js"></script>
     <script>
         MathJax = {
@@ -113,14 +108,18 @@
                 </header>
                 <div id="mdEdit" class="content-area">
                     <label for="mdEditArea">
-                        <textarea id="mdEditArea" wrap="off" style="height: 650px;"></textarea>
+                        <textarea id="mdEditArea" style="height: 650px;"></textarea>
                     </label>
                 </div>
                 <br>
                 <hr>
 
                 <header class="page-header">
-                    <h1 class="page-title" onclick="showWhatIEnter()" id="previewMd">效果预览</h1>
+                    <h1 class="page-title">
+                        <span onclick="showWhatIEnter()" class="btnPointer">效果预览</span>
+                        &nbsp;
+                        <span onclick="downloadMd();" class="btnPointer">导出</span>
+                        </h1>
                 </header>
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
