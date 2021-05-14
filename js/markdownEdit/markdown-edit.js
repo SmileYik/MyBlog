@@ -29,19 +29,21 @@ $(function () {
     }
 
     edit[0].onkeyup = function () {
-        showWhatIEnter();
+        if ($("#autoPreCheck")[0].checked) {
+            showWhatIEnter();
+        }
     }
 
     edit[0].onfocus = function () {
         setCookie("miskyleMarkdownEditH", edit.css("height"));
     }
+
+    setInterval("autoSave()", 30000);
 });
 
 function showWhatIEnter() {
+
     let texts = $("#mdEditArea")[0].value;
-    let save = {};
-    save["text"] = texts;
-    setCookie("miskyleMarkdownEditText", JSON.stringify(save));
     $("#main").html(marked(texts));
     MathJax.startup.defaultReady();
 }
@@ -78,4 +80,44 @@ function downloadMd() {
     eleLink.click();
     // 然后移除
     document.body.removeChild(eleLink);
-};
+}
+
+function resetText() {
+    $("#mdEditArea")[0].value = "";
+    showWhatIEnter();
+}
+
+function autoSave() {
+    let texts = $("#mdEditArea")[0].value;
+    let save = {};
+    save["text"] = texts;
+    setCookie("miskyleMarkdownEditText", JSON.stringify(save));
+    let date = new Date();
+    $("#editInfo").text("在 " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + " 时自动保存");
+}
+
+function loadText() {
+    if (hasCookie("miskyleMarkdownEditText")) {
+        let edit = $("#mdEditArea");
+        edit[0].value = JSON.parse(getCookie("miskyleMarkdownEditText")).text;
+        $("#main").html(marked(edit[0].value));
+        $("#editInfo").text("恢复成功!");
+    } else {
+        $("#editInfo").text("没有保存记录!");
+    }
+}
+
+function loadMathCharacter() {
+    $.ajax({
+        url: "./js/markdownEdit/mathCharacter.md",
+        async: true,
+        dataType: "text",
+        success: function(res) {
+            let obj = $("#mathCharacter");
+            obj.attr("class", "");
+            obj.attr("onclick", "");
+            obj.html(marked(res));
+            MathJax.startup.defaultReady();
+        }
+    });
+}

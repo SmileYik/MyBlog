@@ -104,7 +104,16 @@
         <div id="content" class="site-content">
             <div class="wrap">
                 <header class="page-header">
-                    <h1 class="page-title">编辑器</h1>
+                    <h1 class="page-title">Markdown 编辑器
+                        &nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" id="autoPreCheck">自动预览</input>
+                        &nbsp;
+                        <span onclick="resetText();" class="btnPointer">重置</span>
+                        &nbsp;
+                        <span onclick="loadText();" class="btnPointer">恢复</span>
+                        &nbsp;
+                        <span id="editInfo"></span>
+                    </h1>
                 </header>
                 <div id="mdEdit" class="content-area">
                     <label for="mdEditArea">
@@ -119,15 +128,16 @@
                         <span onclick="showWhatIEnter()" class="btnPointer">效果预览</span>
                         &nbsp;
                         <span onclick="downloadMd();" class="btnPointer">导出</span>
-                        </h1>
+                    </h1>
                 </header>
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
-
                     </main><!-- #main -->
                 </div><!-- #primary -->
 
-                <aside id="secondary" class="widget-area" role="complementary" aria-label="博客边栏"></aside><!-- #secondary -->
+                <aside id="secondary" class="widget-area" role="complementary" aria-label="博客边栏">
+                    <div id="mathCharacter" class="btnPointer" onclick="loadMathCharacter()">显示Math公式提示</div>
+                </aside><!-- #secondary -->
             </div><!-- .wrap -->
 
 

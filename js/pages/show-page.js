@@ -23,7 +23,7 @@ function onPageLoad(){
         }
         nowShowBlogId = datas[2];
         showPageRootPath = blogId[datas[2]];
-        loadPage(datas[0] + ".json", datas[1]);
+        loadPage(datas[0] + ".json", datas[1], datas[0]);
     } else {
         window.location.href = "./page404.html";
     }
@@ -54,16 +54,35 @@ function initMarkdown(){
 }
 
 //取读页面信息
-function loadPage(jsonName, id) {
+function loadPage(jsonName, id, jsonId) {
     let url = showPageRootPath.json + jsonName;
     let request = new XMLHttpRequest();
     request.open("get", url);
     request.send(null);
     request.onload = function () {
-        if (request.status == 200) {
+        if (request.status === 200) {
             try {
                 initMarkdown();
-                modifyHtmlPage(JSON.parse(request.responseText)[id]);
+                let datas = JSON.parse(request.responseText);
+                let prePageDataId = null;
+                let nextPageDataId = null;
+
+                let pre = null;
+                let flag = false;
+                for (let index in datas) {
+                    if (flag) {
+                        nextPageDataId = index;
+                        break;
+                    }
+                    if (index === id) {
+                        flag = true;
+                        prePageDataId = pre;
+                    } else {
+                        pre = index;
+                    }
+                }
+
+                modifyHtmlPage(datas[id], datas, jsonId, prePageDataId, nextPageDataId);
             } catch (e) {
                 window.location.href = "./page404.html";
                 console.log(e);
@@ -74,12 +93,22 @@ function loadPage(jsonName, id) {
     }
 }
 
-function modifyHtmlPage(pageData) {
-    document.getElementById("title").innerHTML = pageData.title + "- miSkYle's Blog";
+function modifyHtmlPage(pageData, pageDatas, jsonId, prePageDataId, nextPageDataId) {
+    document.getElementById("title").innerHTML = pageData.title + " - miSkYle's Blog";
     document.getElementById("postTime1").innerHTML = pageData.createTime;
     document.getElementById("postTime2").innerHTML = pageData.postTime;
     document.getElementById("postTitle").innerHTML = pageData.postTitle;
     document.getElementById("postAuthor").innerHTML = pageData.postAuthor;
+    if (prePageDataId != null) {
+        $(".nav-previous").attr("hidden", false);
+        $("#navPrevLink").attr("href", "./post.html?" + jsonId + "=" + prePageDataId + "=" + nowShowBlogId);
+        $("#navPrevTitle").text(pageDatas[prePageDataId].postTitle);
+    }
+    if (nextPageDataId != null) {
+        $(".nav-next").attr("hidden", false);
+        $("#navNextLink").attr("href", "./post.html?" + jsonId + "=" + nextPageDataId + "=" + nowShowBlogId);
+        $("#navNextTitle").text(pageDatas[nextPageDataId].postTitle);
+    }
     showMarkdown(pageData.postContent);
 }
 
@@ -90,7 +119,7 @@ function showMarkdown(fileName){
     request.send(null);
     request.onload = function () {
         // 返回状态为200，即为数据获取成功
-        if (request.status == 200) {
+        if (request.status === 200) {
             document.getElementById('postContent').innerHTML = marked(request.responseText);
             MathJax.startup.defaultReady();
         }
