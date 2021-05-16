@@ -69,8 +69,8 @@ function hasCookie(key) {
 
 function downloadMd() {
     let content = $("#mdEditArea")[0].value;
-    var eleLink = document.createElement('a');
-    eleLink.download = "markdown.md";
+    let eleLink = document.createElement('a');
+    eleLink.download = $("#mdEditTitle").attr("value") + ".md";
     eleLink.style.display = 'none';
     // 字符内容转变成blob地址
     var blob = new Blob([content]);

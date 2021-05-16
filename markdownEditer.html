@@ -115,9 +115,12 @@
                         <span id="editInfo"></span>
                     </h1>
                 </header>
+                <hr>
                 <div id="mdEdit" class="content-area">
+                    <input type="text" value="Title" id="mdEditTitle"/>
+                    <br>
                     <label for="mdEditArea">
-                        <textarea id="mdEditArea" style="height: 650px;"></textarea>
+                        <textarea id="mdEditArea" style="height: 450px;"></textarea>
                     </label>
                 </div>
                 <br>
@@ -130,13 +133,18 @@
                         <span onclick="downloadMd();" class="btnPointer">导出</span>
                     </h1>
                 </header>
+                <hr>
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
                     </main><!-- #main -->
                 </div><!-- #primary -->
 
                 <aside id="secondary" class="widget-area" role="complementary" aria-label="博客边栏">
-                    <div id="mathCharacter" class="btnPointer" onclick="loadMathCharacter()">显示Math公式提示</div>
+                    <section id="recent-posts-4" class="widget widget_recent_entries">
+                        <h2 class="widget-title">
+                            <div id="mathCharacter" class="btnPointer" onclick="loadMathCharacter()">显示Math公式提示</div>
+                        </h2>
+                    </section>
                 </aside><!-- #secondary -->
             </div><!-- .wrap -->
 
