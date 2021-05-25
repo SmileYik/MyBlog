@@ -70,7 +70,7 @@ function hasCookie(key) {
 function downloadMd() {
     let content = $("#mdEditArea")[0].value;
     let eleLink = document.createElement('a');
-    eleLink.download = $("#mdEditTitle").attr("value") + ".md";
+    eleLink.download = $("#mdEditTitle")[0].value + ".md";
     eleLink.style.display = 'none';
     // 字符内容转变成blob地址
     var blob = new Blob([content]);
