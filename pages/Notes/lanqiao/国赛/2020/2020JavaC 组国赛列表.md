@@ -10,10 +10,10 @@
 
 天干地支: [题目](https://www.lanqiao.cn/problems/1029/learning/) [题解](./post.html?lanqiao2020JavaC=pzeskc=1)
 
-皮亚诺曲线距离: [题目](https://www.lanqiao.cn/problems/1023/learning/) [题解]()
+皮亚诺曲线距离: [题目](https://www.lanqiao.cn/problems/1023/learning/) [题解(假)](./post.html?lanqiao2020JavaC=fkubin=1)
 
 蓝肽子序列: [题目](https://www.lanqiao.cn/problems/1030/learning/) [题解](./post.html?lanqiao2020JavaC=oglhwg=1)
 
-画廊: [题目](https://www.lanqiao.cn/problems/1032/learning/) [题解]()
+画廊: [题目](https://www.lanqiao.cn/problems/1032/learning/) [题解](./post.html?lanqiao2020JavaC=cbymnk=1)
 
-答疑: [题目](https://www.lanqiao.cn/problems/1025/learning/) [题解]()
+答疑: [题目](https://www.lanqiao.cn/problems/1025/learning/) [题解](./post.html?lanqiao2020JavaC=hdkfzo=1)
