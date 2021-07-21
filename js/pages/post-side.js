@@ -1,11 +1,7 @@
 let postSideFormat = "<li><a href=\"%url%\">%title%</a><span class=\"post-date\">%time%</span></li>";
 let postList = {};
 
-let postSizeRootPath = {
-    "preJson": "./js/pages/preview-post.json",
-    "postListJson": "./js/pages/post-list.json",
-    "postJson": "./pages/jsons/"
-};
+let postSizeRootPath = {};
 
 let postSizeRootPathById = {
     "1": {
@@ -18,7 +14,7 @@ let postSizeRootPathById = {
         "postListJson": "./pages/Reading/post-list.json",
         "postJson": "./pages/Reading/jsons/"
     }
-}
+};
 
 function postSizeSetRootPathById(id) {
     postSizeRootPath = postSizeRootPathById[id];
