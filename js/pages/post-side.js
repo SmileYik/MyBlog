@@ -22,7 +22,6 @@ let postSizeRootPathById = {
 
 function postSizeSetRootPathById(id) {
     postSizeRootPath = postSizeRootPathById[id];
-    console.log(postSizeRootPath);
 }
 
 let nowShowJson = {};
