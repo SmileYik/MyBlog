@@ -7,6 +7,10 @@ let blogId = {
     "1": {
         "json": "./pages/Notes/jsons/",
         "markdown": "./pages/Notes/"
+    },
+    "2": {
+        "json": "./pages/Reading/jsons/",
+        "markdown": "./pages/Reading/"
     }
 }
 

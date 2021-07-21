@@ -7,10 +7,22 @@ let postSizeRootPath = {
     "postJson": "./pages/jsons/"
 };
 
-function postSizeSetRootPath(preJson, postListJson, postJson) {
-    postSizeRootPath.preJson = preJson;
-    postSizeRootPath.postListJson = postListJson;
-    postSizeRootPath.postJson = postJson;
+let postSizeRootPathById = {
+    "1": {
+        "preJson": "./pages/Notes/preview-post.json",
+        "postListJson": "./pages/Notes/post-list.json",
+        "postJson": "./pages/Notes/jsons/"
+    },
+    "2": {
+        "preJson": "./pages/Reading/preview-post.json",
+        "postListJson": "./pages/Reading/post-list.json",
+        "postJson": "./pages/Reading/jsons/"
+    }
+}
+
+function postSizeSetRootPathById(id) {
+    postSizeRootPath = postSizeRootPathById[id];
+    console.log(postSizeRootPath);
 }
 
 let nowShowJson = {};
