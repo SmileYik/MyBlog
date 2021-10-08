@@ -108,13 +108,15 @@
 			let timesaaaa = 0;
 			
 			function changeBgm() {
+				let time = $("#bgm")[0].currentTime;
 				if (timesaaaa % 2 == 0) {
 					document.getElementById("bgm").src = "./bgm/badapple2.mp3";
 				} else {
 					document.getElementById("bgm").src = "./bgm/BadApple.mp3";
 				}	
 				timesaaaa = timesaaaa + 1;
-				reset();
+				$("#bgm")[0].currentTime = time;
+				$("#bgm")[0].play();
 			}
 
 			function start() {
