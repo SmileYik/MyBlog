@@ -105,12 +105,14 @@
 				$("#info").html(lyrics[preTime]);
 			}
 			
+			let timesaaaa = 0;
+			
 			function changeBgm() {
-				if ($("#bgm")[0].src === "./bgm/BadApple.mp3") {
-					$("#bgm")[0].src = "./bgm/badapple2.mp3";
+				if (timesaaaa % 2 == 0) {
+					document.getElementById("bgm").src = "./bgm/badapple2.mp3";
 				} else {
-					$("#bgm")[0].src = "./bgm/BadApple.mp3";
-				}
+					document.getElementById("bgm").src = "./bgm/BadApple.mp3";
+				timesaaaa = timesaaaa + 1;
 			}
 
 			function start() {
