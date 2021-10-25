@@ -27,7 +27,6 @@ function onPageLoad(){
             window.location.href = "./page404.html";
             return;
         }
-        console.log(scrollToId);
         nowShowBlogId = datas[2];
         showPageRootPath = blogId[datas[2]];
         loadPage(datas[0] + ".json", datas[1], datas[0]);
@@ -39,10 +38,15 @@ function onPageLoad(){
 function getBlogId() {
     return nowShowBlogId;
 }
-
+let markdownHeadCount = 0;
 //配置取读成功, 开始加载页面
 function initMarkdown(){
     let rendererMD = new marked.Renderer();
+    rendererMD.heading  = function (text, level) {
+        let id = encodeURI(text);
+        return '<h' + level + " id='" + id + "'>" +
+            "<a href='#" + id + "' style='text-decoration:none;'>" + text + "</a></h>";
+    }
     marked.setOptions({
         renderer: rendererMD,
         gfm: true,
@@ -51,9 +55,7 @@ function initMarkdown(){
         pedantic: false,
         sanitize: false,
         smartLists: true,
-        smartypants: true
-    });
-    marked.setOptions({
+        smartypants: true,
         highlight: function (code) {
             return hljs.highlightAuto(code).value;
         }
