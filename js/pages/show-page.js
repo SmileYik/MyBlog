@@ -15,16 +15,19 @@ let blogId = {
 }
 
 let nowShowBlogId = 0;
+let scrollToId = "";
 
-//args format ?<json-name>=<id>=<blog id>
+//args format ?<json-name>=<id>=<blog id>#
 function onPageLoad(){
     let url = window.location.search;
+    scrollToId = window.location.hash;
     if (url.indexOf("?") > -1) {
         let datas = url.substr(1).split("=");
         if (blogId[datas[2]] == null) {
             window.location.href = "./page404.html";
             return;
         }
+        console.log(scrollToId);
         nowShowBlogId = datas[2];
         showPageRootPath = blogId[datas[2]];
         loadPage(datas[0] + ".json", datas[1], datas[0]);
@@ -126,6 +129,7 @@ function showMarkdown(fileName){
         if (request.status === 200) {
             document.getElementById('postContent').innerHTML = marked(request.responseText);
             MathJax.startup.defaultReady();
+            window.location.hash = scrollToId;
         }
     }
 }
