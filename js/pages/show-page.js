@@ -31,7 +31,7 @@ function onPageLoad(){
         showPageRootPath = blogId[datas[2]];
         loadPage(datas[0] + ".json", datas[1], datas[0]);
     } else {
-        window.location.href = "./page404.html";
+        window.location.href = "./page404.html"
     }
 }
 
