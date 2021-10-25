@@ -43,9 +43,9 @@ let markdownHeadCount = 0;
 function initMarkdown(){
     let rendererMD = new marked.Renderer();
     rendererMD.heading  = function (text, level) {
-        let id = encodeURI(text);
+        let id = encodeURIComponent(text);
         return '<h' + level + " id='" + id + "'>" +
-            "<a href='#" + id + "' style='text-decoration:none;'>" + text + "</a></h>";
+            "<a href='#" + id + "' style='text-decoration:none;'>" + text + "</a></h" + level + ">";
     }
     marked.setOptions({
         renderer: rendererMD,
@@ -131,7 +131,12 @@ function showMarkdown(fileName){
         if (request.status === 200) {
             document.getElementById('postContent').innerHTML = marked(request.responseText);
             MathJax.startup.defaultReady();
-            window.location.hash = scrollToId;
+            setTimeout("scrollToIdFunction()",500);
         }
     }
+}
+
+function scrollToIdFunction() {
+    window.location.hash = scrollToId;
+    console.log(scrollToId);
 }
