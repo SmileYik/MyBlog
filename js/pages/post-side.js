@@ -13,7 +13,12 @@ let postSizeRootPathById = {
         "preJson": "./pages/Reading/preview-post.json",
         "postListJson": "./pages/Reading/post-list.json",
         "postJson": "./pages/Reading/jsons/"
-    }
+    },
+    "3": {
+        "preJson": "./pages/Other/preview-post.json",
+        "postListJson": "./pages/Other/post-list.json",
+        "postJson": "./pages/Other/jsons/"
+    },
 };
 
 function postSizeSetRootPathById(id) {

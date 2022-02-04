@@ -15,13 +15,18 @@
     "href": "reading.html"
   },
   "4": {
+    "name": "其他",
+    "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    "href": "./other.html"
+  },
+  "5": {
     "name": "BadApple 字符画",
     "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     "href": "./badapple/badApple.html"
   },
-  "5": {
-    "name": "Markdown 编辑器",
-    "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
-    "href": "./markdownEditer.html"
-  }
+  "6": {
+      "name": "Markdown 编辑器",
+      "clazz": "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+      "href": "./markdownEditer.html"
+    }
 }
