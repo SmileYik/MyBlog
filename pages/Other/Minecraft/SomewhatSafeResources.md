@@ -10,6 +10,9 @@ Spigot-1.12.2-SomewhatSafeResources-1.2-SNAPSHOT.jar
 * **SomewhatSafeResources**: 本作品名
 * **1.2**: 本作品目前的版本号
 
+### 注意
+**1.1升级至1.2时需要重新在插件端加密材质包**
+
 ### Mod
 
 对于Mod, 不同版本Minecraft需要使用相对应版本的Mod.  
@@ -106,3 +109,92 @@ retry-times: 0
 # 否则容易发生客户端一直加载资源包的情况
 retry-times-delay: 20
 ```
+
+
+#### 更新记录
+
+<button onclick="showContent('aa');">显示/隐藏</button>
+
+<div id="aa" hidden>
+
+2022.01.24:  
+插件发布
+
+
+2022.01.25:  
+更新加密与读取方法  
+更新1.16.5版本  
+更新1.17.1版本  
+
+2022.01.29:  
+对1.12.2版本插件修复  
+
+2022.02.05:  
+修复optifine问题  
+适配1.18.1
+
+</div>
+
+#### 版本选择
+
+<div>
+<label for="mcv">Minecraft版本:
+<select id="mcv" onchange="onMcvChange(this.value)">
+    <option value="none">请选择</option>
+    <option value="1.18.1">1.18.1</option>
+    <option value="1.17.1">1.17.1</option>
+    <option value="1.16.5">1.16.5</option>
+    <option value="1.12.2">1.12.2</option>
+</select>
+</label>
+<div id="ssresvp">
+
+</div>
+<div id="ssresvm">
+
+</div>
+</div>
+
+<div id="script" hidden>
+let versions = [
+"Spigot-1.12.2-SomewhatSafeResources-1.2-SNAPSHOT.jar",
+"Spigot-1.16.5-SomewhatSafeResources-1.2-SNAPSHOT.jar",
+"Forge-1.12.2-SomewhatSafeResources-1.2.jar",
+"Forge-1.16.5-SomewhatSafeResources-1.2-SNAPSHOT.jar",
+"Forge-1.17.X-SomewhatSafeResources-1.2-SNAPSHOT.jar",
+"Forge-1.18.1-SomewhatSafeResources-1.2.jar"
+];
+function showContent(id) {
+  let aa = document.getElementById(id);
+  if (aa.hidden) {
+    aa.hidden = '';
+  } else {
+    aa.hidden = 'hidden';
+  }
+}
+function onMcvChange(value) {
+  let ssresp = document.getElementById("ssresp");
+  let ssresm = document.getElementById("ssresm");
+  let txtp = "插件: ";
+  let txtm = "Mod: ";
+  if (value === '1.12.2') {
+    txtp += versions[0];
+    txtm += versions[2];
+  } else {
+    txtp += versions[1];
+  }
+  if (value === '1.16.5') {
+    txtm += versions[3];
+  } else if (value === '1.17.1') {
+    txtm += versions[4];
+  } else if (value === '1.18.1') {
+    txtm += versions[5];
+  } else if (value === 'none') {
+    ssresvp.innerHTML = "";
+    ssresvm.innerHTML = "";
+    return;
+  }
+  ssresvp.innerHTML = txtp;
+  ssresvm.innerHTML = txtm;
+}
+</div>

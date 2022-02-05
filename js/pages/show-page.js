@@ -136,6 +136,7 @@ function showMarkdown(fileName){
             document.getElementById('postContent').innerHTML = marked(request.responseText);
             MathJax.startup.defaultReady();
             setTimeout("scrollToIdFunction()",500);
+            loadMarkdownJs();
         }
     }
 }
@@ -143,4 +144,11 @@ function showMarkdown(fileName){
 function scrollToIdFunction() {
     window.location.hash = scrollToId;
     console.log(scrollToId);
+}
+
+function loadMarkdownJs() {
+    let js = document.getElementById("script");
+    if (js) {
+        window.eval(js.innerText);
+    }
 }
