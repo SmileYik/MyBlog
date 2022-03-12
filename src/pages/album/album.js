@@ -92,7 +92,7 @@ class Album extends React.Component {
 
   render() {
     if (this.state.nav) {
-      return <Navigate to={this.state.nav}/>
+      return <Navigate to={"?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + this.state.nav}/>
     }
     return (
       <Fragment>
