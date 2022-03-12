@@ -1,0 +1,20 @@
+{
+    "author": "Smile Yik",
+    "id": "leetcode-everyday",
+    "items": [
+        {
+            "author": "Smile Yik",
+            "id": "pe-2021-4-26",
+            "items": [
+            ],
+            "markdown": "LeetCode/ProblemEveryday/2021/4/26. 在 D 天内送达包裹的能力.md",
+            "modifyTime": 1647103581900,
+            "postTime": 1647103581900,
+            "prev": "[原贴](https://leetcode-cn.com/problems/capacity-to-ship-packages-within-d-days/)传送带上的包裹必须在 `D` 天内从一个港口运送到另一个港口。传送带上的第 `i` 个包裹的重量为 `weights[i]`。每一天，我们都会按给出重量的顺序往传送带上装载包裹。我们装载的重量不会超过船的最大运载重量。",
+            "tag": ",",
+            "title": "在 D 天内送达包裹的能力"
+        }
+    ],
+    "modifyTime": 1647103542722,
+    "title": "LeetCode每日一题"
+}

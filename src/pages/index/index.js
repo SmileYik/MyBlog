@@ -20,7 +20,7 @@ const article = {
 const article2 = {
   background: "https://images.pexels.com/photos/556669/pexels-photo-556669.jpeg",
   comment: "本博客的源代码和文章都托管在我的Github仓库中, " +
-           "如果你对我的仓库感兴趣, 欢迎[Star](https://github.com/SmileYik/MyBlog)!" +
+           "如果你对我的仓库感兴趣, 欢迎[Star](https://github.com/SmileYik/MyBlog)!\n\n" +
            "此外, 本博客中的所有文章未经允许谢绝以任何形式二次发布或商用(虽然什么东西都没有).$$SmileYik$$",
   header: {
     title: "关于源代码!",

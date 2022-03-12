@@ -6,13 +6,25 @@ export const menuItems = [
     name: "首页"
   },
   {
+    id: "menu-item-2",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
+    href: "?blog=readBook",
+    name: "学习"
+  },
+  {
+    id: "menu-item-3",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
+    href: "?blog=problems",
+    name: "算法题解"
+  },
+  {
     id: "menu-item-1",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
     href: "?blog=other",
     name: "其他"
   },
   {
-    id: "menu-item-2",
+    id: "menu-item-4",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     href: "./badapple/badApple.html",
     name: "BadApple!!!"
@@ -40,6 +52,54 @@ export const blogs = {
     id: "other",
     title: "其他 - Smile Yik's Blog",
     base: "./blogs/other/",
+    markdownBase: "markdowns/",
+    markdownAlbumsBase: "albums/",
+    albums: "all-albums.json",
+    newestPost: "newest-post.json",
+    getMarkdownBase: function () {
+      return this.base + this.markdownBase;
+    },
+    getMarkdownAlbumsBase: function () {
+      return this.base + this.markdownAlbumsBase;
+    },
+    getAlbums: function () {
+      return this.base + this.albums;
+    },
+    getNewestPost: function () {
+      return this.base + this.newestPost;
+    },
+    getSubPageTitle: function (keyWords) {
+      return keyWords + " - Smile Yik's Blog";
+    }
+  },
+  "problems": {
+    id: "problems",
+    title: "算法题解 - Smile Yik's Blog",
+    base: "./blogs/problems/",
+    markdownBase: "markdowns/",
+    markdownAlbumsBase: "albums/",
+    albums: "all-albums.json",
+    newestPost: "newest-post.json",
+    getMarkdownBase: function () {
+      return this.base + this.markdownBase;
+    },
+    getMarkdownAlbumsBase: function () {
+      return this.base + this.markdownAlbumsBase;
+    },
+    getAlbums: function () {
+      return this.base + this.albums;
+    },
+    getNewestPost: function () {
+      return this.base + this.newestPost;
+    },
+    getSubPageTitle: function (keyWords) {
+      return keyWords + " - Smile Yik's Blog";
+    }
+  },
+  "readBook": {
+    id: "readBook",
+    title: "学习 - Smile Yik's Blog",
+    base: "./blogs/readBook/",
     markdownBase: "markdowns/",
     markdownAlbumsBase: "albums/",
     albums: "all-albums.json",

@@ -1,0 +1,20 @@
+{
+    "author": "Smile Yik",
+    "id": "csapp3th",
+    "items": [
+        {
+            "author": "Smile Yik",
+            "id": "csapp3th-8-tfgets",
+            "items": [
+            ],
+            "markdown": "csapp3th/8/tfgets.md",
+            "modifyTime": 1647099809576,
+            "postTime": 1647099809576,
+            "prev": "这里是在做csapp3th中, 第八章课外系统8.25遇到的, 原题大致如下:  > 编写一个fgets的5秒钟内输入版本的tfgets, 如果5秒钟内用户没有输入数据, 则返回NULL, 其余行为与fgets一样.在这里引入**非本地跳转**方法.```",
+            "tag": "信号,",
+            "title": "tfgets: 一定时间内阻止输入并提示超时"
+        }
+    ],
+    "modifyTime": 1647099744269,
+    "title": "深入理解计算机系统学习"
+}

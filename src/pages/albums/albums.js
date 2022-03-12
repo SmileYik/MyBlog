@@ -98,7 +98,16 @@ export class Albums extends React.Component {
               <div id="primary" className="content-area">
                 <main id="main" className="site-main" role="main">
                   <div>
-                    {this.state.albumsJsx}
+                    {
+                      this.state.albumsJsx.map((item) => {
+                        return (
+                          <Fragment key={Math.random()}>
+                            {item}
+                            <hr/>
+                          </Fragment>
+                        );
+                      })
+                    }
                   </div>
                 </main>
               </div>

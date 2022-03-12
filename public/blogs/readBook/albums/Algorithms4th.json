@@ -1,0 +1,32 @@
+{
+    "author": "Smile Yik",
+    "id": "Algorithms4th",
+    "items": [
+        {
+            "author": "Smile Yik",
+            "id": "chap1-3",
+            "items": [
+            ],
+            "markdown": "Algorithms4th/chap1/3.md",
+            "modifyTime": 1647097829305,
+            "postTime": 1647097829305,
+            "prev": "#### 为 FixedCapacityStackOfString 添加一个方法 isFull().```java/** * chap1.three.FixedCapacityStackOfString.java.",
+            "tag": "习题,,算法(第四版),",
+            "title": "第一章第三节习题"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "chap1-4",
+            "items": [
+            ],
+            "markdown": "Algorithms4th/chap1/4.md",
+            "modifyTime": 1647097876056,
+            "postTime": 1647097876056,
+            "prev": "#### 证明从N个数中取出三个整数的不同组合的整数为N(N - 1)(N - 2)/6.$$C^{3}_{N}=\\frac{N(N-1)(N-2)}{3\\times2}=\\frac{N(N-1)(N-2)}{6}$$#### 修改 ThreeSum, 正确处理两个较大int值相加可能溢出的情况.",
+            "tag": "习题,,算法(第四版),",
+            "title": "第一章第四节习题"
+        }
+    ],
+    "modifyTime": 0,
+    "title": "Algorithms4th"
+}
