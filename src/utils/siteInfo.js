@@ -8,7 +8,7 @@ export const menuItems = [
   {
     id: "menu-item-1",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
-    href: "other",
+    href: "?blog=other",
     name: "其他"
   },
   {

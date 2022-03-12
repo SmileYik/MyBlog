@@ -3,28 +3,27 @@ import MyHeader from "../../components/Header/Header";
 import Footer from "../../components/Footer/footer";
 import BookAside from "../../components/Aside/book-aside/book-aside";
 import {blogs, menuItems, site} from "../../utils/siteInfo";
-import {Navigate, useParams} from "react-router-dom";
+import {Navigate} from "react-router-dom";
 import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
 import LoadAllJs from "../../utils/JsLoader";
 
 export default function BookWrapper(props) {
-  const params = useParams();
-  const blog = blogs[params.bid];
+  const blog = blogs[props.bid];
   if (blog) {
     let nav = <Fragment/>;
     jQuery.ajax({
-      url: blog.getMarkdownAlbumsBase() + params.aid + ".json",
+      url: blog.getMarkdownAlbumsBase() + props.aid + ".json",
       async: false,
       contextType: "application/json",
       success: function (res) {
         if (res.items) {
           nav = <Fragment>
                   <LoadAllJs />
-                  <Book bid={params.bid}
+                  <Book bid={props.bid}
                         album={res}
-                        iid={params.iid}/>
+                        iid={props.iid}/>
                 </Fragment>;
         } else {
           nav = <Navigate to={"/"} />;

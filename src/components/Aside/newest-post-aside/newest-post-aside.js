@@ -35,7 +35,7 @@ export default function NewestPostAside(props) {
             posts.map((post) => {
               return (
                 <li key={post.id}>
-                  <a href={props.bid + "/album/" + post.album + "/" + post.id}>
+                  <a href={"?blog=" + props.bid + "&album=" + post.album + "&post=" + post.id}>
                     {post.title}
                   </a>
                   <span className="post-date">

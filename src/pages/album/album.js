@@ -10,17 +10,16 @@ import Index from "../index";
 import LoadAllJs from "../../utils/JsLoader";
 
 export default function AlbumWrapper(props) {
-  const params = useParams();
-  const blog = blogs[params.bid];
+  const blog = blogs[props.bid];
   if (blog) {
-    let nav = <a/>;
+    let nav = <Fragment/>;
     jQuery.ajax({
-      url: blog.getMarkdownAlbumsBase() + params.aid + ".json",
+      url: blog.getMarkdownAlbumsBase() + props.aid + ".json",
       async: false,
       contextType: "application/json",
       success: function (res) {
         if (res.items) {
-          nav = <Album bid={params.bid} album={res}/>;
+          nav = <Album bid={props.bid} album={res}/>;
         } else {
           nav = <Index />;
         }
@@ -65,7 +64,7 @@ class Album extends React.Component {
       const items = state.album.items;
       for (let i = state.startIndex; i < state.step && i < items.length; ++i) {
         const header = {
-          title: <Link to={items[i].id}>{items[i].title}</Link>,
+          title: <Link to={"?blog=" + state.blog.id + "&album=" + state.album.id + "&post=" + items[i].id}>{items[i].title}</Link>,
           meta: {
             modifyTime: items[i].modifyTime,
             postTime: items[i].postTime,

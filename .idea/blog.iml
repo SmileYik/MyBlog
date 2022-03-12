@@ -9,5 +9,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="highlight" level="application" />
+    <orderEntry type="library" name="mathjax" level="application" />
+    <orderEntry type="library" name="night-owl" level="application" />
   </component>
 </module>

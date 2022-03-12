@@ -22,7 +22,7 @@ export default function AlbumsWrapper(props) {
   }
 }
 
-class Albums extends React.Component {
+export class Albums extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -69,7 +69,7 @@ class Albums extends React.Component {
           async: false
         });
         const header = {
-          title: <Link to={state.albums[i].id}>{state.albums[i].title}</Link>,
+          title: <Link to={"?blog=" + this.state.blog.id + "&album=" + state.albums[i].id}>{state.albums[i].title}</Link>,
           meta: {
             modifyTime: state.albums[i].modifyTime,
             author: state.albums[i].author
