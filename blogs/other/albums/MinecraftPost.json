@@ -1,0 +1,32 @@
+{
+    "author": "SmileYik",
+    "id": "MinecraftPost",
+    "items": [
+        {
+            "author": "Smile Yik",
+            "id": "SomewhatSafeResources",
+            "items": [
+            ],
+            "markdown": "Minecraft/SomewhatSafeResources.md",
+            "modifyTime": 1647089437796,
+            "postTime": 1647089437796,
+            "prev": "此插件在使用过程中**需要**在**客户端**上安装一个**Mod**,  并且Mod版本与服务端所使用的插件的版本**需要对应**.  本插件与本Mod有类似的命名规则, 例如```",
+            "tag": "加密,插件,Minecraft,",
+            "title": "SomewhatSafeResources - 一个能让你的服务器材质包变得更加安全的插件"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "SocketConsole",
+            "items": [
+            ],
+            "markdown": "Minecraft/SocketConsole.md",
+            "modifyTime": 1647089349405,
+            "postTime": 1647089349405,
+            "prev": "这里有两个文件, 一个是: `SocketConsolePlugin`, 另外一个是: `SocketConsoleClient`, 其中前者为Minecraft Bukkit插件, 后者为网页端.网页端是可选的, 如果不需要网页端可以查看底下的 [如果想用自己的客户端](#如果想用自己的客户端)",
+            "tag": "插件,Minecraft,",
+            "title": "SocketConsole - 套接字控制台"
+        }
+    ],
+    "modifyTime": 0,
+    "title": "Minecraft作品相关"
+}

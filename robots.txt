@@ -1,16 +1,3 @@
-# robots.txt
-User-agent: Googlebot
-Allow: /
-User-agent: MSNBot
-Allow: /
-User-agent: Slurp
-Allow: /
-User-agent: baiduspider
-Allow: /
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Allow: /
-Disallow: /js/
-Disallow: /css/
-Disallow: /imgs/
-Disallow: /pages/
-Sitemap: sitemap.xml
+Disallow:
