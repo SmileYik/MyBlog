@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>是BadApple啦 - miSkYle's Blog</title>
+		<script src="js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			@font-face {
+			 font-family: 'fangsong';
+			 src: url('font/fangsong.ttf') format('truetype');
+			} 
+			
+			#box {
+				height: 445px;
+				width: 640px;
+				border: 5px groove rgba(0, 0, 0, 0.5);
+				background-color: white;
+				margin: 100px auto 0px;
+			}
+
+			pre {
+				font-family: fangsong,sans-serif;
+			}
+
+			#pic {
+				width: 99%;
+				margin: 3px auto;
+			}
+
+			#boxControls {
+				width: 640px;
+				height: 65px;
+				margin: 0px auto 0px;
+			}
+
+			body {
+				background-color: rgba(0, 0, 0, 0.6);
+			}
+		</style>
+	</head>
+	<body>
+		<pre hidden>a</pre>
+		<div id="box">
+			<pre id="pic"></pre>
+		</div>
+		<div id="boxControls">
+			<br>
+			<p style="width: 650px; height: 20px; margin: auto auto;text-align: center;">
+				<button onclick="reset()">重 置</button>
+				<button onclick="start()">开 始</button>
+				<button onclick="stop()">停 止</button>
+				<button onclick="changeBgm()">更改BGM</button>
+			</p>
+			<audio id="bgm" src="bgm/BadApple.mp3" controls hidden preload></audio>
+		</div>
+		<p id="info" style="width: 650px; height: 20px; margin: auto auto;text-align: center;"></p>
+		<script type="text/javascript">
+			let index = 0;
+			let badAppleTicks = {};
+			let timer;
+			const millsPerTick = 219376.0 / 6570.0;
+			let rowLyrics = ["29275:流れてく 時の中ででも<br />就算在流逝的时间中", "32473:気だるさが<br />仍能发现", "33673:ほらグルグル廻って<br />你瞧只在原地打转不停", "35873:私から 離れる心も 見えないわ<br />我那已失去的心也看不见", "40873:そう知らない？<br />这样你 明 白 吗？", "43073:自分から 動くこともなく<br />就算自己什么都不做", "46548:時の隙間に 流され続けて<br />时光仍渐渐消逝在缝隙中", "49973:知らないわ 周りのことなく<br />周遭的一切 我一概不知", "53598:私は私 それだけ<br />「我就是我」 仅此而已", "56873:夢見てる？<br />梦中发现了吗？", "58123:何も見てない？<br />什么都没发现？", "59873:語るも無駄な 自分の言葉？<br />发现自己如何诉说那没用的真心话？", "63348:悲しむなんて 疲れるだけよ<br />悲伤只会使自己更累", "66848:何も感じず<br />干脆什么都别多想", "68598:過ごせばいいの<br />如此度日就好", "70348:戸惑う言葉 与えられても<br />就算碎语和闲言", "73823:自分の心 ただ上の空<br />我早已心不在焉", "77348:もし私から 動くのならば<br />若我试着改变这一切的话", "80748:すべて変えるのなら 黒にする<br />这一切都将化为黑暗", "84198:こんな自分に 未来はあるの？<br />这样的我 能有未来吗？", "87800:こんな世界に 私はいるの？<br />这样的世界 能有我吗？", "91123:今切ないの？<br />现在我很难过吗？", "92823:今悲しいの？<br />现在我很悲伤吗？", "94798:自分の事も わからないのまま<br />就连这样的事情 自己都不清楚", "98098:歩むことさえ 疲れるだけよ<br />就算继续走下去 只会感到更累", "101624:人のことなど 知りもしないわ<br />别人的事情 也不愿关心 ", "105075:こんな私も 変われるのなら<br />这样的我 也能改变吗？", "108675:もし変われるのなら<br />如果真的改变的话", "110325:白になる？<br />一切能回归虚无吗？", "126569:流れてく 時の中ででも<br />就算在流逝的时间中", "129850:気だるさがほら<br />仍能发现", "131100:グルグル廻って<br />你瞧  只在原地打转不停", "133450:私から 離れる心も 見えないわそう<br />我那已失去的心也看不见", "138500:知らない？<br />这样你 明 白 吗？", "140350:自分から 動くこともなく<br />就算自己什么都不做", "143775:時の隙間に 流され続けて<br />时光仍渐渐消逝在缝隙中", "147200:知らないわ 周りのことなく<br />周遭的一切 我一概不知", "150725:私は私 それだけ<br />「我就是我」 仅此而已", "154100:夢見てる？<br />在梦中发现了吗？", "155425:何も見てない？<br />什么都没发现？", "157200:語るも無駄な 自分の言葉？<br />发现自己如何诉说那没用的真心话？", "160625:悲しむなんて 疲れるだけよ<br />悲伤只会使自己更累", "164308:何も感じず<br />干脆什么都别多想", "166133:過ごせばいいの<br />如此度日就好", "167733:戸惑う言葉 与えられても<br />就算碎语和闲言", "171183:自分の心 ただ上の空<br />我早已心不在焉", "174658:もし私から 動くのならば<br />若我试着改变这一切的话", "178133:すべて変えるのなら 黒にする<br />这一切就将化为黑暗", "181708:動くのならば<br />想要改变的话", "183608:動くのならば<br />如果改变的话", "185350:すべて壊すわ<br />一切都会破坏", "187100:すべて壊すわ<br />一切都会毁灭", "188800:悲しむならば<br />如果我感到伤心", "190550:悲しむならば<br />如果我感到悲哀", "192300:私の心 白く変われる？<br />我的心是否就能回归虚无呢？", "195750:貴方の事も<br />你的一切", "197475:私のことも<br />我的一切", "199275:すべての事も<br />所有的一切", "200875:まだ知らないの<br />我还完全不清楚", "202800:重い目蓋を 開けたのならば<br />想张开这沉重的眼睛的话", "206275:すべて壊すのなら<br />想毁灭一切的话", "208275:黒になれ！<br />就让黑暗吞噬掉这一切！"];
+			let lyrics = {};
+			$.ajax({
+				url: "./badAppleTick.json",
+				async: false,
+				dataType: "json",
+				success: function(res) {
+					badAppleTicks = res;
+					$("#pic")[0].innerText = badAppleTicks[index];
+					$("#bgm")[0].ontimeupdate = function (e) {
+						MB_updateLyric($("#bgm")[0].currentTime);
+					}
+					loadLyric();
+					$("#info").text("初步准备完毕, 等待所有字母进框即代表最终加载完成, 若音画不同步则请按下重置按钮!");
+				}
+			});
+
+			function loadLyric() {
+				let tempLyric = {};
+				for (let index in rowLyrics) {
+					let line = rowLyrics[index].split(":");
+					tempLyric[Number(line[0])] = line[1];
+				}
+				lyrics = tempLyric;
+			}
+
+			function MB_updateLyric(time) {
+				time = time * 1000;
+				if (time < 29000) {
+					return;
+				}
+				let preTime = 0;
+				for (let temp in lyrics) {
+					preTime = temp;
+					break;
+				}
+				for (let temp in lyrics) {
+					if (time < temp) {
+						$("#info").html(lyrics[preTime]);
+						break;
+					}
+					preTime = temp;
+				}
+				$("#info").html(lyrics[preTime]);
+			}
+			
+			let timesaaaa = 0;
+			
+			function changeBgm() {
+				let time = $("#bgm")[0].currentTime;
+				if (timesaaaa % 2 == 0) {
+					document.getElementById("bgm").src = "./bgm/badapple2.mp3";
+				} else {
+					document.getElementById("bgm").src = "./bgm/BadApple.mp3";
+				}	
+				timesaaaa = timesaaaa + 1;
+				$("#bgm")[0].currentTime = time;
+				$("#bgm")[0].play();
+			}
+
+			function start() {
+				if (index === 0) {
+					$("#bgm")[0].currentTime = 0;
+				}
+				$("#bgm")[0].play();
+				timer = setInterval("badAppleTick()", millsPerTick);
+				$("#info").text("本作品为东方Project同人创作, 字符画引用b站用户丶Nice所制作的字符画.");
+			}
+
+			function stop() {
+				if (timer != null) {
+					clearInterval(timer);
+					$("#bgm")[0].pause();
+				}
+			}
+
+			function badAppleTick() {
+				if (index > 6570) {
+					index = 0;
+					$("#bgm")[0].currentTime = 0;
+					$("#bgm")[0].play();
+				}
+				$("#pic")[0].innerText = badAppleTicks[index++];
+			}
+
+			function reset() {
+				index = 0;
+				$("#pic")[0].innerText = badAppleTicks[index];
+				clearInterval(timer);
+				$("#bgm")[0].currentTime = 0;
+				$("#bgm")[0].pause();
+			}
+
+		</script>
+	</body>
+</html>

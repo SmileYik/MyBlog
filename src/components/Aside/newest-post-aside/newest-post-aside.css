@@ -1,0 +1,14 @@
+.itemTag {
+    width: fit-content;
+    height: fit-content;
+    background: #3e403c;
+    color: #797b77;
+    padding: 5px 5px 3px 5px;
+    margin: 2px 2px;
+    border: 1px;
+    border-radius: 10px;
+}
+
+.itemTag {
+    font-size: 0.8em;
+}
