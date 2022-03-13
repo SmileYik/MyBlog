@@ -28,6 +28,12 @@ export const menuItems = [
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     href: "./badapple/badApple.html",
     name: "BadApple!!!"
+  },
+  {
+    id: "menu-item-5",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    href: "?tool=markdown",
+    name: "Markdown编辑器"
   }
 ];
 

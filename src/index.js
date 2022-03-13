@@ -1,14 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-
 import "./common/style/style.min.css"
 import "./common/style/theme.min.css"
 import "./common/style/style.css"
 import "./common/style/blocks.css"
 import "./common/style/colors-dark.css"
 import "./common/style/night-owl.min.css"
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <App />,

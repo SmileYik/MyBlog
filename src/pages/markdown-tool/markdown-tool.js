@@ -1,0 +1,47 @@
+import React from "react";
+import MyHeader from "../../components/Header/Header";
+import Footer from "../../components/Footer/footer";
+import {menuItems, site} from "../../utils/siteInfo";
+import LoadAllJs from "../../utils/JsLoader";
+import {MarkdownUtil} from "../../utils/MarkdownUtil";
+
+export default class MarkdownPrev extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      "a": ""
+    };
+    this.onEditAreaValueChange = this.onEditAreaValueChange.bind(this);
+  }
+
+  componentDidMount() {
+    document.body.className = "blog wp-custom-logo wp-embed-responsive hfeed has-header-image has-sidebar colors-dark";
+  }
+
+  onEditAreaValueChange(event) {
+    this.setState({
+      "a": event.target.value
+    });
+  }
+
+  render() {
+    return (
+    <div className={"site"}>
+      <MyHeader menus={menuItems} site={site} marginBottom={"72px;"}/>
+      <div className="site-content-contain">
+        <div id="content" className="site-content">
+          <div className="wrap">
+            <textarea onChange={this.onEditAreaValueChange} style={{height: "400px"}}/>
+            <hr/>
+            <div>
+              {MarkdownUtil.render(this.state.a)}
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+      <LoadAllJs />
+    </div>
+    );
+  }
+}

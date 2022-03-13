@@ -5,7 +5,7 @@ import AlbumWrapper from "./pages/album/album";
 import BookWrapper from "./pages/book/book";
 import React from "react";
 import {blogs} from "./utils/siteInfo";
-import MarkdownPrev from "./pages/markdown/markdown";
+import MarkdownPrev from "./pages/markdown-tool/markdown-tool";
 
 function App() {
   return (
@@ -31,12 +31,11 @@ function App() {
 
 function RouteWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const action = searchParams.get("action");
-  if (action) {
-    if (action === "markdown") {
+  const tool = searchParams.get("tool");
+  if (tool != null) {
+    if (tool === "markdown") {
       return <MarkdownPrev />
     }
-    return <Index />;
   }
 
   const blogId = searchParams.get("blog");
