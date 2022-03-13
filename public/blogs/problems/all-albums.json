@@ -16,5 +16,11 @@
         "id": "leetcode-everyday",
         "modifyTime": 1647103542722,
         "title": "LeetCode每日一题"
+    },
+    {
+        "author": "SmileYik",
+        "id": "leetcode-dp",
+        "modifyTime": 1647178079204,
+        "title": "LeetCode 动态规划"
     }
 ]
