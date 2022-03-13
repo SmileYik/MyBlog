@@ -3,7 +3,7 @@ import MyHeader from "../../components/Header/Header";
 import Footer from "../../components/Footer/footer";
 import BookAside from "../../components/Aside/book-aside/book-aside";
 import {blogs, menuItems, site} from "../../utils/siteInfo";
-import {Navigate} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
@@ -66,12 +66,20 @@ class Book extends React.Component {
     this.updateTitle();
   }
 
+  scrollToAnchor(name) {
+    const elem = document.getElementById(name);
+    if (elem) {
+      elem.scrollIntoView();
+    }
+  }
+
   getPostContent(id) {
     const _this = this;
     const item = this.itemMap[id];
     if (!item) {
       return;
     }
+    this.scrollToAnchor("page");
     jQuery.ajax({
       url: this.state.blog.getMarkdownBase() + item.markdown,
       async: true,
@@ -150,7 +158,6 @@ class Book extends React.Component {
         content: "加载中... 请稍候..."
       }
     })
-    this.searchItem();
   }
 
   getHeaderMeta(meta) {

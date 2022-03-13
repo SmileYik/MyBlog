@@ -1,6 +1,6 @@
 import {marked} from "marked";
 import hljs from "highlight.js";
-import MathJax from "react-mathjax3";
+import MathJax from "mathjax3-react";
 import React from "react";
 
 export const MarkdownUtil = {
@@ -21,11 +21,17 @@ export const MarkdownUtil = {
   },
   render: function (text) {
     return (
-      <MathJax.Context input="tex">
+      <MathJax.Provider input="tex" options={{
+        tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+        skipHtmlTags: [
+          'script', 'noscript', 'style', 'textarea', 'pre',
+          'code', 'annotation', 'annotation-xml'
+        ]
+      }}>
         <div className="entry-content">
           <MathJax.Html html={ marked(text) } />
         </div>
-      </MathJax.Context>
+      </MathJax.Provider>
     );
   }
 }
