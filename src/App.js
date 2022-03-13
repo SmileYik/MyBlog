@@ -5,6 +5,7 @@ import AlbumWrapper from "./pages/album/album";
 import BookWrapper from "./pages/book/book";
 import React from "react";
 import {blogs} from "./utils/siteInfo";
+import MarkdownPrev from "./pages/markdown/markdown";
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
 
 function RouteWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const action = searchParams.get("action");
+  if (action) {
+    if (action === "markdown") {
+      return <MarkdownPrev />
+    }
+    return <Index />;
+  }
+
   const blogId = searchParams.get("blog");
   const albumId = searchParams.get("album");
   const itemId = searchParams.get("post");
