@@ -50,6 +50,7 @@ class Book extends React.Component {
       content: "加载中... 请稍候..."
     };
     this.onItemClick = this.onItemClick.bind(this);
+    this.onAnchorClicked = this.onAnchorClicked.bind(this);
     MarkdownUtil.init();
     this.bakeItems();
     this.bakeItemsList(this.state.album.items);
@@ -67,6 +68,9 @@ class Book extends React.Component {
   }
 
   scrollToAnchor(name) {
+    if (!name) {
+      return;
+    }
     const elem = document.getElementById(name);
     if (elem) {
       elem.scrollIntoView();
@@ -100,6 +104,13 @@ class Book extends React.Component {
     const item = this.itemMap[this.state.iid];
     if (item) {
       document.title = this.state.blog.getSubPageTitle(item.title);
+    }
+  }
+
+  onAnchorClicked(event) {
+    if (event.target.hash && event.target.hash.startsWith("#")) {
+      event.preventDefault();
+      this.scrollToAnchor(event.target.hash.substring(1));
     }
   }
 
@@ -281,7 +292,9 @@ class Book extends React.Component {
                         {header.title}
                       </h1>
                     </header>
-                    {MarkdownUtil.render(this.state.content)}
+                    <div onClick={this.onAnchorClicked}>
+                      {MarkdownUtil.render(this.state.content)}
+                    </div>
                   </article>
                   <nav className="navigation post-navigation" role="navigation" aria-label="文章">
                     <h2 className="screen-reader-text">文章导航</h2>

@@ -5,8 +5,12 @@ import React from "react";
 
 export const MarkdownUtil = {
   init: function () {
+    const render = new marked.Renderer();
+    render.heading = function (text, level) {
+      return "<h" + level + " id='" + encodeURIComponent(text) + "'>" + text + "</h" + level + ">";
+    };
     marked.setOptions({
-      renderer: new marked.Renderer(),
+      renderer: render,
       gfm: true,
       tables: true,
       breaks: false,
