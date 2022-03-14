@@ -6,9 +6,6 @@ import "../common/style/night-owl.min.css"
 
 export const MarkdownUtil = {
   init: function () {
-
-  },
-  render: function (text) {
     const render = new marked.Renderer();
     render.heading = function (text, level) {
       return "<h" + level + " id='" + encodeURIComponent(text) + "'>" + text + "</h" + level + ">";
@@ -29,9 +26,10 @@ export const MarkdownUtil = {
         } else {
           return hljs.highlight(code, { language }).value;
         }
-      },
-      langPrefix: 'hljs language-'
+      }
     });
+  },
+  render: function (text) {
     return (
       <MathJax.Provider input="tex" options={{
         tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
