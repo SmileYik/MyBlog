@@ -64,7 +64,7 @@
 当天卖出后可以买当天的股票, 那么可以看成是只要两天内前一天买入后一天卖出能有收益时,
 在后一天卖出的同时, 买入当天的股票.
 
-```
+```java
 class Solution {
     public int maxProfit(int[] prices) {
         int[] dp = new int[prices.length];
@@ -98,7 +98,7 @@ class Solution {
 前一天没有持有股票的最大利润值, 也可以是今天卖出股票后的利
 润与前一天持有股票的最大利润的总和.
 
-```
+```java
 class Solution {
     public int maxProfit(int[] prices) {
         //[][0] 未持有股票的最大利润, [][1] 持有股票的 最大利润.
@@ -118,7 +118,7 @@ class Solution {
 这里dp数组的当前值只依赖于上一个值, 那么可以做出以下优化去
 减小空间复杂度:
 
-```
+```java
 class Solution {
     public int maxProfit(int[] prices) {
         //[][0] 未持有股票的最大利润, [][1] 持有股票的 最大利润.
