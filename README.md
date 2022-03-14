@@ -1,70 +1,163 @@
-# Getting Started with Create React App
+# 快速部署
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 1. 初始化博客
 
-## Available Scripts
+让你的博客文件结构重置到初始状态.
 
-In the project directory, you can run:
+- 清理public文件夹
+```
+❯ tree ./public
+./public
+├── blogs 存放博客文章
+├── CNAME 记录自定义域名
+├── common 
+│   ├── data
+│   │   └── music-box
+│   │       └── musics.json 音乐盒歌词及曲目信息
+│   ├── images
+│   │   ├── background.png  主页背景
+│   │   ├── ico_100.jpg     博客头像
+│   │   ├── ico_150.jpg     博客头像
+│   │   └── ico_normal.jpg  博客头像
+│   └── js
+│       ├── global.js
+│       ├── jquery.min.js
+│       ├── music-box.js
+│       └── navigation.js
+├── favicon.ico
+├── index.html              首页
+├── manifest.json
+└── robots.txt
+```
 
-### `npm start`
+- src文件夹结构
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+❯ tree ./src
+./src
+├── App.js
+├── common
+│   ├── js
+│   └── style                                 要用到的公共样式
+│       ├── blocks.css
+│       ├── colors-dark.css
+│       ├── night-owl.min.css
+│       ├── style.css
+│       ├── style.min.css
+│       └── theme.min.css
+├── components                                博客的组件
+│   ├── Article
+│   │   └── article.js                  
+│   ├── Aside
+│   │   ├── aside.js                    
+│   │   ├── book-aside
+│   │   │   ├── book-aside.css
+│   │   │   └── book-aside.js
+│   │   └── newest-post-aside
+│   │       ├── newest-post-aside.css
+│   │       └── newest-post-aside.js
+│   ├── CustomHeader
+│   │   └── CustomHeader.js
+│   ├── Footer
+│   │   └── footer.js
+│   ├── Header
+│   │   └── Header.js
+│   └── navigation-top
+│       └── navigation-top.js
+├── index.js
+├── pages
+│   ├── album
+│   │   └── album.js
+│   ├── albums
+│   │   └── albums.js
+│   ├── book
+│   │   └── book.js
+│   ├── index
+│   │   └── index.js
+│   └── markdown-tool
+│       └── markdown-tool.js
+├── reportWebVitals.js
+└── utils
+    ├── JsLoader.js
+    ├── MarkdownUtil.js
+    └── siteInfo.js                     存放站点配置信息, 包括菜单栏等
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+19 directories, 27 files
+```
 
-### `npm test`
+## 2. 对博客进行配置
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 对 public/index.html 文件进行修改
 
-### `npm run build`
+将以下一句修改成为
+`https://<github用户名>.github.io/<你的仓库名>`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+<base href="https://blog.smileyik.tk"/>
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+之后修改你需要修改的meta标签内容即可
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 对src/utils/siteInfo.js进行配置
 
-### `npm run eject`
+```
+export const menuItems = [
+  {
+    id: "menu-item-0", // 菜单id
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-0",
+    href: "/",     // 跳转到的页面
+    name: "首页"    // 菜单名
+  }
+];
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+export const site = {
+  url: "/",        //主站地址.
+  icons: {
+    normal: "./common/images/ico_normal.jpg",  站点头像
+    icon150: "./common/images/ico_150.jpg",    站点头像
+    icon100: "./common/images/ico_100.jpg",    站点头像
+    alt: "Smile Yik's Blog"                    站点头像加载失败后的文字
+  },
+  title: "Smile Yik's Blog",                   站点名称
+  description: "小奕的个人博客",                  站点副标题
+  background: {
+    background: "./common/images/background.png",  首页背景
+    alt: "Smile Yik's Blog"                        首页背景加载失败后的文字
+  }
+}
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+export const blogs = {
+  "other": {                                博客id: {}
+    id: "other",                            博客id
+    title: "其他 - Smile Yik's Blog",        博客标题
+    base: "./blogs/other/",                 博客目录是在那, 基于public文件夹
+    markdownBase: "markdowns/",             博客markdowns文件存放的文件夹, 基于base目录
+    markdownAlbumsBase: "albums/",          博客文章集文件存放的文件夹, 基于base目录
+    albums: "all-albums.json",              记录所有文章集的文件, 基于base目录
+    newestPost: "newest-post.json",         记录最新发布的文章的文件, 基于base目录
+    getMarkdownBase: function () {          // 以下可以不用在意, 照抄就行
+      return this.base + this.markdownBase;
+    },
+    getMarkdownAlbumsBase: function () {
+      return this.base + this.markdownAlbumsBase;
+    },
+    getAlbums: function () {
+      return this.base + this.albums;
+    },
+    getNewestPost: function () {
+      return this.base + this.newestPost;
+    },
+    getSubPageTitle: function (keyWords) {     // 获取文章页面标题
+      return keyWords + " - Smile Yik's Blog";
+    }
+  }
+};
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 3. 发布到github仓库
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+在目录下运行如下指令即可
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+npm run deploy
+```

@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <Routes>
-          <Route path="*" element={<RouteWrapper />}/>
+          <Route path="*" element={<LinkFixWrapper />}/>
           {/*<Route path="index" element={<Index />}/>*/}
           {/*<Route path="index?blog=:bid" element={<AlbumsWrapper />}/>*/}
           {/*<Route path=":bid/">*/}
@@ -26,6 +26,33 @@ function App() {
           {/*</Route>*/}
       </Routes>
     </Router>
+  );
+}
+
+
+
+function scrollToAnchor(name) {
+  if (!name) {
+    return;
+  }
+  const elem = document.getElementById(name);
+  if (elem) {
+    elem.scrollIntoView();
+  }
+}
+
+function onATagClicked(event) {
+  if (event.target.hash && event.target.hash.startsWith("#")) {
+    event.preventDefault();
+    this.scrollToAnchor(event.target.hash.substring(1));
+  }
+}
+
+function LinkFixWrapper() {
+  return (
+    <div onClick={onATagClicked}>
+      <RouteWrapper />
+    </div>
   );
 }
 
