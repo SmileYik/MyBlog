@@ -2,10 +2,19 @@
     {
         "album": "leetcode-dp",
         "author": "Smile Yik",
+        "id": "lcdp-42",
+        "modifyTime": 1647357683747,
+        "postTime": 1647357683747,
+        "tag": "动态规划,",
+        "title": "42. 接雨水"
+    },
+    {
+        "album": "leetcode-dp",
+        "author": "Smile Yik",
         "id": "lc-139",
         "modifyTime": 1647271035549,
         "postTime": 1647271035549,
-        "tag": "动态规划,",
+        "tag": "动态规划,,",
         "title": "139. 单词拆分"
     },
     {
@@ -43,14 +52,5 @@
         "postTime": 1647183909660,
         "tag": "动态规划,,",
         "title": "买卖股票的最佳时机"
-    },
-    {
-        "album": "leetcode-dp",
-        "author": "SmileYik",
-        "id": "lcdp-dp1",
-        "modifyTime": 1647178116847,
-        "postTime": 1647178116847,
-        "tag": "动态规划,,",
-        "title": "最佳观光组合"
     }
 ]
