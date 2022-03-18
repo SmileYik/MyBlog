@@ -2,10 +2,19 @@
     {
         "album": "leetcode-dp",
         "author": "Smile Yik",
+        "id": "lcdp-96",
+        "modifyTime": 1647590554502,
+        "postTime": 1647590554502,
+        "tag": "动态规划,数学,",
+        "title": "96. 不同的二叉搜索树"
+    },
+    {
+        "album": "leetcode-dp",
+        "author": "Smile Yik",
         "id": "lc-91",
         "modifyTime": 1647444370787,
         "postTime": 1647444370787,
-        "tag": "动态规划,",
+        "tag": ",动态规划,",
         "title": "91. 解码方法"
     },
     {
@@ -14,7 +23,7 @@
         "id": "lc-413",
         "modifyTime": 1647444364588,
         "postTime": 1647444364587,
-        "tag": "动态规划,",
+        "tag": ",动态规划,",
         "title": "413. 等差数列划分"
     },
     {
@@ -43,14 +52,5 @@
         "postTime": 1647259661326,
         "tag": ",",
         "title": "714. 买卖股票的最佳时机含手续费"
-    },
-    {
-        "album": "leetcode-dp",
-        "author": "Smile Yik",
-        "id": "lc-309",
-        "modifyTime": 1647258368703,
-        "postTime": 1647258368703,
-        "tag": ",动态规划,",
-        "title": "309.最佳买卖股票时机含冷冻期"
     }
 ]
