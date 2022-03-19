@@ -2,10 +2,19 @@
     {
         "album": "leetcode-dp",
         "author": "Smile Yik",
+        "id": "lc-300",
+        "modifyTime": 1647686590297,
+        "postTime": 1647686590297,
+        "tag": "动态规划,",
+        "title": "300. 最长递增子序列"
+    },
+    {
+        "album": "leetcode-dp",
+        "author": "Smile Yik",
         "id": "lc-304",
         "modifyTime": 1647600053569,
         "postTime": 1647600053569,
-        "tag": "动态规划,前缀和,",
+        "tag": ",前缀和,动态规划,",
         "title": "304. 二维区域和检索 - 矩阵不可变"
     },
     {
@@ -14,7 +23,7 @@
         "id": "lc-1314",
         "modifyTime": 1647600044779,
         "postTime": 1647600044779,
-        "tag": "动态规划,前缀和,",
+        "tag": ",前缀和,动态规划,",
         "title": "1314. 矩阵区域和"
     },
     {
@@ -23,7 +32,7 @@
         "id": "lcdp-96",
         "modifyTime": 1647590554502,
         "postTime": 1647590554502,
-        "tag": ",动态规划,数学,",
+        "tag": ",数学,动态规划,",
         "title": "96. 不同的二叉搜索树"
     },
     {
@@ -43,14 +52,5 @@
         "postTime": 1647444364587,
         "tag": ",动态规划,",
         "title": "413. 等差数列划分"
-    },
-    {
-        "album": "leetcode-dp",
-        "author": "Smile Yik",
-        "id": "lcdp-42",
-        "modifyTime": 1647357683747,
-        "postTime": 1647357683747,
-        "tag": ",动态规划,",
-        "title": "42. 接雨水"
     }
 ]
