@@ -32,6 +32,7 @@ export default class MarkdownPrev extends React.Component {
         <div id="content" className="site-content">
           <div className="wrap">
             <textarea onChange={this.onEditAreaValueChange} style={{height: "400px"}}/>
+            <a href="https://ericp.cn/cmd"><button style={{width: "100%", backgroundColor: "cadetblue"}}>Cmd Markdown 公式指导手册</button></a>
             <hr/>
             <div>
               {MarkdownUtil.render(this.state.a)}
