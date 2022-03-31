@@ -4,15 +4,39 @@
     "items": [
         {
             "author": "Smile Yik",
-            "id": "springmvc1",
+            "id": "a-Controller",
             "items": [
             ],
-            "markdown": "Spring/SpringMVC/SpringMVC1.md",
-            "modifyTime": 1648737342487,
-            "postTime": 1648737342487,
-            "prev": "## 常用注解### @RequestMapping用来将Web请求与方法或者类关联起来形成映射.",
-            "tag": "Java,SpringMVC,",
-            "title": "SpringMVC1"
+            "markdown": "Spring/SpringMVC/annotation/Controller.md",
+            "modifyTime": 1648741932753,
+            "postTime": 1648741932753,
+            "prev": "### @Controller```java@Target(ElementType.TYPE)@Retention(RetentionPolicy.RUNTIME)",
+            "tag": "SpringMVC,Java,",
+            "title": "Controller"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "a-ResponseBody",
+            "items": [
+            ],
+            "markdown": "Spring/SpringMVC/annotation/ResponseBody.md",
+            "modifyTime": 1648741950020,
+            "postTime": 1648741950020,
+            "prev": "### @ResponseBody```java@Target({ElementType.TYPE, ElementType.METHOD})@Retention(RetentionPolicy.RUNTIME)",
+            "tag": "SpringMVC,Java,",
+            "title": "ResponseBody"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "a-RequestMapping",
+            "items": [
+            ],
+            "markdown": "Spring/SpringMVC/annotation/RequestMapping.md",
+            "modifyTime": 1648741954773,
+            "postTime": 1648741954773,
+            "prev": "### @RequestMapping用来将Web请求与方法或者类关联起来形成映射.在注解源代码中有如下一行代码:",
+            "tag": "SpringMVC,Java,",
+            "title": "RequestMapping"
         }
     ],
     "modifyTime": 1648737316517,
