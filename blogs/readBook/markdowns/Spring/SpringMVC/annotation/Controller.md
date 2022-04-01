@@ -1,4 +1,3 @@
-### @Controller
 
 ```java
 @Target(ElementType.TYPE)

@@ -1,4 +1,3 @@
-### @ResponseBody
 
 ```java
 @Target({ElementType.TYPE, ElementType.METHOD})

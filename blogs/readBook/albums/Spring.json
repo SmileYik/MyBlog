@@ -11,7 +11,7 @@
             "modifyTime": 1648741932753,
             "postTime": 1648741932753,
             "prev": "### @Controller```java@Target(ElementType.TYPE)@Retention(RetentionPolicy.RUNTIME)",
-            "tag": "SpringMVC,Java,",
+            "tag": "Java,SpringMVC,,",
             "title": "Controller"
         },
         {
@@ -23,7 +23,7 @@
             "modifyTime": 1648741950020,
             "postTime": 1648741950020,
             "prev": "### @ResponseBody```java@Target({ElementType.TYPE, ElementType.METHOD})@Retention(RetentionPolicy.RUNTIME)",
-            "tag": "SpringMVC,Java,",
+            "tag": "Java,SpringMVC,,",
             "title": "ResponseBody"
         },
         {
@@ -35,8 +35,32 @@
             "modifyTime": 1648741954773,
             "postTime": 1648741954773,
             "prev": "### @RequestMapping用来将Web请求与方法或者类关联起来形成映射.在注解源代码中有如下一行代码:",
-            "tag": "SpringMVC,Java,",
+            "tag": "Java,SpringMVC,,",
             "title": "RequestMapping"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "a-RestController",
+            "items": [
+            ],
+            "markdown": "Spring/SpringMVC/annotation/RestController.md",
+            "modifyTime": 1648818968791,
+            "postTime": 1648818968791,
+            "prev": "在上一个[@Controller](?blog=readBook&album=Spring&post=a-Controller)中我们知道了这是一个标记一个类是一个控制器组件.而这个 **@RestController** 与 **@Controller** 的作用一样, 就是在 **@Controller** 的基础上添加了一个 **[@ResponseBody](?blog=readBook&album=Spring&post=a-ResponseBody)** 注解.```java",
+            "tag": "Java,SpringMVC,,",
+            "title": "RestController"
+        },
+        {
+            "author": "Smile Yik",
+            "id": "a-PathVariable",
+            "items": [
+            ],
+            "markdown": "Spring/SpringMVC/annotation/PathVariable.md",
+            "modifyTime": 1648826766622,
+            "postTime": 1648826766622,
+            "prev": "**@PathVariable** 的作用是将请求路径上的占位符对应的值绑定到方法形参上.它有三个属性, 分别是`value`, `name`以及`required`. 其中`value`是`name`的别名.+ `name`属性用来绑定请求路径变量, 也就是请求路径中用`{}`花括号包围着的占位符. 当未赋值时默认为空串.",
+            "tag": "Java,SpringMVC,",
+            "title": "PathVariable"
         }
     ],
     "modifyTime": 1648737316517,

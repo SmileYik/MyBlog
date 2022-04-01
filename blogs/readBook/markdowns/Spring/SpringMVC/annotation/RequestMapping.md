@@ -199,7 +199,7 @@ curl -X POST localhost:8080/demo1/oh -d action=kungfu
 ```
 
 可以得到如下的结果:curl -X POST localhost:8080/demo1/oh -d action=kungfu
-
+变种
 ```
 400
 400
@@ -268,3 +268,45 @@ curl -G -d action=oh localhost:8080/demo1/oh
 代码中params中要求了两个参数, 一个是要求`action`的值为`oh`, 一个要求`action`的值不为`oh`, 而我们给的两个请求中一个请求为`action`的值为`notoh`, 不满足第一个要求的参数条件所以不给响应, 而第二个请求中`action`的值为`oh`, 不满足第二个要求的参数条件, 所以不给响应.
 
 由此可见params属性值中的所有要求**全部满足**时, 才会给予响应.
+
+### 一些它的变种注释
+
+#### @GetMapping
+
+其等效于
+
+```java
+@RequestMapping(method = RequestMethod.GET)
+```
+
+#### @PostMapping
+
+其等效于
+
+```java
+@RequestMapping(method = RequestMethod.POST)
+```
+
+#### @PutMapping
+
+其等效于
+
+```java
+@RequestMapping(method = RequestMethod.PUT)
+```
+
+#### @DeleteMapping
+
+其等效于
+
+```java
+@RequestMapping(method = RequestMethod.DELETE)
+```
+
+#### @PatchMapping
+
+其等效于
+
+```java
+@RequestMapping(method = RequestMethod.PATCH)
+```
