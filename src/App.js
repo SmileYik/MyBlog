@@ -44,7 +44,7 @@ function scrollToAnchor(name) {
 function onATagClicked(event) {
   if (event.target.hash && event.target.hash.startsWith("#")) {
     event.preventDefault();
-    this.scrollToAnchor(event.target.hash.substring(1));
+    scrollToAnchor(event.target.hash.substring(1));
   }
 }
 
