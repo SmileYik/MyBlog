@@ -82,7 +82,7 @@ class Book extends React.Component {
     if (!item) {
       return;
     }
-    this.scrollToAnchor("main");
+    this.scrollToAnchor("page");
     jQuery.ajax({
       url: this.state.blog.getMarkdownBase() + item.markdown,
       async: true,
