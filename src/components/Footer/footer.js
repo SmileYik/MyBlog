@@ -21,7 +21,7 @@ class MusicBox extends React.Component {
           <section id="custom_html-3" className="widget_text widget widget_custom_html">
             <h2 className="widget-title">music</h2>
             <div className="textwidget custom-html-widget">
-              <audio controls="controls" autoPlay="autoplay" height="100" width="100" id="MB_audio"></audio>
+              <audio controls="controls" height="100" width="100" id="MB_audio"></audio>
               <p style={{textIndent: "5.8em"}}>
                 <a id="MB_Button_Start">播放</a> &nbsp;&nbsp;&nbsp;
                 <a id="MB_Button_ChangeMode">循环</a> &nbsp;&nbsp;&nbsp;

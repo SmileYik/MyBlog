@@ -29,7 +29,7 @@ export class Albums extends React.Component {
       albums: [],
       blog: blogs[props.bid],
       startIndex: 0,
-      step: 5,
+      step: 15,
       albumsJsx: []
     }
   }

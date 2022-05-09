@@ -58,11 +58,13 @@ function MB_onMusicBoxInitNow() {
     MB_audio.src = MB_musicUrlFormat.replace("{id}", musicId);
     MB_audio.currentTime = MB_pastTime;
     MB_setModeStatus();
-
+    MB_audio.pause();
     if (MB_hasCookie(MB_COOKIE_NAMES.play)) {
         if (MB_getCookie(MB_COOKIE_NAMES.play) !== "1") {
             MB_audio.pause();
         }
+    } else {
+        MB_audio.pause();
     }
 
     MB_audio.ontimeupdate = function (e) {
@@ -73,6 +75,8 @@ function MB_onMusicBoxInitNow() {
     MB_audio.oncanplay = function (e) {
         if (MB_getCookie(MB_COOKIE_NAMES.play) === "1") {
             MB_audio.play();
+        } else {
+            MB_audio.pause();
         }
     }
 
