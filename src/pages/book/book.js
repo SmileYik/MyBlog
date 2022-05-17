@@ -40,6 +40,8 @@ class Book extends React.Component {
   itemMap = {};
   itemList = [];
   firstItem = null;
+  heads = [];
+
   constructor(props) {
     super(props);
     this.state = {
@@ -50,7 +52,8 @@ class Book extends React.Component {
       content: "加载中... 请稍候..."
     };
     this.onItemClick = this.onItemClick.bind(this);
-    MarkdownUtil.init();
+    this.addHeader = this.addHeader.bind(this);
+    MarkdownUtil.init(this.addHeader);
     this.bakeItems();
     this.bakeItemsList(this.state.album.items);
   }
@@ -63,7 +66,41 @@ class Book extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    this.heads = [];
     this.updateTitle();
+  }
+
+  addHeader(text, level) {
+    if (level === 1 || this.heads.length === 0) {
+      this.heads.push({
+        text: text,
+        level: level,
+        childs: []
+      });
+    } else {
+      let parent = this.heads;
+      let lastHeader = this.heads[this.heads.length - 1];
+      while (true) {
+        if (lastHeader.level >= level) {
+          parent.push({
+            text: text,
+            level: level,
+            childs: []
+          })
+          break
+        } else if (lastHeader.childs.length === 0) {
+          lastHeader.childs.push({
+            text: text,
+            level: level,
+            childs: []
+          })
+          break
+        } else {
+          parent = lastHeader.childs
+          lastHeader = lastHeader.childs[lastHeader.childs.length - 1]
+        }
+      }
+    }
   }
 
   scrollToAnchor(name) {
@@ -156,6 +193,7 @@ class Book extends React.Component {
       jQuery("#" + state.iid).removeClass("contentItemPick");
       jQuery("#" + id).addClass("contentItemPick");
       this.getPostContent(id);
+      this.heads = [];
       return {
         iid: id,
         content: "加载中... 请稍候..."
@@ -269,6 +307,7 @@ class Book extends React.Component {
         author: item.author
       }
     }
+
     return (
       <Fragment>
         <MyHeader menus={menuItems} site={site} marginBottom={"72px;"}/>
@@ -295,7 +334,7 @@ class Book extends React.Component {
                   </nav>
                 </main>
               </div>
-              <BookAside items={this.state.album.items} onItemClick={this.onItemClick} />
+              <BookAside items={this.state.album.items} onItemClick={this.onItemClick} heads={this.heads} />
             </div>
           </div>
           <Footer />

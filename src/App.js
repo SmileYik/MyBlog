@@ -6,6 +6,7 @@ import BookWrapper from "./pages/book/book";
 import React from "react";
 import {blogs} from "./utils/siteInfo";
 import MarkdownPrev from "./pages/markdown-tool/markdown-tool";
+import "./common/style/addtion.style.css"
 
 function App() {
   return (
@@ -45,6 +46,10 @@ function onATagClicked(event) {
   if (event.target.hash && event.target.hash.startsWith("#")) {
     event.preventDefault();
     scrollToAnchor(event.target.hash.substring(1));
+  } else if (event.target.parentElement.hash &&
+    event.target.parentElement.hash.startsWith("#")) {
+    event.preventDefault();
+    scrollToAnchor(event.target.parentElement.hash.substring(1));
   }
 }
 
@@ -52,6 +57,11 @@ function LinkFixWrapper() {
   return (
     <div onClick={onATagClicked}>
       <RouteWrapper />
+      <div className="scroll-to-top">
+        <a href="#main" title="滚动到头顶">
+          <img height='48' width="48" src="../common/images/up-to-top.png"/>
+        </a>
+      </div>
     </div>
   );
 }

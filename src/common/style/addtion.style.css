@@ -1,0 +1,7 @@
+.scroll-to-top {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vw;
+    width: 48px;
+    height: 48px;
+}
