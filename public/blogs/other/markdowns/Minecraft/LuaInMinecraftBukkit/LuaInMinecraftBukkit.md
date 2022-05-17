@@ -1,3 +1,4 @@
+> 最后更新于2022年05月17日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/LuaInMinecraftBukkit.md)
 
 LuaInMinecraftBukkit是一个可以让Minecraft Bukkit服务端及其的延伸端能使用lua脚本, 并利用lua脚本来编写插件.
 
