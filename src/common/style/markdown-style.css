@@ -59,3 +59,12 @@ span[line-row]>span {
 span[line-row]>span::before {
     content: counter(linenumber);
 }
+
+.code-pre * {
+    font-family: "DejaVuSansMono", monospace
+}
+
+@font-face {
+    font-family: "DejaVuSansMono";
+    src: url("../fonts/DejaVuSansMono.ttf");
+}
