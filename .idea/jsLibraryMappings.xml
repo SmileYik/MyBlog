@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{highlight, mathjax, night-owl}" />
+    <file url="PROJECT" libraries="{highlight, highlight.js, highlightjs-line-numbers, mathjax, night-owl}" />
   </component>
 </project>

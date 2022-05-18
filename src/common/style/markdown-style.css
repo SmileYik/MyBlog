@@ -18,25 +18,16 @@
 
 .code-line-number {
     position: absolute;
-    left: -1.6em;
-    font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
-    font-size: 0.9375rem;
-    padding-right: 2px;
+    left: -3.6em;
+    width: 3em;
+    padding-right: 5px;
     color: #ccc;
-    border-right: solid #3e403c;
+    border-right: solid #3e403c 3px;
     text-align: right;
 }
 
-.code-line-number-bkg {
-    position: absolute;
-    left: -2.5em;
-    height: 100%;
-    width: 2.5em;
-    background: #333;
-}
-
 .code-line-number span {
-    line-height: 1.6;
+    line-height: 1.599;
     display: block;
 }
 
@@ -44,6 +35,9 @@
     position: relative;
 }
 
+.ori-code code {
+    line-height: 0px;
+}
 @keyframes fadeout {
     0% {opacity: 1;}
     100% {opacity: 0;}
@@ -52,4 +46,16 @@
 @keyframes fadein {
     0% {opacity: 0;}
     100% {opacity: 1;}
+}
+
+span[line-row] {
+    counter-reset: linenumber;
+}
+
+span[line-row]>span {
+    counter-increment: linenumber;
+}
+
+span[line-row]>span::before {
+    content: counter(linenumber);
 }

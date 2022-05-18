@@ -12,5 +12,7 @@
     <orderEntry type="library" name="highlight" level="application" />
     <orderEntry type="library" name="mathjax" level="application" />
     <orderEntry type="library" name="night-owl" level="application" />
+    <orderEntry type="library" name="highlightjs-line-numbers" level="application" />
+    <orderEntry type="library" name="highlight.js" level="application" />
   </component>
 </module>

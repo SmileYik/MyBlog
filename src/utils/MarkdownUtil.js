@@ -33,14 +33,14 @@ export const MarkdownUtil = {
           "</div>" +
         "</div>"
       // 生成行号
-      let lineNumber = "<div class='code-line-number'>"
+      let lineNumber = "<code class='code-line-number' style='background: none'><span line-row>"
       const number = code.split("\n").length
       for (let i = 1; i <= number; ++i) {
-        lineNumber += "<span>" + i + ".</span>";
+        lineNumber += "<span></span>";
       }
-      lineNumber += "</div>";
+      lineNumber += "</span></code>";
       // 将代码与行号及工具栏合并.
-      return "<div class='code-pre'><div class='code-line-number-bkg'></div><pre>" +
+      return "<div class='code-pre'><pre>" +
               toolBar + lineNumber + oriCode +
               "</pre></div>\n"
     }
@@ -71,7 +71,7 @@ export const MarkdownUtil = {
           'script', 'noscript', 'style', 'textarea', 'pre',
           'code', 'annotation', 'annotation-xml'
         ],
-      }} url="https://unpkg.com/mathjax@3.2.0/es5/tex-mml-chtml.js">
+      }} url="common/js/tex-mml-chtml.js">
         <div className="entry-content">
           <MathJax.Html html={ marked(text) } />
         </div>
