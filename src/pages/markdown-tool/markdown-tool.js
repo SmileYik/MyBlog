@@ -15,6 +15,7 @@ export default class MarkdownPrev extends React.Component {
   }
 
   componentDidMount() {
+    MarkdownUtil.init();
     document.body.className = "blog wp-custom-logo wp-embed-responsive hfeed has-header-image has-sidebar colors-dark";
   }
 
@@ -31,6 +32,7 @@ export default class MarkdownPrev extends React.Component {
       <div className="site-content-contain">
         <div id="content" className="site-content">
           <div className="wrap">
+            <div id="main"/>
             <textarea onChange={this.onEditAreaValueChange} style={{height: "400px"}}/>
             <a href="https://ericp.cn/cmd"><button style={{width: "100%", backgroundColor: "cadetblue"}}>Cmd Markdown 公式指导手册</button></a>
             <hr/>
