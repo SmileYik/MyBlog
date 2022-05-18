@@ -28,7 +28,7 @@ export const MarkdownUtil = {
       // tool bar
       let toolBar =
         "<div class='code-tool-line'>" +
-          "<div onclick='copyCode.copyCode(this)'>" +  this.codeCopyIcon +
+          "<div onclick='copyCode.copyCode(this)' title='复制'>" +  this.codeCopyIcon +
             "<pre class='code-tool-line-copy-content' hidden>" + code + "</pre>" +
           "</div>" +
         "</div>"

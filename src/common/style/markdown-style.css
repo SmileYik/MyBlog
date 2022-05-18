@@ -1,10 +1,14 @@
 .code-tool-line {
-    text-align: right;
+    text-align: center;
     position: absolute;
     right: 8px;
     top: 8px;
-    opacity: 0;
     animation: fadeout 0.8s ease forwards;
+    background: rgba(34, 34, 34, 0.4);
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 10px;
 }
 
 .code-pre:hover .code-tool-line {
@@ -18,8 +22,9 @@
 
 .code-line-number {
     position: absolute;
-    left: -3.6em;
+    left: -3.2em;
     width: 3em;
+    padding-top: 0;
     padding-right: 5px;
     color: #ccc;
     border-right: solid #3e403c 3px;
@@ -27,7 +32,7 @@
 }
 
 .code-line-number span {
-    line-height: 1.599;
+    line-height: 1.6;
     display: block;
 }
 
@@ -35,9 +40,6 @@
     position: relative;
 }
 
-.ori-code code {
-    line-height: 0px;
-}
 @keyframes fadeout {
     0% {opacity: 1;}
     100% {opacity: 0;}

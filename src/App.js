@@ -37,17 +37,20 @@ function scrollToAnchor(name) {
     return;
   }
   const elem = document.getElementById(name);
-  let offset = 45;
-  if (navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad|AppleWebKit.*Mobile.*)/i)) {
-    offset = 0;
-  }
   if (elem) {
-    window.scrollTo({
-      top: elem.getBoundingClientRect().top - offset,
-      left: elem.getBoundingClientRect().left,
-      behavior: "smooth"
-    })
-    // elem.scrollIntoView({block: "center", behavior: "smooth"});
+    const temp = document.getElementsByClassName("custom-header")[0];
+    if (temp && temp.style &&
+      temp.style["margin-bottom"] &&
+      temp.style["margin-bottom"].length === 3) {
+      // 小屏幕
+      elem.scrollIntoView({block: "start", behavior: "smooth"});
+    } else {
+      window.scrollTo({
+        top: elem.getBoundingClientRect().top - 45,
+        left: elem.getBoundingClientRect().left,
+        behavior: "smooth"
+      })
+    }
   }
 }
 

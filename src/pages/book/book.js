@@ -103,14 +103,8 @@ class Book extends React.Component {
     }
   }
 
-  scrollToAnchor(name) {
-    if (!name) {
-      return;
-    }
-    const elem = document.getElementById(name);
-    if (elem) {
-      elem.scrollIntoView();
-    }
+  scrollToTop() {
+    document.getElementsByClassName("scroll-to-top")[0].children[0].click()
   }
 
   getPostContent(id) {
@@ -119,7 +113,7 @@ class Book extends React.Component {
     if (!item) {
       return;
     }
-    this.scrollToAnchor("page");
+    this.scrollToTop();
     jQuery.ajax({
       url: this.state.blog.getMarkdownBase() + item.markdown,
       async: true,
