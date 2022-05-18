@@ -37,8 +37,17 @@ function scrollToAnchor(name) {
     return;
   }
   const elem = document.getElementById(name);
+  let offset = 45;
+  if (navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad|AppleWebKit.*Mobile.*)/i)) {
+    offset = 0;
+  }
   if (elem) {
-    elem.scrollIntoView();
+    window.scrollTo({
+      top: elem.getBoundingClientRect().top - offset,
+      left: elem.getBoundingClientRect().left,
+      behavior: "smooth"
+    })
+    // elem.scrollIntoView({block: "center", behavior: "smooth"});
   }
 }
 
