@@ -21,7 +21,7 @@ const MB_COOKIE_NAMES = {
 function MB_onMusicBoxInit() {
     let url = "common/data/music-box/musics.json";
     let request = new XMLHttpRequest();
-    request.open("get", url);
+    request.open("get", url, true);
     request.send(null);
     request.onload = function () {
         if (request.status === 200) {

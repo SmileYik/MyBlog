@@ -1,6 +1,6 @@
-> 最后更新于2022年05月17日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/RegistListener.md)
+> 最后更新于2022年05月19日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/RegistListener.md)
 
->此页面内容对应于LuaInMinecraftBukkit插件的最新版本(**version: 1.4**), 历史文档可以插件此页面的历史记录
+>此页面内容对应于LuaInMinecraftBukkit插件的最新版本(及以上版本)(**version: 1.4**), 历史文档可以插件此页面的历史记录
 
 这里是说说如何创建一个监听事件的.
 

@@ -2,10 +2,19 @@
     {
         "album": "MinecraftPost",
         "author": "Smile Yik",
+        "id": "LuaInMinecraftBukkit-api",
+        "modifyTime": 1652953291482,
+        "postTime": 1652953291482,
+        "tag": "Java,Minecraft,Bukkit,Lua,",
+        "title": "插件接口"
+    },
+    {
+        "album": "MinecraftPost",
+        "author": "Smile Yik",
         "id": "LuaInMinecraftBukkit-lua_plugin",
         "modifyTime": 1652762121820,
         "postTime": 1652762121820,
-        "tag": "Minecraft,Lua,Bukkit,Java,",
+        "tag": "Java,Minecraft,,Bukkit,Lua,",
         "title": "lua_plugin.yml"
     },
     {
@@ -14,7 +23,7 @@
         "id": "LuaInMinecraftBukkit-config",
         "modifyTime": 1652762102903,
         "postTime": 1652762102903,
-        "tag": "Minecraft,Lua,Bukkit,Java,",
+        "tag": "Java,Minecraft,,Bukkit,Lua,",
         "title": "config.yml"
     },
     {
@@ -23,7 +32,7 @@
         "id": "LuaInMinecraftBukkit-registEvent",
         "modifyTime": 1650102663681,
         "postTime": 1650102663681,
-        "tag": "Minecraft,Lua,Bukkit,,Java,",
+        "tag": "Java,Minecraft,,Bukkit,Lua,",
         "title": "LuaInMinecraftBukkit - 注册监听器"
     },
     {
@@ -32,7 +41,7 @@
         "id": "LuaInMinecraftBukkit-registCmd",
         "modifyTime": 1650102644147,
         "postTime": 1650102644147,
-        "tag": "Minecraft,Lua,Bukkit,,Java,",
+        "tag": "Java,Minecraft,,Bukkit,Lua,",
         "title": "LuaInMinecraftBukkit - 注册指令"
     },
     {
@@ -41,16 +50,7 @@
         "id": "LuaInMinecraftBukkit-quickStart",
         "modifyTime": 1650102608795,
         "postTime": 1650102608795,
-        "tag": "Minecraft,Lua,Bukkit,,Java,",
+        "tag": "Java,Minecraft,,Bukkit,Lua,",
         "title": "LuaInMinecraftBukkit - QuickStart"
-    },
-    {
-        "album": "MinecraftPost",
-        "author": "Smile Yik",
-        "id": "LuaInMinecraftBukkit-luaBukkit",
-        "modifyTime": 1650102596747,
-        "postTime": 1650102596747,
-        "tag": "Minecraft,Lua,Bukkit,,Java,",
-        "title": "LuaInMinecraftBukkit - luaBukkit"
     }
 ]

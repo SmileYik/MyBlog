@@ -1,6 +1,6 @@
->最后更新于2022年05月17日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart.md)
+>最后更新于2022年05月19日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart.md)
 
->此页面内容对应于LuaInMinecraftBukkit插件的最新版本(**version: 1.4**), 历史文档可以插件此页面的历史记录
+>此页面内容对应于LuaInMinecraftBukkit插件的最新版本(及以上版本)(**version: 1.4**), 历史文档可以插件此页面的历史记录
 
 准备条件有:
 
@@ -121,7 +121,7 @@ logger:info("加载完毕!")
 local logger = self:getLogger()
 ```
 
-self是一个指向Java插件中的[LuaPlugin](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/plugin/LuaPlugin.java)类的引用,
+self是一个指向Java插件中的[LuaPlugin](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/luaplugin/LuaPlugin.java)类的引用,
 而`:`符号就相当于是在c语言中解引用的过程, `self:getLogger()`
 连起来一起就变成了执行`self`引用指向的对象的`getLogger()`
 方法. 所以这一句就是在本身的**LuaPlugin**类的实例中获取
@@ -131,8 +131,8 @@ self是一个指向Java插件中的[LuaPlugin](https://github.com/SmileYik/LuaIn
 
 + `configPath` 对应着Java中 `File` 类实例对象引用
 + `logger` 对应着Java中 `Logger` 类实例对象引用
-+ `luaBukkit.event` 对应的是 [EventRegister](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/plugin/event/EventRegister.java) 类实例对象引用
-+ `luaBukkit.command` 对应的是 [CommandRegister](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/plugin/command/CommandRegister.java) 类实例对象引用
++ `luaBukkit.event` 对应的是 [EventRegister](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/luaplugin/event/EventRegister.java) 类实例对象引用
++ `luaBukkit.command` 对应的是 [CommandRegister](https://github.com/SmileYik/LuaInMinecraftBukkt/blob/master/src/main/java/tk/smileyik/luainminecraftbukkit/luaplugin/command/CommandRegister.java) 类实例对象引用
 + `luaBukkit.server` 对应的是java中`Bukkit.getServer()`返回的服务器实例对象的引用
 
 等等等等
