@@ -54,6 +54,9 @@ export const site = {
 }
 
 export const blogs = {
+  quickPost: {
+    requestHead: "http://1.14.193.189:8083/"
+  },
   "other": {
     id: "other",
     title: "其他 - Smile Yik's Blog",
