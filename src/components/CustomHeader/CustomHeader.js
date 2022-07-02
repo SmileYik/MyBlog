@@ -61,7 +61,7 @@ export default function CustomHeader(props) {
   return (
     <div className="custom-header">
       <CustomHeaderMedia background={props.site.background}/>
-      <SiteBranding site={props.site} marginBottom={props.marginBottom}/>
+      <SiteBranding site={props.site}/>
     </div>
   );
 }

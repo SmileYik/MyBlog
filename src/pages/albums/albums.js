@@ -91,7 +91,7 @@ export class Albums extends React.Component {
   render() {
     return (
       <Fragment>
-        <MyHeader menus={menuItems} site={site} marginBottom={"72px;"}/>
+        <MyHeader menus={menuItems} site={site}/>
         <div className="site-content-contain">
           <div id="content" className="site-content">
             <div className="wrap">

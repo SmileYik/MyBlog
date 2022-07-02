@@ -40,7 +40,7 @@ export default class Index extends React.Component {
   render() {
     return (
       <div className={"site"}>
-        <MyHeader menus={menuItems} site={site} marginBottom={"0px"} />
+        <MyHeader menus={menuItems} site={site}/>
         <div className="site-content-contain">
           <div id="content" className="site-content">
             <div id="primary" className="content-area">
