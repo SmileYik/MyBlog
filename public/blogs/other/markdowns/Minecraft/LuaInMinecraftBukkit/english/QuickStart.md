@@ -1,104 +1,106 @@
->最后更新于2022年05月19日 | [历史记录](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart.md)
+>Update: 2022-05-19 | [History](https://github.com/SmileYik/MyBlog/commits/master/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart.md)
 
->此页面内容对应于LuaInMinecraftBukkit插件的最新版本(及以上版本)(**version: 1.4**), 历史文档可以插件此页面的历史记录
-
-准备条件有:
-
-+ 简单熟悉**lua 5.2.X**语法(默认模式)
-
-或者
-
-+ 简单熟悉**lua 5.4**语法(native模式)
-
-### 第一步 创建脚本插件文件夹
-
-在Bukkit服务器的`plugins/LuaInMinecraftBukkit`目录下, 有一个名为`plugins`的目录, 这个目录就是用来装lua脚本插件的目录.
-
-我们进入`plugins/LuaInMinecraftBukkit/plugins`目录中, 创建一个`MyLuaPlugin`文件夹, 这个文件夹就成了一个脚本插件文件夹.
+>This page for latest version of LuaInMinecraftBukkit(or upper)(**version: 1.4**), you can find older content in history.
 
 
-### 第二步 创建 lua_plugin.yml
+### Prepare
 
-在`MyLuaPlugin`文件夹中创建一个`lua_plugin.yml`文件, 用来告诉插件这里有一个脚本插件, 在其中写入.
++ konw how to use **lua 5.2.X** (Inside Mode)
+
+OR
+
++ konw how to use **lua 5.4** (Outside Mode)
+
+### Create Your Lua Plugin Folder
+
+After you install this plugin. it will create a folder named `plugins` in `[your bukkit root]/plugins/LuaInMinecraftBukkit` folder. this folder is use to put lua script plugin.
+
+Enter `plugins/LuaInMinecraftBukkit/plugins` and create a folder named `MyLuaPlugin`, then you done the first step.
+
+### Create lua_plugin.yml for Your Script Plugin
+
+Into `MyLuaPlugin` folder and create a new file named `lua_plugin.yml`, this file is to tell LuaInMinecraftBukkit that your lua plugin information.
+
+It is template of `lua_plugin.yml`
 
 ``` yml
-# 展示用的名字
+# your lua plugin display name
 displayName: 我的Lua插件
-# 脚本插件id, 建议插件id与目录名保持一致, 并且只使用26个英文字母组成
+# lua script id, make sure as same as folder name, and just contants a-zA-Z0-9
 id: MyLuaPlugin
-# 作者
-author: SmileYik
-# 脚本版本
+# author
+author: author
+# your script version
 version: 1.0
-# 强制依赖插件, 是一个列表
-# 其中列表里是其他依赖脚本插件的脚本插件id
+# which script plugin you dependent.
 dependents: []
-# 非强制依赖插件, 是一个列表
-# 其中列表里是其他依赖脚本插件的脚本插件id
+# which script plugin you dependent.
 softDependents: []
-# 模式有两种, 在填写过程中注意首字母大写
-# 一种是 Inside(默认模式)
-# 另外一种是 Outside(Native模式)
-#
+# which Lua VM did your script plugin want to use.
+# you can chose Inside or Outside.
+# Inside is made by java
+# Outside is made by c
 mode: Inside
 ```
 
-插件总是会在加载脚本前去查询`lua_plugin.yml`文件以获取脚本插件信息.
+### Create main.lua
 
-### 第三步 创建 main.lua
+LuaInMinecraftBukkit always to load a script plugin at `main.lua` file.
 
-插件总是从`main.lua`脚本开始, 为了让插件能够运行我们写的脚本插件, 我们在`MyLuaPlugin`文件夹内创建一个`main.lua`文件
-
-并且在其中写入如下文本:
+create `main.lua` file. and write these text into it.
 
 ```lua
--- 获取日志实例
+-- Get Logger
 local logger = self:getLogger()
 
 command = {}
 listener = {}
 
--- 当脚本插件被启用时会执行这个方法
+-- LuaInMinecraftBukkit will find onEnable function and call it first after load your script plugin's main.lua file.
 function onEnable()
-    logger:info("我被启用了!!!!")
-    -- 注册一个指令, 第一个参数为: 注册的指令
-    --             第二个参数为: 函数路径
+    logger:info("I be enable!!!!!")
+    -- register a command
+    -- param two allow this format: '<lua script id>.<function>'
+    -- in this example, this lua script named 'MyLuaPlugin',
+    -- and this function is 'command.dispatch'.
+    -- then i will use 'MyLuaPlugin.command.dispatch'
     luaBukkit.command:registerCommand(
         "test", "MyLuaPlugin.command.dispatch"
     )
-    -- 注册一个事件, 第一个参数为: 事件类型
-    --             第二个参数为: 函数路径
-    --             第三个参数为: 事件优先级
+    -- register a player join event
+    -- the param two is as same as register command.
     luaBukkit.event:register(
         "PlayerJoinEvent", "MyLuaPlugin.listener.onPlayerJoin", 2
     )
 end
 
--- 当脚本插件被结束时会执行这个方法
+-- LuaInMinecraftBukkit will find onDisable function and call it after unload your script plugin.
 function onDisable()
-    logger:info("我被卸载了!")
+    logger:info("I am unload!")
 end
 
+-- this function is registered a PlayerJoinEvent.
 function listener.onPlayerJoin(event)
     local playername = event:getPlayer():getName()
-    event:setJoinMessage(playername .. "加入了服务器哦~")
-    event:getPlayer():sendMessage("你好啊" .. playername)
+    event:setJoinMessage(playername .. " JOINED~")
+    event:getPlayer():sendMessage("Hello, " .. playername)
 end
 
+-- this function is registered a command.
 function command.dispatch(isPlayer, sender, args)
     if (args[2] == "openInventory" and isPlayer) then
-        local inv = luaBukkit.server:createInventory(NIL, 27, "我是你的第一个窗口~")
+        local inv = luaBukkit.server:createInventory(NIL, 27, "I am your first window~")
         sender:openInventory(inv)
-        logger:info("执行完毕")
+        logger:info("done!!!")
         return
     end
-    sender:sendMessage("指令错误!")
+    sender:sendMessage("your command is wrong!")
 end
 
-logger:info("加载完毕!")
+logger:info("load over!")
 ```
 
-现在, 你的**LuaInMinecraftBukkit**的插件配置目录的结构应该是这样子的:
+Then, your script plugin folder should like this:
 
 ```
 .
@@ -160,32 +162,40 @@ luaBukkit.command:registerCommand(
 
 |形参|值|说明|
 |-|-|-|
-|形参1|isPlayer|是否为玩家发出, 这是一个bool类型|
-|形参2|sender|发送指令的实体, 这里可能是玩家也可能是控制台实例对象的引用|
-|形参3|args|玩家发送的指令, 是一个字符串列表, 第一个元素对应的值代表这个脚本所注册的指令(在这个例子中args[1]的值是`test`)|
+|形参1|isPlayer|if this command is send by a player, it will be true.|
+|形参2|sender|who send this command, it might be player or console|
+|形参3|args|the command args. if your send command /luap test a b c, this will be a list [test, a, b, c]|
 
-### 第四步 启用脚本
+### Enable Your Script Plugin
 
-脚本已经编好了但是还没有被运行, 运行可以有以下方法.
+there has two way to load and enable your script plugin.
 
-#### 选项1: 重启服务器以启动脚本
+#### Way 1: restart your bukkit server.
 
-这个方法很简单, 只需要重新启动Bukkit服务器就可以加载脚本了.
+this is a simple way to load your script plugin.
 
-#### 选项2: 热加载
+#### Way 2: use command
 
-**确保没有一个相同脚本插件ID的脚本插件已被加载!**
+**Make Sure There is No Same ID Script Plugin Be Loaded!**
+
+send a command in your server like:
+
+**MyLuaPlugin** is your script plugin id.
+
+```shell
+/lua load MyLuaPlugin
+```
 
 在控制台中输入指令`/lua load MyLuaPlugin`即可加载(**注意大小写**)
 
-### 第五步 上mc看效果了
+### Show in Minecraft
 
 可以自己试一下效果.
 
-+ 登陆事件演示
++ Login
 
-![登陆事件效果](/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart/yudt8o.png)
+![登陆事件效果](/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/../QuickStart/yudt8o.png)
 
-+ 指令演示(指令: "/luap test openInventory")
++ Open A Inventory(Command: "/luap test openInventory")
 
-![指令演示效果](/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/QuickStart/50s1e6.png)
+![指令演示效果](/blogs/other/markdowns/Minecraft/LuaInMinecraftBukkit/../QuickStart/50s1e6.png)
