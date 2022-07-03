@@ -5,7 +5,7 @@ import {PostArticle} from "../../components/Article/article";
 import BookAside from "../../components/Aside/book-aside/book-aside";
 import Footer from "../../components/Footer/footer";
 import {blogs, menuItems, site} from "../../utils/siteInfo";
-import {Link, Navigate, useParams} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 import Index from "../index";
 import LoadAllJs from "../../utils/JsLoader";
 

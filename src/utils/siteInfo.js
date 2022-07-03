@@ -34,6 +34,12 @@ export const menuItems = [
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     href: "?tool=markdown",
     name: "Markdown编辑器"
+  },
+  {
+    id: "menu-item-6",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    href: "?tool=postTool",
+    name: "快速发布"
   }
 ];
 
@@ -55,7 +61,8 @@ export const site = {
 
 export const blogs = {
   quickPost: {
-    requestHead: "http://1.14.193.189:8083/"
+    requestHead: "http://1.14.193.189:8083/",
+    webSocketRequestHead: "ws://1.14.193.189:8083/"
   },
   "other": {
     id: "other",

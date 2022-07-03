@@ -4,14 +4,15 @@ import "./common/style/style.css"
 import "./common/style/blocks.css"
 import "./common/style/colors-dark.css"
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('page')
-);
+
+import {createRoot} from 'react-dom/client';
+
+const container = document.getElementById('page');
+const root = createRoot(container);
+root.render(<App />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
