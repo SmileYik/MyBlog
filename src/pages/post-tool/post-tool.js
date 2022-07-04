@@ -226,7 +226,7 @@ export default class PostTool extends React.Component {
     ws.onmessage = (msg) => {
       this.setState(old => {
         return {
-          "cmdLog": old.cmdLog + "<br>" + msg.data
+          "cmdLog": old.cmdLog + "\n\r" + msg.data
         }
       })
     }
@@ -290,7 +290,7 @@ export default class PostTool extends React.Component {
         <span> </span>
         <button onClick={this.onApplyButtonClick}>应用</button>
         <hr/>
-        <div>{this.state.cmdLog}</div>
+        <pre>{this.state.cmdLog}</pre>
       </Fragment>
     )
   }
