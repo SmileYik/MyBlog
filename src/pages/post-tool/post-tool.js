@@ -61,14 +61,14 @@ export default class PostTool extends React.Component {
         <ArticleHeaderMetaSwitchTime meta={meta}/>
         <br/>
         <span>
-                    由
-                    <span className="author vcard">
-                        <a className="url fn n" id="postAuthor">
-                            {meta.author}
-                        </a>
-                    </span>
-                    编辑
-                </span>
+          由
+          <span className="author vcard">
+            <a className="url fn n" id="postAuthor">
+              {meta.author}
+            </a>
+          </span>
+          编辑
+      </span>
       </div>
     );
   }
@@ -160,7 +160,7 @@ export default class PostTool extends React.Component {
 
   onTitleChange() {
     this.setState(old => {
-      let header = this.old.header;
+      let header = old.header;
       header.title = jQuery("#input-title")[0].value;
       return {
         "header": header
@@ -170,7 +170,7 @@ export default class PostTool extends React.Component {
 
   onAuthorChange() {
     this.setState(old => {
-      let header = this.old.header;
+      let header = old.header;
       header.meta.author = jQuery("#input-author")[0].value;
       return {
         "header": header
