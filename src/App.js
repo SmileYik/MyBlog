@@ -5,7 +5,6 @@ import AlbumWrapper from "./pages/album/album";
 import BookWrapper from "./pages/book/book";
 import React from "react";
 import {blogs} from "./utils/siteInfo";
-import MarkdownPrev from "./pages/markdown-tool/markdown-tool";
 import "./common/style/addtion.style.css"
 import PostTool from "./pages/post-tool/post-tool";
 
@@ -83,9 +82,7 @@ function RouteWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tool = searchParams.get("tool");
   if (tool != null) {
-    if (tool === "markdown") {
-      return <MarkdownPrev />
-    } else if (tool === "postTool") {
+    if (tool === "postTool") {
       return <PostTool />
     }
   }

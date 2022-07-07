@@ -13,31 +13,25 @@ export const menuItems = [
   },
   {
     id: "menu-item-3",
-    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     href: "?blog=problems",
     name: "算法题解"
   },
   {
-    id: "menu-item-1",
-    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
+    id: "menu-item-3",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-3",
     href: "?blog=other",
     name: "其他"
   },
   {
     id: "menu-item-4",
-    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-4",
     href: "./badapple/badApple.html",
     name: "BadApple!!!"
   },
   {
     id: "menu-item-5",
-    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
-    href: "?tool=markdown",
-    name: "Markdown编辑器"
-  },
-  {
-    id: "menu-item-6",
-    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-5",
     href: "?tool=postTool",
     name: "快速发布"
   }
