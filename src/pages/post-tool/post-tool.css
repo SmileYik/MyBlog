@@ -1,0 +1,29 @@
+.tool-bar input {
+    margin-bottom: 10px;
+}
+
+.tool-bar select {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tool-bar div {
+    margin-bottom: 10px;
+    display: block;
+    position: relative;
+}
+
+
+.tool-bar div select, .tool-bar div input {
+    display: inline-block;
+    width: 60%;
+}
+
+.tool-bar div button {
+    width: 38%;
+    padding: 11px 5px;
+    position: absolute;
+    right: 0;
+}
+
+

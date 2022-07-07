@@ -6,9 +6,10 @@ import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
 import SimpleMdeReact from "react-simplemde-editor";
+import LoadAllJs from "../../utils/JsLoader";
 import "easymde/dist/easymde.min.css";
 import "./easymde.dark.css"
-import LoadAllJs from "../../utils/JsLoader";
+import "./post-tool.css"
 
 export default class PostTool extends React.Component {
   constructor(props) {
@@ -36,6 +37,7 @@ export default class PostTool extends React.Component {
       "itemId": "",
       "tags": "",
       "cmdLog": "",
+      "command": [],
       "simpleMdeOption": {
         autofocus: true,
         spellChecker: false,
@@ -67,6 +69,16 @@ export default class PostTool extends React.Component {
     this.onAuthorChange = this.onAuthorChange.bind(this);
     this.onPostButtonClick = this.onPostButtonClick.bind(this);
     this.onApplyButtonClick = this.onApplyButtonClick.bind(this);
+    this.uploadImage = this.uploadImage.bind(this);
+    this.deleteImage = this.deleteImage.bind(this);
+    this.onLoadPostButtonClick = this.onLoadPostButtonClick.bind(this);
+    this.onModifyPostButtonClick = this.onModifyPostButtonClick.bind(this);
+    this.onActionButtonClick = this.onActionButtonClick.bind(this);
+    this.onCreateAlbumButtonClick = this.onCreateAlbumButtonClick.bind(this);
+    this.onLoadAlbumButtonClick = this.onLoadAlbumButtonClick.bind(this);
+    this.onModifyAlbumButtonClick = this.onModifyAlbumButtonClick.bind(this);
+    this.onDeleteAlbumButtonClick = this.onDeleteAlbumButtonClick.bind(this);
+    this.onDeletePostButtonClick = this.onDeletePostButtonClick.bind(this);
   }
 
   componentDidMount() {
@@ -121,6 +133,18 @@ export default class PostTool extends React.Component {
           blogs: res.result
         })
         setTimeout(_this.onSelectBlog, 100)
+        setTimeout(function () {
+          jQuery.get({
+            url: blogs.quickPost.requestHead + "cmd",
+            async: true,
+            contextType: "application/json",
+            success: function (res) {
+              _this.setState({
+                "command": res.result
+              });
+            }
+          })
+        }, 100)
       }
     })
     this.setState({
@@ -244,90 +268,360 @@ export default class PostTool extends React.Component {
   }
 
   onApplyButtonClick() {
-    const ws = new WebSocket(blogs.quickPost.webSocketRequestHead + "cmd/" + this.state.token + "/deploy")
+    const url = blogs.quickPost.webSocketRequestHead + "cmd/" + this.state.token + "/" + jQuery("#input-command")[0].value
+    const ws = new WebSocket(url)
     ws.onopen = () => {
       console.log("open.....")
+      this.setState({
+        cmdLog: "running command!"
+      });
     }
     ws.onerror = (e) => {
       console.log(e)
+      this.setState({
+        cmdLog: "ERROR!!!!"
+      });
     }
     ws.onmessage = (msg) => {
       this.setState(old => {
         return {
-          "cmdLog": old.cmdLog + "\n\r" + msg.data
+          "cmdLog":  msg.data + "\n\r" + old.cmdLog
         }
       })
+    }
+    ws.onclose = (msg) => {
+      this.setState(old => {
+        return {
+          "cmdLog": msg.reason + "\n\r" + old.cmdLog
+        }
+      })
+    }
+  }
+
+  uploadImage() {
+    const formData = new FormData();
+    formData.append("img", jQuery("#input-image-upload")[0].files[0])
+    jQuery.post({
+      url: blogs.quickPost.requestHead + "image",
+      data: formData,
+      contentType: false,
+      enctype: "multipart/form-data",
+      processData: false,
+      success(res) {
+        jQuery("#input-image-delete")[0].value = res.result
+      }
+    })
+  }
+
+  deleteImage() {
+    const fileName = jQuery("#input-image-delete")[0].value
+    jQuery.ajax({
+      type: "DELETE",
+      url: blogs.quickPost.requestHead + "image",
+      contentType: "application/json",
+      data: fileName,
+      processData: false,
+      success(res) {
+        if (res.result === true) {
+          alert("删除成功！")
+        } else {
+          alert("删除失败！")
+        }
+      }
+    })
+  }
+
+  onLoadPostButtonClick() {
+    const itemId = this.state.itemId;
+    if (itemId === "" || itemId === "null") {
+      // no select a item
+      return;
+    }
+
+    const url = blogs.quickPost.requestHead +
+        "album/" +
+        this.state.blog + "/" +
+        this.state.album + "/" +
+        this.state.itemId
+
+    jQuery.get({
+      url: url,
+      async: true,
+      success: (res) => {
+        const item = res.result;
+        this.setState({
+          "prevContent": item.prev,
+          "allowPrev": item.prev,
+          "header": {
+            "title": item.title,
+            "meta": {
+              "postTime": item.postTime,
+              "modifyTime": item.modifyTime,
+              "author": item.author
+            }
+          },
+          "itemId": item.id,
+          "tags": item.tag,
+        })
+        jQuery("#input-title")[0].value = item.title;
+        jQuery("#input-author")[0].value = item.author;
+        jQuery("#input-tag")[0].value = item.tag;
+        jQuery("#input-id")[0].value = item.id;
+        jQuery("#input-index")[0].value = -1;
+        jQuery("#input-markdown")[0].value = item.markdown;
+      }
+    })
+
+  }
+
+  onModifyPostButtonClick() {
+    const _this = this;
+    const item = {
+      "id": jQuery("#input-id")[0].value,
+      "author": this.state.header.meta.author,
+      "items": [],
+      "tag": this.state.tags,
+      "title": this.state.header.title,
+      "prev": this.state.prevContent,
+      "markdown": jQuery("#input-markdown")[0].value,
+      "modifyTime": new Date().getTime(),
+      "postTime": this.state.header.meta.postTime
+    };
+    const index = jQuery("#input-index")[0].value;
+    let url = blogs.quickPost.requestHead +
+        "album/" +
+        this.state.blog + "/" +
+        this.state.album;
+    if (index !== "-1") {
+      url = url + "/" + this.state.itemId + "/" + index;
+    }
+    console.log(url)
+    console.log(item)
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("TOKEN", this.state.token)
+    xhr.setRequestHeader("Content-Type", "application/json")
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        _this.setState({
+          "cmdLog": JSON.parse(xhr.responseText).result
+        })
+      }
+    }
+    xhr.send(JSON.stringify(item))
+  }
+
+  onCreateAlbumButtonClick() {
+    let url = blogs.quickPost.requestHead + "simpleAlbum/" + this.state.blog
+    const data = {
+      "album": {
+        "id": jQuery("#input-id")[0].value,
+        "author": this.state.header.meta.author,
+        "modifyTime": new Date().getTime(),
+        "title": this.state.header.title
+      },
+      markdown: this.state.prevContent
+    }
+
+    jQuery.post({
+      url: url,
+      async: true,
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      processData: false,
+      success(res) {
+        console.log(res)
+      }
+    })
+  }
+
+  onLoadAlbumButtonClick() {
+    const _this = this;
+    let url = blogs.quickPost.requestHead + "simpleAlbum/" + this.state.blog + "/" + this.state.album
+    jQuery.get({
+      url: url,
+      async: true,
+      success(res) {
+        const result = res.result;
+        _this.setState({
+          "prevContent": res.msg,
+          "allowPrev": res.msg,
+          "header": {
+            "title": result.title,
+            "meta": {
+              "postTime": 0,
+              "modifyTime": result.modifyTime,
+              "author": result.author
+            }
+          },
+          "itemId": result.id,
+        });
+        jQuery("#input-title")[0].value = result.title;
+        jQuery("#input-author")[0].value = result.author;
+        jQuery("#input-id")[0].value = result.id;
+      }
+    })
+  }
+
+  onModifyAlbumButtonClick() {
+    let url = blogs.quickPost.requestHead + "simpleAlbum/" + this.state.blog
+    const data = {
+      "album": {
+        "id": jQuery("#input-id")[0].value,
+        "author": this.state.header.meta.author,
+        "modifyTime": new Date().getTime(),
+        "title": this.state.header.title
+      },
+      markdown: this.state.prevContent
+    }
+
+    jQuery.ajax({
+      url: url,
+      type: "PUT",
+      async: true,
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      processData: false,
+      success(res) {
+        if (res.result === true) {
+          alert("修改成功！")
+        } else {
+          alert("修改失败！")
+        }
+      }
+    })
+  }
+
+  onDeletePostButtonClick() {
+    let url = blogs.quickPost.requestHead +
+        "album/" +
+        this.state.blog + "/" +
+        this.state.album + "/" + this.state.itemId;
+
+    jQuery.ajax({
+      type: "DELETE",
+      url: url,
+      async: true,
+      success: (res) => {
+        if (res.result.id) {
+          alert("删除成功！");
+        } else {
+          alert("删除失败！");
+        }
+      }
+    })
+  }
+
+  onDeleteAlbumButtonClick() {
+    let url = blogs.quickPost.requestHead + "simpleAlbum/" + this.state.blog + "/" + this.state.album;
+    jQuery.ajax({
+      type: "DELETE",
+      url: url,
+      async: true,
+      success: (res) => {
+        if (res.result === true) {
+          alert("删除成功！");
+        } else {
+          alert("删除失败！");
+        }
+      }
+    })
+  }
+
+  onActionButtonClick() {
+    const action = jQuery("#input-choose-action")[0].value;
+    switch (action) {
+      case "0": this.onLoadPostButtonClick(); break;
+      case "1": this.onModifyPostButtonClick(); break;
+      case "2": this.onPostButtonClick(); break;
+      case "3": this.onCreateAlbumButtonClick(); break;
+      case "4": this.onLoadAlbumButtonClick(); break;
+      case "5": this.onModifyAlbumButtonClick(); break;
+      case "6": this.onDeletePostButtonClick(); break;
+      case "7": this.onDeleteAlbumButtonClick(); break;
     }
   }
 
 
   spawnToolAside() {
     return (
-      <Fragment>
+      <div className="tool-bar">
         <label htmlFor="input-token">密钥 (<span id="useToken" onClick={this.updateToken}> 应用 </span>)</label>
         <input type="password" id="input-token"/>
-
-        <br/>
         <hr/>
         <label htmlFor="input-title">标题</label>
         <input type="text" id="input-title" defaultValue={this.state.header.title} onChange={this.onTitleChange}/>
-        <br/>
         <label htmlFor="input-author">作者</label>
         <input type="text" id="input-author" defaultValue={this.state.header.meta.author} onChange={this.onAuthorChange}/>
-        <br/>
         <label htmlFor="input-tag">标签</label>
         <input type="text" id="input-tag" defaultValue={this.state.tags}/>
-        <br/>
         <hr/>
         <label htmlFor="input-blog">Blog</label>
-        <select style={{width: "100%"}} id="input-blog" onChange={this.onSelectBlog}>
-          {this.state.blogs.map((item => {
-            return <option key={item} value={item}>{item}</option>
-          }))}
+        <select id="input-blog" onChange={this.onSelectBlog}>
+          {this.state.blogs.map(item => <option key={item} value={item}>{item}</option>)}
         </select>
-        <br/>
         <br/>
         <label htmlFor="input-album">文章集</label>
-        <select style={{width: "100%"}} id="input-album" onChange={this.onSelectAlbum}>
-          {this.state.albums.map((item => {
-            return <option key={item.id} value={item.id}>{item.title}</option>
-          }))}
+        <select id="input-album" onChange={this.onSelectAlbum}>
+          {this.state.albums.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
         </select>
-        <br/>
-        <br/>
         <label htmlFor="input-item">属于</label>
-        <select style={{width: "100%"}} id="input-item" onChange={this.onSelectItem}>
+        <select id="input-item" onChange={this.onSelectItem}>
           <option value="null">不属于任何一篇文章下</option>
-          {this.state.items.map((item => {
-            return <option key={item.id} value={item.id}>{item.title}</option>
-          }))}
+          {this.state.items.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
         </select>
-        <br/>
-        <br/>
         <label htmlFor="input-id">id</label>
         <input type="text" id="input-id" defaultValue={this.state.itemId}/>
-        <br/>
         <hr/>
         <label htmlFor="input-markdown">Markdown</label>
         <input type="text" id="input-markdown" defaultValue={this.state.markdown}/>
-        <br/>
         <label htmlFor="input-index">插入位置</label>
         <input type="number" id="input-index" defaultValue={0}/>
-        <br/>
-        <button onClick={this.onPostButtonClick}>发表</button>
-        <span> </span>
-        <button onClick={this.onApplyButtonClick}>应用</button>
+        <div>
+          <select id="input-choose-action">
+            <option value="0">读取文章</option>
+            <option value="1">修改文章</option>
+            <option value="2">发表文章</option>
+            <option value="3">创建文章集</option>
+            <option value="4">读取文章集</option>
+            <option value="5">修改文章集</option>
+            <option value="6">删除文章</option>
+            <option value="7">删除文章集</option>
+          </select>
+          <button onClick={this.onActionButtonClick}>执行操作</button>
+        </div>
         <hr/>
-        <pre>{this.state.cmdLog}</pre>
-      </Fragment>
+        <label htmlFor="input-command">指令</label>
+        <div>
+          <select id="input-command">
+            {this.state.command.map(item => <option key={item} value={item}>{item}</option>)}
+          </select>
+          <button onClick={this.onApplyButtonClick}>应用</button>
+        </div>
+
+        <pre style={{height: "200px"}}>{this.state.cmdLog}</pre>
+        <hr/>
+        <div>
+          <label htmlFor="input-image-upload">上传图片</label>
+          <input type="file" id="input-image-upload"/>
+          <button onClick={this.uploadImage}>上传</button>
+        </div>
+        <div>
+          <input type="text" id="input-image-delete"/>
+          <button onClick={this.deleteImage}>删除</button>
+        </div>
+      </div>
     )
   }
 
   renderJs() {
     if (this.state.firstRender) {
-      this.setState({
-        "firstRender": false
-      })
+      setTimeout(() => {
+        this.setState({
+          "firstRender": false
+        })
+      }, 100)
       return <LoadAllJs/>
     } else {
       return <Fragment/>
@@ -342,7 +636,7 @@ export default class PostTool extends React.Component {
           <div id="content" className="site-content">
             <div className="wrap">
               <div className={"markdownEditArea"}>
-                <SimpleMdeReact defaultValue={this.state.prevContent} onChange={this.onEditAreaValueChange} options={this.state.simpleMdeOption}/>
+                <SimpleMdeReact value={this.state.prevContent} onChange={this.onEditAreaValueChange} options={this.state.simpleMdeOption}/>
                 <a href="https://ericp.cn/cmd">
                   <button style={{width: "100%", backgroundColor: "cadetblue"}}>Cmd Markdown 公式指导手册</button>
                 </a>
@@ -353,9 +647,7 @@ export default class PostTool extends React.Component {
                   <article className="post type-post status-publish format-standard hentry category-uncategorized">
                     <header className="entry-header">
                       {this.getHeaderMeta(this.state.header.meta)}
-                      <h1 className="entry-title">
-                        {this.state.header.title}
-                      </h1>
+                      <h1 className="entry-title"> {this.state.header.title} </h1>
                     </header>
                     {MarkdownUtil.render(this.state.allowPrev)}
                   </article>

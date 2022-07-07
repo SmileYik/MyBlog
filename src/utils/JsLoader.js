@@ -8,11 +8,11 @@ export default function LoadAllJs() {
   return <Fragment/>
 }
 
-function loadJsByContent(script) {
-  const s = document.createElement("script");
-  s.innerText = script;//"initGlobal(jQuery);initMainNavigation(jQuery); "
-  document.body.appendChild(s);
-}
+// function loadJsByContent(script) {
+//   const s = document.createElement("script");
+//   s.innerText = script;//"initGlobal(jQuery);initMainNavigation(jQuery); "
+//   document.body.appendChild(s);
+// }
 
 function loadJsByUrl(url) {
   const s = document.createElement("script");
