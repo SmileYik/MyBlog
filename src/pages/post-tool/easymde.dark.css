@@ -1,0 +1,37 @@
+.markdownEditArea, .CodeMirror {
+    background: #333;
+}
+
+.editor-statusbar,
+.editor-toolbar button.active {
+    background: #222;
+}
+
+.editor-toolbar button, .CodeMirror {
+    color: #eee;
+}
+
+.fullscreen button.active {
+    background: #fcfcfc;
+}
+
+.fullscreen button, .CodeMirror-fullscreen {
+    color: #222;
+}
+
+.CodeMirror-cursor {
+    border-left: 1px solid #eee
+}
+
+.CodeMirror-fullscreen .CodeMirror-cursor {
+    border-left: 1px solid #000
+}
+
+.editor-preview {
+    background: #222;
+    color: #eee;
+}
+
+.editor-preview pre {
+    background: #333;
+}

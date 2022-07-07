@@ -5,12 +5,19 @@ import {blogs, menuItems, site} from "../../utils/siteInfo";
 import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
+import SimpleMdeReact from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
+import "./easymde.dark.css"
+import LoadAllJs from "../../utils/JsLoader";
 
 export default class PostTool extends React.Component {
   constructor(props) {
     super(props);
+    const _this = this;
     this.state = {
+      "firstRender": true,
       "prevContent": "",
+      "allowPrev": "",
       "header": {
         "title": "Title",
         "meta": {
@@ -28,7 +35,28 @@ export default class PostTool extends React.Component {
       "markdown": "",
       "itemId": "",
       "tags": "",
-      "cmdLog": ""
+      "cmdLog": "",
+      "simpleMdeOption": {
+        autofocus: true,
+        spellChecker: false,
+        maxHeight: "400px",
+        toolbar: [
+            "bold", "italic", "strikethrough", "heading", "|",
+            "quote", "code", "unordered-list", "ordered-list", "clean-block", "|",
+            "link", "image", "table", "horizontal-rule", "|",
+            "preview", "side-by-side", "fullscreen", "|",
+            "undo", "redo", "|",
+            "guide"
+        ],
+        previewRender(text) {
+          _this.setState(old => {
+            return {
+              "allowPrev": old.prevContent
+            }
+          })
+          return MarkdownUtil.renderWithoutMath(text);
+        }
+      }
     };
     this.onEditAreaValueChange = this.onEditAreaValueChange.bind(this);
     this.updateToken = this.updateToken.bind(this);
@@ -46,9 +74,9 @@ export default class PostTool extends React.Component {
     document.body.className = "blog wp-custom-logo wp-embed-responsive hfeed has-header-image has-sidebar colors-dark";
   }
 
-  onEditAreaValueChange(event) {
+  onEditAreaValueChange(value) {
     this.setState({
-      "prevContent": event.target.value
+      "prevContent": value
     });
   }
 
@@ -295,6 +323,17 @@ export default class PostTool extends React.Component {
     )
   }
 
+  renderJs() {
+    if (this.state.firstRender) {
+      this.setState({
+        "firstRender": false
+      })
+      return <LoadAllJs/>
+    } else {
+      return <Fragment/>
+    }
+  }
+
   render() {
     return (
       <div className={"site"}>
@@ -303,7 +342,7 @@ export default class PostTool extends React.Component {
           <div id="content" className="site-content">
             <div className="wrap">
               <div className={"markdownEditArea"}>
-                <textarea onChange={this.onEditAreaValueChange} style={{height: "400px"}}/>
+                <SimpleMdeReact defaultValue={this.state.prevContent} onChange={this.onEditAreaValueChange} options={this.state.simpleMdeOption}/>
                 <a href="https://ericp.cn/cmd">
                   <button style={{width: "100%", backgroundColor: "cadetblue"}}>Cmd Markdown 公式指导手册</button>
                 </a>
@@ -318,7 +357,7 @@ export default class PostTool extends React.Component {
                         {this.state.header.title}
                       </h1>
                     </header>
-                    {MarkdownUtil.render(this.state.prevContent)}
+                    {MarkdownUtil.render(this.state.allowPrev)}
                   </article>
                 </main>
               </div>
@@ -329,7 +368,7 @@ export default class PostTool extends React.Component {
           </div>
           <Footer/>
         </div>
-        {/*<LoadAllJs />*/}
+        {this.renderJs()}
       </div>
     );
   }

@@ -77,5 +77,8 @@ export const MarkdownUtil = {
         </div>
       </MathJax.Provider>
     );
+  },
+  renderWithoutMath: function (text) {
+    return marked(text)
   }
 }

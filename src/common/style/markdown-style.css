@@ -70,3 +70,10 @@ span[line-row]>span::before {
     font-family: "DejaVuSansMono";
     src: url("../fonts/DejaVuSansMono.ttf");
 }
+
+blockquote {
+    border-left: solid 2px;
+    padding: 5px;
+    overflow: inherit;
+    background-color: #333;
+}

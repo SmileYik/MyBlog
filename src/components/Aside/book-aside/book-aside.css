@@ -7,42 +7,41 @@
 .contentItem:hover {
     color: #1e1e1e;
     background: rgb(143, 147, 147);
+    padding: 5px;
 }
 
 .contentItemPick {
-    background: rgb(143, 147, 147);
-    color: #1e1e1e;
+    /*background: rgb(143, 147, 147);*/
+    /*color: #1e1e1e;*/
+    border-left: solid #bbb;
+    padding: 5px;
 }
 
 
-.widget .contentItemList ul {
-    list-style: disclosure-closed;
-}
+/*.widget .contentItemList ul ul {*/
+/*    list-style: disc;*/
+/*}*/
 
-.widget .contentItemList ul ul {
-    list-style: disc;
-}
+/*.widget .contentItemList ul ul ul {*/
+/*    list-style: circle;*/
+/*}*/
 
-.widget .contentItemList ul ul ul {
-    list-style: circle;
-}
+/*.widget .contentItemList ul ul ul ul {*/
+/*    list-style: square;*/
+/*}*/
 
-.widget .contentItemList ul ul ul ul {
-    list-style: square;
-}
+/*.widget .contentItemList ul ul ul ul ul {*/
+/*    list-style: lower-alpha;*/
+/*}*/
 
-.widget .contentItemList ul ul ul ul ul {
-    list-style: lower-alpha;
-}
+/*.widget .contentItemList ul ul ul ul ul {*/
+/*    list-style: lower-greek;*/
+/*}*/
 
-.widget .contentItemList ul ul ul ul ul {
-    list-style: lower-greek;
-}
+/*.widget .contentItemList ul ul ul ul ul {*/
+/*    list-style: lower-latin;*/
+/*}*/
 
-.widget .contentItemList ul ul ul ul ul {
-    list-style: lower-latin;
-}
-
-.widget .contentItemList ul ul ul ul ul {
-    list-style: lower-roman;
-}
+/*.widget .contentItemList ul ul ul ul ul {*/
+/*    list-style: lower-roman;*/
+/*}*/
