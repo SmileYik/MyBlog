@@ -431,7 +431,11 @@ export default class PostTool extends React.Component {
       contentType: "application/json",
       processData: false,
       success(res) {
-        console.log(res)
+        if (res.result === true) {
+          alert("创建成功！");
+        } else {
+          alert("创建失败！");
+        }
       }
     })
   }
