@@ -13,7 +13,7 @@ GLuint vboId;
 glGenBuffers(1, &vboId);
 
 // 将缓冲对象绑定在顶点缓冲类型上
-glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
 // 将顶点数据传递给顶点缓冲类型
 glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -246,6 +246,4 @@ int main()
   return 0;
 }
 ```
-
-
 

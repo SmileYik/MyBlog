@@ -240,7 +240,7 @@ export default class PostTool extends React.Component {
       "title": this.state.header.title,
       "prev": this.state.prevContent,
       "markdown": jQuery("#input-markdown")[0].value,
-      "modifyTime": 0,
+      "modifyTime": new Date().getTime(),
       "postTime": new Date().getTime()
     };
 
