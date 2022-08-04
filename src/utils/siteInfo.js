@@ -6,13 +6,13 @@ export const menuItems = [
     name: "首页"
   },
   {
-    id: "menu-item-2",
+    id: "menu-item-1",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1",
     href: "?blog=readBook",
     name: "学习"
   },
   {
-    id: "menu-item-3",
+    id: "menu-item-2",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2",
     href: "?blog=problems",
     name: "算法题解"
@@ -34,6 +34,12 @@ export const menuItems = [
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-5",
     href: "?tool=postTool",
     name: "快速发布"
+  },
+  {
+    id: "menu-item-6",
+    clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-6",
+    href: "./watchtogether/index.html",
+    name: "一起看"
   }
 ];
 
