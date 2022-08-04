@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>一起看</title>
+    <script src="//unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
+<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.css" rel="stylesheet">-->
+<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.js"></script>-->
+<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.css" rel="stylesheet">-->
+<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.js"></script>-->
+    <!--    <script src="js/mobilecontrolbar.index.browser.js"></script>-->
+<!--    <script src="js/mobilestate.index.browser.js"></script>-->
+</head>
+<body>
+
+<span>房间id：</span>
+<input id="room_id" type="text" />
+<button onclick="connect()">连接</button>
+<button onclick="disconnect()">断开</button>
+<br/>
+<span>本地使用播放链接: </span>
+<input id="video_local_url" type="text" />
+<br/>
+<span>远程使用播放链接: </span>
+<input id="video_url" type="text" />
+<button onclick="bindUrl()">应用链接</button>
+<button onclick="doSame()">主机强制同步</button>
+<button onclick="refreshUrl()">更新客户端连接</button>
+<br/>
+<span id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</span>
+<hr/>
+<!--<video id="video_src" controls="controls" preload="auto">-->
+<!--</video>-->
+<div id="video_wrapper">
+</div>
+<script>
+
+    let player = new Player({
+        "id": "video_wrapper",
+        "url": "http://chimee.pyzy.net/vod/1.mp4",
+        "playsinline": true,
+        "whitelist": [
+            ""
+        ],
+        "pip": true,
+        "keyShortcut": "on",
+        "closeVideoClick": false,
+        "closeVideoDblclick": false,
+        "closeVideoTouch": true,
+        "x5-video-orientation": "landscape",
+        "x5-video-player-fullscreen": "true",
+        "playbackRate": [
+            0.5,
+            0.75,
+            1,
+            1.25,
+            1.5,
+            1.75,
+            2
+        ],
+        "videoInit": true
+    });
+
+    // new ChimeePlayer({
+    //     wrapper: '#video_wrapper',  // video dom容器
+    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
+    //     controls: true
+    // });
+
+    // new ChimeeMobilePlayer({
+    //     wrapper: '#video_wrapper',  // video dom容器
+    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
+    //     controls: true,
+    //     playsInline: true,
+    //     preload: 'auto',
+    //     x5VideoPlayerFullscreen: true,
+    //     x5VideoOrientation: 'landscape|portrait',
+    //     xWebkitAirplay: true,
+    //     // removeInnerPlugins: ['chimeeMobiControlbar', 'chimeeState'] // 需要移除的插件
+    // });
+
+
+    var ws;
+    var host = 0;
+    var url;
+    let video;
+    var id = -1
+    const info = document.getElementById("info")
+
+    function connect() {
+        let roomId = document.getElementById("room_id").value;
+        video = document.getElementsByTagName("video")[0];
+        ws = new WebSocket("ws://1.14.193.189:8085/room/" + roomId)
+        ws.onerror = function (error) {
+            console.log(error)
+            info.innerText = "连接错误！连接已断开！" + error
+        }
+
+        ws.onopen = function () {
+            console.log("open")
+        }
+
+        ws.onmessage = function (message) {
+            let msg = message.data
+            console.log(msg)
+            if (msg === 'host') {
+                host = 1
+                info.innerText = "你是主机， 你可以用打开及同步命令"
+                start()
+            } else if (msg.startsWith("client")) {
+                host = 2
+                info.innerText = "你是观看者， 你只能观看"
+                ws.send("getVideo")
+            } else if (msg.startsWith("http")) {
+                url = msg;
+                video.src = url
+            } else if (host === 1) {
+
+            } else {
+                if (msg.startsWith("video")) {
+                    url = msg.substring(5)
+                    video.src = url
+                    info.innerText = "开始观看：" + url
+                } else if (msg === "play") {
+                    video.play();
+                    info.innerText = "开始播放";
+                } else if (msg === "pause") {
+                    video.pause();
+                    info.innerText = "停止播放";
+                } else if (msg.startsWith("seek")) {
+                    video.currentTime = msg.substring(4)
+                    info.innerText = "主机要求快进或快退";
+                } else if (msg.startsWith("same")) {
+                    video.currentTime = msg.substring(5)
+                    if (msg.startsWith("samet")) {
+                        video.play()
+                    } else {
+                        video.pause()
+                    }
+                    info.innerText = "主机要求同步放映进度";
+                } else if (msg.startsWith("rate")) {
+                    video.playbackRate = msg.substring(4);
+                    info.innerText = "主机要求更改放映速度";
+                } else if (msg === 'ping') {
+                    ws.send("pong")
+                }
+            }
+        }
+
+        ws.onclose = function (res) {
+            info.innerText = "连接已断开！"
+            clearInterval(id)
+        }
+    }
+
+    function bindUrl() {
+        let videoUrl = document.getElementById("video_url").value;
+        let videoLocalUrl = document.getElementById("video_local_url").value;
+        if (host === 1) {
+            ws.send("video" + videoUrl)
+            if (videoLocalUrl === "") {
+                videoLocalUrl = videoUrl
+            }
+            video.src = videoLocalUrl
+        } else {
+            info.innerText = "主机才能用哦！"
+        }
+    }
+
+    var isPlay = false
+
+    function start() {
+        video.onplay = () => {
+            if (host === 1) {
+                ws.send("play")
+                isPlay = true
+            }
+        }
+        video.onpause = () => {
+            if (host === 1) {
+                ws.send("pause")
+                isPlay = false
+            }
+        }
+
+        video.onseeked = () => {
+            if (host === 1) {
+                ws.send("seek" + video.currentTime)
+            }
+        }
+        video.onratechange = () => {
+            if (host === 1) {
+                ws.send("rate" + video.playbackRate)
+            }
+        }
+        if (id !== -1) {
+            clearInterval(id)
+        }
+        id = setInterval(() => {
+            ws.send("ping")
+        }, 1000)
+    }
+
+    function doSame() {
+        if (host === 1) {
+            ws.send("same" + (isPlay ? 't' : 'f') + video.currentTime);
+        } else {
+            info.innerText = "主机才能用哦！"
+        }
+    }
+
+    function disconnect() {
+        ws.close()
+    }
+
+    function refreshUrl() {
+        if (host !== 1) {
+            ws.send("getVideo")
+        }
+    }
+
+</script>
+</body>
+</html>
