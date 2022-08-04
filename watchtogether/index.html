@@ -15,6 +15,7 @@
 
 <span>房间id：</span>
 <input id="room_id" type="text" />
+<input id="enable-wss" type="checkbox" value="wss"> 启用wss </input>
 <button onclick="connect()">连接</button>
 <button onclick="disconnect()">断开</button>
 <br/>
@@ -34,6 +35,11 @@
 <div id="video_wrapper">
 </div>
 <script>
+
+    let nowUrl = location.href
+    if (nowUrl.startsWith("https://")) {
+        location.href = "http://" + location.href.substring(8)
+    }
 
     let player = new Player({
         "id": "video_wrapper",
@@ -90,7 +96,8 @@
     function connect() {
         let roomId = document.getElementById("room_id").value;
         video = document.getElementsByTagName("video")[0];
-        ws = new WebSocket("ws://1.14.193.189:8085/room/" + roomId)
+        let url = "://1.14.193.189:8085/room/"
+        ws = new WebSocket((document.getElementById("enable-wss").checked ? "wss" : "ws") + url + roomId)
         ws.onerror = function (error) {
             console.log(error)
             info.innerText = "连接错误！连接已断开！" + error
