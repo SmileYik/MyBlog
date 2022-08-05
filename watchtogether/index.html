@@ -2,38 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="never"/>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <title>一起看</title>
-    <script src="//unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
-<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.css" rel="stylesheet">-->
-<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.js"></script>-->
-<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.css" rel="stylesheet">-->
-<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.js"></script>-->
-    <!--    <script src="js/mobilecontrolbar.index.browser.js"></script>-->
-<!--    <script src="js/mobilestate.index.browser.js"></script>-->
+    <script src="http://unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.2.0"></script>
 </head>
 <body>
 
-<span>房间id：</span>
-<input id="room_id" type="text" />
-<input id="enable-wss" type="checkbox" value="wss"> 启用wss </input>
+<label for="search-box">搜索视频链接：</label><input id="search-box" type="text">
+<label for="search-wait-time">搜索等待时间(秒)：</label><input id="search-wait-time" type="number" value="2">
+<button onclick="searchVideo()">搜索</button>
+<pre id="search-result">
+
+</pre>
+<hr/>
+
+<label for="room_id">房间id：</label><input id="room_id" type="text" />
+<label for="enable-wss" hidden >启用WSS</label><input id="enable-wss" type="checkbox" value="wss" hidden />
 <button onclick="connect()">连接</button>
 <button onclick="disconnect()">断开</button>
 <br/>
-<span>本地使用播放链接: </span>
-<input id="video_local_url" type="text" />
+<label for="video_local_url">本地使用播放链接: </label><input id="video_local_url" type="text" />
 <br/>
-<span>远程使用播放链接: </span>
-<input id="video_url" type="text" />
+<label for="video_url">远程使用播放链接: </label><input id="video_url" type="text" />
 <button onclick="bindUrl()">应用链接</button>
 <button onclick="doSame()">主机强制同步</button>
 <button onclick="refreshUrl()">更新客户端连接</button>
 <br/>
 <span id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</span>
 <hr/>
-<!--<video id="video_src" controls="controls" preload="auto">-->
-<!--</video>-->
-<div id="video_wrapper">
-</div>
+<div id="video_wrapper"></div>
 <script>
 
     let nowUrl = location.href
@@ -50,8 +49,8 @@
         ],
         "pip": true,
         "keyShortcut": "on",
-        "closeVideoClick": false,
-        "closeVideoDblclick": false,
+        "closeVideoClick": true,
+        "closeVideoDblclick": true,
         "closeVideoTouch": true,
         "x5-video-orientation": "landscape",
         "x5-video-player-fullscreen": "true",
@@ -66,37 +65,19 @@
         ],
         "videoInit": true
     });
-
-    // new ChimeePlayer({
-    //     wrapper: '#video_wrapper',  // video dom容器
-    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
-    //     controls: true
-    // });
-
-    // new ChimeeMobilePlayer({
-    //     wrapper: '#video_wrapper',  // video dom容器
-    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
-    //     controls: true,
-    //     playsInline: true,
-    //     preload: 'auto',
-    //     x5VideoPlayerFullscreen: true,
-    //     x5VideoOrientation: 'landscape|portrait',
-    //     xWebkitAirplay: true,
-    //     // removeInnerPlugins: ['chimeeMobiControlbar', 'chimeeState'] // 需要移除的插件
-    // });
-
-
-    var ws;
-    var host = 0;
-    var url;
+    let ws;
+    let host = 0;
+    let url;
     let video;
-    var id = -1
+    let id = -1
     const info = document.getElementById("info")
+    const hostAddress = "1.14.193.189:8085"
+    let isPlay = false
 
     function connect() {
-        let roomId = document.getElementById("room_id").value;
-        video = document.getElementsByTagName("video")[0];
-        let url = "://1.14.193.189:8085/room/"
+        let roomId = document.getElementById("room_id").value
+        video = document.getElementsByTagName("video")[0]
+        let url = "://" + hostAddress + "/room/"
         ws = new WebSocket((document.getElementById("enable-wss").checked ? "wss" : "ws") + url + roomId)
         ws.onerror = function (error) {
             console.log(error)
@@ -105,6 +86,12 @@
 
         ws.onopen = function () {
             console.log("open")
+            if (id !== -1) {
+                clearInterval(id)
+            }
+            id = setInterval(() => {
+                ws.send("heart")
+            }, 1000)
         }
 
         ws.onmessage = function (message) {
@@ -120,13 +107,13 @@
                 ws.send("getVideo")
             } else if (msg.startsWith("http")) {
                 url = msg;
-                video.src = url
+                bindUrlToVideo(url)
             } else if (host === 1) {
 
             } else {
                 if (msg.startsWith("video")) {
                     url = msg.substring(5)
-                    video.src = url
+                    bindUrlToVideo(url)
                     info.innerText = "开始观看：" + url
                 } else if (msg === "play") {
                     video.play();
@@ -148,8 +135,6 @@
                 } else if (msg.startsWith("rate")) {
                     video.playbackRate = msg.substring(4);
                     info.innerText = "主机要求更改放映速度";
-                } else if (msg === 'ping') {
-                    ws.send("pong")
                 }
             }
         }
@@ -157,6 +142,7 @@
         ws.onclose = function (res) {
             info.innerText = "连接已断开！"
             clearInterval(id)
+            console.log(res)
         }
     }
 
@@ -168,13 +154,21 @@
             if (videoLocalUrl === "") {
                 videoLocalUrl = videoUrl
             }
-            video.src = videoLocalUrl
+            bindUrlToVideo(videoLocalUrl)
         } else {
             info.innerText = "主机才能用哦！"
         }
     }
 
-    var isPlay = false
+    function bindUrlToVideo(videoLocalUrl) {
+        if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
+            var hls = new Hls()
+            hls.loadSource(videoLocalUrl)
+            hls.attachMedia(video)
+        } else {
+            video.src = videoLocalUrl
+        }
+    }
 
     function start() {
         video.onplay = () => {
@@ -200,12 +194,6 @@
                 ws.send("rate" + video.playbackRate)
             }
         }
-        if (id !== -1) {
-            clearInterval(id)
-        }
-        id = setInterval(() => {
-            ws.send("ping")
-        }, 1000)
     }
 
     function doSame() {
@@ -223,6 +211,31 @@
     function refreshUrl() {
         if (host !== 1) {
             ws.send("getVideo")
+        }
+    }
+
+    function searchVideo() {
+        const url = document.getElementById("search-box").value;
+        const wait = document.getElementById("search-wait-time").value;
+        if (url && url.startsWith("http")) {
+            let xhr = new XMLHttpRequest()
+            xhr.open("get", "http://" + hostAddress + "/video?wait=" + wait + "&url=" + encodeURI(url))
+            xhr.onreadystatechange = (res) => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const urls = JSON.parse(xhr.responseText)
+                        let text = "搜索到的结果如下：\n"
+                        for (let i = 0; i < urls.length; ++i) {
+                            text += urls[i] + "\n"
+                        }
+                        document.getElementById("search-result").innerText = text
+                    } else {
+                        document.getElementById("search-result").innerText = "未搜索成功..."
+                    }
+                }
+            }
+            document.getElementById("search-result").innerText = "正在搜索请稍后..."
+            xhr.send()
         }
     }
 
