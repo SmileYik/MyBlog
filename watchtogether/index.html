@@ -1,40 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="referrer" content="never"/>
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <title>一起看</title>
-    <script src="http://unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.2.0"></script>
 </head>
 <body>
-<label for="search-token">搜索视频Token：</label><input id="search-token" type="text">
-<br/>
-<label for="search-box">搜索视频链接：</label><input id="search-box" type="text">
-<label for="search-prefix-parwix">Parwix</label><input id="search-prefix-parwix" value="https://jx.bozrc.com:4433/player/?url=" type="checkbox" checked>
-<label for="search-wait-time">搜索等待时间(秒)：</label><input id="search-wait-time" type="number" value="2">
-<button onclick="searchVideo()">搜索</button>
-<pre id="search-result">
-
-</pre>
-<hr/>
-
 <label for="room_id">房间id：</label><input id="room_id" type="text" />
 <label for="enable-wss" hidden >启用WSS</label><input id="enable-wss" type="checkbox" value="wss" hidden />
 <button onclick="connect()">连接</button>
 <button onclick="disconnect()">断开</button>
 <br/>
-<label for="video_local_url">本地使用播放链接: </label><input id="video_local_url" type="text" />
-<br/>
-<label for="video_url">远程使用播放链接: </label><input id="video_url" type="text" />
+<label for="video_url">播放链接: </label><input id="video_url" type="text" />
 <button onclick="bindUrl()">应用链接</button>
+<button onclick="bindVideo()">寻找视频源</button>
 <button onclick="doSame()">主机强制同步</button>
 <button onclick="refreshUrl()">更新客户端连接</button>
 <br/>
 <span id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</span>
 <hr/>
-<div id="video_wrapper"></div>
+<iframe id="video_wrapper" src="https://jx.bozrc.com:4433/player/?url=" width="100%" height="600px" sandbox="allow-same-origin"></iframe>
 <script>
 
     let nowUrl = location.href
@@ -42,34 +27,8 @@
         location.href = "http://" + location.href.substring(8)
     }
 
-    let player = new Player({
-        "id": "video_wrapper",
-        "url": "http://chimee.pyzy.net/vod/1.mp4",
-        "playsinline": true,
-        "whitelist": [
-            ""
-        ],
-        "pip": true,
-        "keyShortcut": "on",
-        "closeVideoClick": true,
-        "closeVideoDblclick": true,
-        "closeVideoTouch": true,
-        "x5-video-orientation": "landscape",
-        "x5-video-player-fullscreen": "true",
-        "playbackRate": [
-            0.5,
-            0.75,
-            1,
-            1.25,
-            1.5,
-            1.75,
-            2
-        ],
-        "videoInit": true
-    });
     let ws;
     let host = 0;
-    let url;
     let video;
     let id = -1
     const info = document.getElementById("info")
@@ -78,7 +37,6 @@
 
     function connect() {
         let roomId = document.getElementById("room_id").value
-        video = document.getElementsByTagName("video")[0]
         let url = "://" + hostAddress + "/room/"
         ws = new WebSocket((document.getElementById("enable-wss").checked ? "wss" : "ws") + url + roomId)
         ws.onerror = function (error) {
@@ -102,7 +60,6 @@
             if (msg === 'host') {
                 host = 1
                 info.innerText = "你是主机， 你可以用打开及同步命令"
-                start()
             } else if (msg.startsWith("client")) {
                 host = 2
                 info.innerText = "你是观看者， 你只能观看"
@@ -148,31 +105,34 @@
         }
     }
 
+    function bindUrlToVideo(url) {
+        document.getElementById("video_wrapper").src = "https://jx.bozrc.com:4433/player/?url=" + url
+        setTimeout(bindVideo, 3000)
+    }
+
     function bindUrl() {
         let videoUrl = document.getElementById("video_url").value;
-        let videoLocalUrl = document.getElementById("video_local_url").value;
         if (host === 1) {
+            bindUrlToVideo(videoUrl)
             ws.send("video" + videoUrl)
-            if (videoLocalUrl === "") {
-                videoLocalUrl = videoUrl
-            }
-            bindUrlToVideo(videoLocalUrl)
         } else {
             info.innerText = "主机才能用哦！"
         }
     }
 
-    function bindUrlToVideo(videoLocalUrl) {
-        if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
-            var hls = new Hls()
-            hls.loadSource(videoLocalUrl)
-            hls.attachMedia(video)
-        } else {
-            video.src = videoLocalUrl
-        }
+
+    function findVideo(window) {
+
     }
 
-    function start() {
+
+    function bindVideo() {
+        const iframe1 = document.getElementById("video_wrapper").contentWindow
+        const myiframe = iframe1.document.getElementById("myiframe").contentWindow
+        video = myiframe.document.getElementById("video")
+
+        console.log(video)
+
         video.onplay = () => {
             if (host === 1) {
                 ws.send("play")
@@ -215,36 +175,6 @@
             ws.send("getVideo")
         }
     }
-
-    function searchVideo() {
-        let url = document.getElementById("search-box").value;
-        const wait = document.getElementById("search-wait-time").value;
-        const token = document.getElementById("search-token").value;
-        if (url && url.startsWith("http")) {
-            let xhr = new XMLHttpRequest()
-            if (document.getElementById("search-prefix-parwix").checked) {
-                url = document.getElementById("search-prefix-parwix").value + url
-            }
-            xhr.open("get", "http://" + hostAddress + "/video?wait=" + wait + "&url=" + encodeURI(url) + "&token=" + token)
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        const urls = JSON.parse(xhr.responseText)
-                        let text = "搜索到的结果如下：\n"
-                        for (let i = 0; i < urls.length; ++i) {
-                            text += urls[i] + "\n\n"
-                        }
-                        document.getElementById("search-result").innerText = text
-                    } else {
-                        document.getElementById("search-result").innerText = "未搜索成功..."
-                    }
-                }
-            }
-            document.getElementById("search-result").innerText = "正在搜索请稍后..."
-            xhr.send()
-        }
-    }
-
 </script>
 </body>
 </html>
