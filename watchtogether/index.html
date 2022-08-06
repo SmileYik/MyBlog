@@ -67,7 +67,7 @@
     <p id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</p>
 </div>
 <hr/>
-<div id="video_wrapper"></div>
+<div id="video_wrapper" hidden="hidden"></div>
 <p>
     使用方法：<br>
     主机： 先填入房间id再点连接， 若创建成功则会显示”你已经是主机“等提示，之后再在远程使用播放连接这一栏填入播放链接后点击应用链接即可<br>
@@ -281,6 +281,7 @@
     }
 
     function bindUrlToVideo(videoLocalUrl) {
+        document.getElementById("video_wrapper").hidden = false;
         if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
             var hls = new Hls()
             hls.loadSource(videoLocalUrl)
