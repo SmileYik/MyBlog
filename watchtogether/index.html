@@ -56,7 +56,7 @@
         <br/>
         <button onclick="bindUrl()">应用链接</button>
         <button onclick="doSame()">同步</button>
-        <button onclick="refreshUrl()">更新客户端连接</button>
+        <button onclick="refreshUrl()">更新视频</button>
     </div>
 </details>
 
@@ -105,7 +105,8 @@
         "closeVideoDblclick": true,
         "closeVideoTouch": true,
         "x5-video-orientation": "landscape",
-        "x5-video-player-fullscreen": "true",
+        "x5-video-player-fullscreen": "false",
+        "rotateFullscreen": true,
         "playbackRate": [
             0.5,
             0.75,
@@ -116,7 +117,11 @@
             2
         ],
         "videoInit": true,
-        volume: 0.,
+        "volume": 0.,
+        "rotate": {
+            "innerRotate": true,
+            "clockwise": false
+        }
     });
     let ws;
     let host = 0;
@@ -283,6 +288,28 @@
 
     function bindUrlToVideo(videoLocalUrl) {
         document.getElementById("video_wrapper").hidden = false;
+        var btns = document.getElementById("video_addition_btns");
+        if (btns) {
+            btns.remove()
+        }
+        var controls = document.getElementsByClassName("xgplayer-controls")[0];
+        var pip = document.createElement("xg-pip");
+        var p = document.createElement("p")
+        var span1 = document.createElement("span")
+        var span2 = document.createElement("span")
+        span1.innerText = "同步进度"
+        span2.innerText = "同步视频"
+        span1.onclick = doSame
+        span2.onclick = refreshUrl
+        p.className = "name"
+        pip.className = "xgplayer-pip"
+        pip.tabIndex = 10
+        pip.id = "video_addition_btns"
+        p.appendChild(span1)
+        p.appendChild(span2)
+        pip.appendChild(p)
+        controls.appendChild(pip)
+
         if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
             var hls = new Hls()
             hls.loadSource(videoLocalUrl)
@@ -324,6 +351,9 @@
         } else {
             ws.send("doSame")
         }
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
     }
 
     function disconnect() {
@@ -334,6 +364,9 @@
         if (host !== 1) {
             ws.send("getVideo")
         }
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
     }
 
     function searchVideo() {
