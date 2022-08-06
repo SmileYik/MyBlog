@@ -115,7 +115,8 @@
             1.75,
             2
         ],
-        "videoInit": true
+        "videoInit": true,
+        volume: 0.,
     });
     let ws;
     let host = 0;
@@ -207,7 +208,7 @@
                     } else {
                         video.pause()
                     }
-                    info.innerText = "主机要求同步放映进度";
+                    info.innerText = "主机要求同步放映进度(有可能会静音，手动取消即可)";
                 } else if (msg.startsWith("rate")) {
                     video.playbackRate = msg.substring(4);
                     info.innerText = "主机要求更改放映速度";
@@ -378,7 +379,7 @@
     }
 
     function quickCopyUrl(url) {
-        navigator.clipboard.writeText(url);
+        copyContent(url)
         var even = window.event || arguments.callee.caller.arguments[0];
         even.preventDefault();
         even.stopPropagation();
@@ -387,11 +388,21 @@
     function shareRoom() {
         if (roomId !== null) {
             let url = "https://blog.smileyik.tk/watchtogether/?roomId=" + roomId
-            navigator.clipboard.writeText(url);
+            copyContent(url)
             alert("分享链接已复制")
         } else {
             alert("你还没有加入一个房间哦")
         }
+    }
+
+    function copyContent(content) {
+        var copyArea = document.createElement("textarea");
+        copyArea.value = content
+        document.body.appendChild(copyArea)
+        copyArea.focus()
+        copyArea.select()
+        document.execCommand("copy")
+        copyArea.remove()
     }
 
 </script>
