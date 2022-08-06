@@ -9,8 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.2.0"></script>
 </head>
 <body>
-
+<label for="search-token">搜索视频Token：</label><input id="search-token" type="text">
+<br/>
 <label for="search-box">搜索视频链接：</label><input id="search-box" type="text">
+<label for="search-prefix-parwix">Parwix</label><input id="search-prefix-parwix" value="https://jx.bozrc.com:4433/player/?url=" type="checkbox" checked>
 <label for="search-wait-time">搜索等待时间(秒)：</label><input id="search-wait-time" type="number" value="2">
 <button onclick="searchVideo()">搜索</button>
 <pre id="search-result">
@@ -215,18 +217,22 @@
     }
 
     function searchVideo() {
-        const url = document.getElementById("search-box").value;
+        let url = document.getElementById("search-box").value;
         const wait = document.getElementById("search-wait-time").value;
+        const token = document.getElementById("search-token").value;
         if (url && url.startsWith("http")) {
             let xhr = new XMLHttpRequest()
-            xhr.open("get", "http://" + hostAddress + "/video?wait=" + wait + "&url=" + encodeURI(url))
-            xhr.onreadystatechange = (res) => {
+            if (document.getElementById("search-prefix-parwix").checked) {
+                url = document.getElementById("search-prefix-parwix").value + url
+            }
+            xhr.open("get", "http://" + hostAddress + "/video?wait=" + wait + "&url=" + encodeURI(url) + "&token=" + token)
+            xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         const urls = JSON.parse(xhr.responseText)
                         let text = "搜索到的结果如下：\n"
                         for (let i = 0; i < urls.length; ++i) {
-                            text += urls[i] + "\n"
+                            text += urls[i] + "\n\n"
                         }
                         document.getElementById("search-result").innerText = text
                     } else {
