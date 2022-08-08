@@ -10,6 +10,11 @@
         summary {
             user-select: none;
         }
+
+        pre {
+            word-break: break-all;
+            white-space: break-spaces;
+        }
     </style>
 </head>
 <body>
@@ -36,6 +41,7 @@
     <hr>
     <div>
         <label for="room_username">显示昵称：</label><input id="room_username" type="text" placeholder="可以不填"/>
+        <button onclick="saveUsername()">保存用户名</button>
         <br/>
         <label for="room_id">房间号码：</label><input id="room_id" type="text" />
         <label for="enable-wss" hidden >启用WSS</label><input id="enable-wss" type="checkbox" value="wss" hidden />
@@ -64,22 +70,68 @@
 <div>
     <p>观看列表：<span id="watch-list">还没有人观看哦</span></p>
 
-    <p id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</p>
+    <p id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制, <strong>播放时没有声音是因为默认为静音)</strong></p>
 </div>
 <hr/>
 <div id="video_wrapper" hidden="hidden"></div>
-<p>
-    使用方法：<br>
-    主机： 先填入房间id再点连接， 若创建成功则会显示”你已经是主机“等提示，之后再在远程使用播放连接这一栏填入播放链接后点击应用链接即可<br>
-    观看： 填入已有的房间id后再点连接即可。<br>
-</p>
+<details style="border: 1px #888 solid; padding: 10px; margin: 0" open="open">
+    <summary>怎么开始一起看?</summary>
+    <br>
+    <details>
+        <pre>
+        在一起看房间栏中填入你想要的昵称和房间号码后, 点击连接按钮就可以连接到一起看的房间了!
+
+        如果你连接后提示你
+            <strong>你是主机， 你可以用打开及同步命令, 电视操作站已为你打开</strong>,
+        并且为你打开电视操作站, 那么这个房间的其他观看者都要听你的命令惹.
+
+        tip: 在填完昵称后点击保存昵称, 那么下次进入时候会自动填入昵称哦~
+        </pre>
+        <summary  style="color: blueviolet">一起看房间连接和断开</summary>
+    </details>
+
+    <details>
+        <pre>
+        在连接到房间后可以使用电视操作站里面的各个按钮, 仅有主机才能更改要观看的视频链接.
+        主机在远程使用播放链接中填入视频链接后点击应用链接按钮就可以一起观看了
+
+        同步按钮能够让观看方同步主机的视频进度, 更新视频按钮能够让观看方同步主机观看的视频
+
+        不过需要注意的是直接填入视频网站的链接(例如bilibili的分享链接)是没用的哦.
+        得拿去视频解析那一栏解析到的视频链接才有可能能够播放.
+        </pre>
+        <summary style="color: cornflowerblue">电视操作站的使用</summary>
+    </details>
+
+    <details>
+        <pre>
+        在搜索视频链接中填入你想要解析的视频链接点击解析后, 等待一段时间就会提示搜索结果;
+        搜索等待时间稍微高一点点能够提高解析出结果的概率(5秒可能就已经够用了);
+        使用Parwix解析则可以解析大部分视频网站如腾讯视频, bilibili等
+
+        需要注意: 填入的哔哩哔哩链接为带有av号或者bv号的链接, 例如"https://www.bilibili.com/video/BV1UN4y1L7xN";
+        另外Parwix应该是不可以解析付费视频的.
+        </pre>
+        <summary style="color: #1c9bc2">视频解析的使用</summary>
+    </details>
+</details>
+<p id="statistic-info"></p>
 <script>
     const hostAddress = "1.14.193.189:8085"
 
     let nowUrl = location.href
     if (nowUrl.startsWith("https://")) {
         location.href = "http://" + location.href.substring(8)
-    } else if (nowUrl.indexOf("?") !== -1 && nowUrl.indexOf("roomId") !== -1) {
+    }
+
+    const username_cookie = getCookie("username")
+    if (username_cookie !== "") {
+        document.getElementById("room_username").value = username_cookie
+    }
+
+
+
+    if (nowUrl.indexOf("?") !== -1 && nowUrl.indexOf("roomId") !== -1) {
         let str = nowUrl.substring(nowUrl.indexOf("roomId"))
         if (str.indexOf("&") !== -1) {
             str = str.substring(0, str.indexOf("&"))
@@ -92,6 +144,9 @@
             }, 100)
         }
     }
+
+    getStatisticInfo()
+
     let player = new Player({
         "id": "video_wrapper",
         "url": "http://chimee.pyzy.net/vod/1.mp4",
@@ -106,7 +161,7 @@
         "closeVideoTouch": true,
         "x5-video-orientation": "landscape",
         "x5-video-player-fullscreen": "false",
-        "rotateFullscreen": true,
+        "rotateFullscreen": false   ,
         "playbackRate": [
             0.5,
             0.75,
@@ -288,27 +343,39 @@
 
     function bindUrlToVideo(videoLocalUrl) {
         document.getElementById("video_wrapper").hidden = false;
-        var btns = document.getElementById("video_addition_btns");
-        if (btns) {
-            btns.remove()
+        let btns = document.getElementById("video_addition_btns_do_same");
+        if (!btns) {
+            let controls = document.getElementsByClassName("xgplayer-controls")[0];
+            let pip = document.createElement("xg-pip");
+            let p = document.createElement("p")
+            let span = document.createElement("span")
+            span.innerText = "同步进度"
+            span.onclick = doSame
+            p.className = "name"
+            pip.className = "xgplayer-pip"
+            pip.tabIndex = 10
+            pip.id = "video_addition_btns_do_same"
+            p.appendChild(span)
+            pip.appendChild(p)
+            controls.appendChild(pip)
         }
-        var controls = document.getElementsByClassName("xgplayer-controls")[0];
-        var pip = document.createElement("xg-pip");
-        var p = document.createElement("p")
-        var span1 = document.createElement("span")
-        var span2 = document.createElement("span")
-        span1.innerText = "同步进度"
-        span2.innerText = "同步视频"
-        span1.onclick = doSame
-        span2.onclick = refreshUrl
-        p.className = "name"
-        pip.className = "xgplayer-pip"
-        pip.tabIndex = 10
-        pip.id = "video_addition_btns"
-        p.appendChild(span1)
-        p.appendChild(span2)
-        pip.appendChild(p)
-        controls.appendChild(pip)
+        btns = document.getElementById("video_addition_btns_refresh_url");
+        if (!btns) {
+            let controls = document.getElementsByClassName("xgplayer-controls")[0];
+            let pip = document.createElement("xg-pip");
+            let p = document.createElement("p")
+            let span = document.createElement("span")
+            span.innerText = "同步视频"
+            span.onclick = refreshUrl
+            p.className = "name"
+            pip.className = "xgplayer-pip"
+            pip.tabIndex = 11
+            pip.id = "video_addition_btns_do_same"
+            p.appendChild(span)
+            pip.appendChild(p)
+            controls.appendChild(pip)
+        }
+
 
         if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
             var hls = new Hls()
@@ -404,6 +471,25 @@
         }
     }
 
+    function getStatisticInfo() {
+        let xhr = new XMLHttpRequest()
+        xhr.open("get", "http://" + hostAddress + "/statistic")
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const result = JSON.parse(xhr.responseText)
+                    document.getElementById("statistic-info").innerHTML =
+                        "当前正在一起看的房间数有 " + result.onlineRooms.length + " 个; <br>" +
+                        "当前正在一起看的用户数有 " + result.onlineWatchers.length + " 人; <br>" +
+                        "总共创建房间 " + result.createdRoomsCount + " 次; <br>" +
+                        "总共观一起看 " + result.watchTimes + " 次; <br>" +
+                        "视频解析共计使用 " + result.useVideoUrlDogTimes + " 次."
+                }
+            }
+        }
+        xhr.send()
+    }
+
     function quickInUrl(url) {
         document.getElementById("video_url").value = url
         var even = window.event || arguments.callee.caller.arguments[0];
@@ -436,6 +522,35 @@
         copyArea.select()
         document.execCommand("copy")
         copyArea.remove()
+    }
+
+    function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime()+(exdays*24*60*60*1000));
+        var expires = "expires="+d.toGMTString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++)
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    function saveUsername() {
+        let username = document.getElementById("room_username").value
+        if (username === "") {
+            alert("你还没有填入一个昵称呀")
+            return
+        }
+
+        setCookie("username", username, 365)
+        alert("好啦，下次访问这个网站时候会自动填入你的用户名的~")
     }
 
 </script>
