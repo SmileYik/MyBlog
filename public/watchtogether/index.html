@@ -2,38 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="never"/>
     <title>一起看</title>
-    <script src="//unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
-<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.css" rel="stylesheet">-->
-<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-mobile-player/latest/chimee-mobile-player.browser.js"></script>-->
-<!--    <link crossorigin="anonymous" href="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.css" rel="stylesheet">-->
-<!--    <script crossorigin="anonymous" src="//lib.baomitu.com/chimee-player/latest/chimee-player.browser.js"></script>-->
-    <!--    <script src="js/mobilecontrolbar.index.browser.js"></script>-->
-<!--    <script src="js/mobilestate.index.browser.js"></script>-->
+    <script src="http://unpkg.byted-static.com/xgplayer/2.31.2/browser/index.js" type="text/javascript"></script>
+    <script src="http://blog.smileyik.tk/watchtogether/hls.min.js"></script>
+    <style>
+        summary {
+            user-select: none;
+        }
+
+        pre {
+            word-break: break-all;
+            white-space: break-spaces;
+        }
+    </style>
 </head>
 <body>
 
-<span>房间id：</span>
-<input id="room_id" type="text" />
-<button onclick="connect()">连接</button>
-<button onclick="disconnect()">断开</button>
-<br/>
-<span>本地使用播放链接: </span>
-<input id="video_local_url" type="text" />
-<br/>
-<span>远程使用播放链接: </span>
-<input id="video_url" type="text" />
-<button onclick="bindUrl()">应用链接</button>
-<button onclick="doSame()">主机强制同步</button>
-<button onclick="refreshUrl()">更新客户端连接</button>
-<br/>
-<span id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制)</span>
+<details>
+    <summary style="color: #1c9bc2">视频解析</summary>
+    <hr>
+    <div>
+        <label for="search-token">搜索视频密钥：</label><input id="search-token" type="password" placeholder="可以不填(减轻我服务器压力)">
+        <br/>
+        <label for="search-box">搜索视频链接：</label><input id="search-box" type="text" placeholder="搜索不到可能是等待时间太短" style="width: 50%">
+        <br/>
+        <label for="search-wait-time">搜索等待时间(秒)：</label><input id="search-wait-time" type="number" aria-valuemin="0" min="0" value="0" style="width: 30px">
+        <br/>
+        <label for="search-prefix-parwix">Parwix解析</label><input id="search-prefix-parwix" value="https://jx.bozrc.com:4433/player/?url=" type="checkbox" checked>
+        <br/>
+        <button onclick="searchVideo()">搜索</button>
+        <pre id="search-result" style="white-space: break-spaces; word-break: break-all"></pre>
+    </div>
+</details>
 <hr/>
-<!--<video id="video_src" controls="controls" preload="auto">-->
-<!--</video>-->
-<div id="video_wrapper">
+<details open="open">
+    <summary style="color: blueviolet">一起看房间</summary>
+    <hr>
+    <div>
+        <label for="room_username">显示昵称：</label><input id="room_username" type="text" placeholder="可以不填"/>
+        <button onclick="saveUsername()">保存用户名</button>
+        <br/>
+        <label for="room_id">房间号码：</label><input id="room_id" type="text" />
+        <label for="enable-wss" hidden >启用WSS</label><input id="enable-wss" type="checkbox" value="wss" hidden />
+        <br/>
+        <button id="room_connect" onclick="connect()">连接</button>
+        <button onclick="disconnect()">断开</button>
+        <button onclick="shareRoom()">分享房间</button>
+    </div>
+</details>
+<hr/>
+
+<details id="video_controller">
+    <summary style="color: cornflowerblue">电视操作站</summary>
+    <div>
+        <label for="video_url">远程使用播放链接: </label><input id="video_url" type="text" style="width: 50%"/>
+        <br/>
+        <label for="video_local_url">本地使用播放链接: </label><input id="video_local_url" type="text" placeholder="可以不填"  style="width: 50%"/>
+        <br/>
+        <button onclick="bindUrl()">应用链接</button>
+        <button onclick="doSame()">同步</button>
+        <button onclick="refreshUrl()">更新视频</button>
+    </div>
+</details>
+
+<hr/>
+<div>
+    <p>观看列表：<span id="watch-list">还没有人观看哦</span></p>
+
+    <p id="info">(若主机要求开始播放但是你没有开始播放则需要你手动播放一次后即可让主机控制, <strong>播放时没有声音是因为默认为静音)</strong></p>
 </div>
+<hr/>
+<div id="video_wrapper" hidden="hidden"></div>
+<details style="border: 1px #888 solid; padding: 10px; margin: 0" open="open">
+    <summary>怎么开始一起看?</summary>
+    <br>
+    <details>
+        <pre>
+        在一起看房间栏中填入你想要的昵称和房间号码后, 点击连接按钮就可以连接到一起看的房间了!
+
+        如果你连接后提示你
+            <strong>你是主机， 你可以用打开及同步命令, 电视操作站已为你打开</strong>,
+        并且为你打开电视操作站, 那么这个房间的其他观看者都要听你的命令惹.
+
+        tip: 在填完昵称后点击保存昵称, 那么下次进入时候会自动填入昵称哦~
+        </pre>
+        <summary  style="color: blueviolet">一起看房间连接和断开</summary>
+    </details>
+
+    <details>
+        <pre>
+        在连接到房间后可以使用电视操作站里面的各个按钮, 仅有主机才能更改要观看的视频链接.
+        主机在远程使用播放链接中填入视频链接后点击应用链接按钮就可以一起观看了
+
+        同步按钮能够让观看方同步主机的视频进度, 更新视频按钮能够让观看方同步主机观看的视频
+
+        不过需要注意的是直接填入视频网站的链接(例如bilibili的分享链接)是没用的哦.
+        得拿去视频解析那一栏解析到的视频链接才有可能能够播放.
+        </pre>
+        <summary style="color: cornflowerblue">电视操作站的使用</summary>
+    </details>
+
+    <details>
+        <pre>
+        在搜索视频链接中填入你想要解析的视频链接点击解析后, 等待一段时间就会提示搜索结果;
+        搜索等待时间稍微高一点点能够提高解析出结果的概率(5秒可能就已经够用了);
+        使用Parwix解析则可以解析大部分视频网站如腾讯视频, bilibili等
+
+        需要注意: 填入的哔哩哔哩链接为带有av号或者bv号的链接, 例如"https://www.bilibili.com/video/BV1UN4y1L7xN";
+        另外Parwix应该是不可以解析付费视频的.
+        </pre>
+        <summary style="color: #1c9bc2">视频解析的使用</summary>
+    </details>
+</details>
+<p id="statistic-info"></p>
 <script>
+    const hostAddress = "1.14.193.189:8085"
+
+    let nowUrl = location.href
+    if (nowUrl.startsWith("https://")) {
+        location.href = "http://" + location.href.substring(8)
+    }
+
+    const username_cookie = getCookie("username")
+    if (username_cookie !== "") {
+        document.getElementById("room_username").value = username_cookie
+    }
+
+
+
+    if (nowUrl.indexOf("?") !== -1 && nowUrl.indexOf("roomId") !== -1) {
+        let str = nowUrl.substring(nowUrl.indexOf("roomId"))
+        if (str.indexOf("&") !== -1) {
+            str = str.substring(0, str.indexOf("&"))
+        }
+        if (str.length > 7 && str.startsWith("roomId")) {
+            const roomId = str.substring(7)
+            setTimeout(() => {
+                document.getElementById("room_id").value = roomId;
+                document.getElementById("room_connect").click()
+            }, 100)
+        }
+    }
+
+    getStatisticInfo()
 
     let player = new Player({
         "id": "video_wrapper",
@@ -44,11 +156,12 @@
         ],
         "pip": true,
         "keyShortcut": "on",
-        "closeVideoClick": false,
-        "closeVideoDblclick": false,
+        "closeVideoClick": true,
+        "closeVideoDblclick": true,
         "closeVideoTouch": true,
         "x5-video-orientation": "landscape",
-        "x5-video-player-fullscreen": "true",
+        "x5-video-player-fullscreen": "false",
+        "rotateFullscreen": false   ,
         "playbackRate": [
             0.5,
             0.75,
@@ -58,46 +171,55 @@
             1.75,
             2
         ],
-        "videoInit": true
+        "videoInit": true,
+        "volume": 0.,
+        "rotate": {
+            "innerRotate": true,
+            "clockwise": false
+        }
     });
-
-    // new ChimeePlayer({
-    //     wrapper: '#video_wrapper',  // video dom容器
-    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
-    //     controls: true
-    // });
-
-    // new ChimeeMobilePlayer({
-    //     wrapper: '#video_wrapper',  // video dom容器
-    //     src: 'http://chimee.pyzy.net/vod/1.mp4',
-    //     controls: true,
-    //     playsInline: true,
-    //     preload: 'auto',
-    //     x5VideoPlayerFullscreen: true,
-    //     x5VideoOrientation: 'landscape|portrait',
-    //     xWebkitAirplay: true,
-    //     // removeInnerPlugins: ['chimeeMobiControlbar', 'chimeeState'] // 需要移除的插件
-    // });
-
-
-    var ws;
-    var host = 0;
-    var url;
+    let ws;
+    let host = 0;
     let video;
-    var id = -1
+    let id = -1
     const info = document.getElementById("info")
+    let isPlay = false
+    let users = []
+    let roomId = null
 
     function connect() {
-        let roomId = document.getElementById("room_id").value;
-        video = document.getElementsByTagName("video")[0];
-        ws = new WebSocket("ws://1.14.193.189:8085/room/" + roomId)
+        roomId = document.getElementById("room_id").value
+        video = document.getElementsByTagName("video")[0]
+        let url = "://" + hostAddress + "/room/"
+        let username = document.getElementById("room_username").value;
+        if (username === "") {
+            username = ""
+            const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            for (let i = 0; i < 6; ++i) {
+                username += pool[Math.trunc(Math.random() * 26 * 2)]
+            }
+            document.getElementById("room_username").value = username
+        }
+
+        ws = new WebSocket((document.getElementById("enable-wss").checked ? "wss" : "ws") + url + roomId + "/" + username)
         ws.onerror = function (error) {
             console.log(error)
             info.innerText = "连接错误！连接已断开！" + error
+            roomId = null
         }
 
         ws.onopen = function () {
             console.log("open")
+            if (id !== -1) {
+                clearInterval(id)
+            }
+            id = setInterval(() => {
+                if (host === 1) {
+                    ws.send("hsame" + (isPlay ? 't' : 'f') + video.currentTime)
+                } else {
+                    ws.send("heart")
+                }
+            }, 1000)
         }
 
         ws.onmessage = function (message) {
@@ -105,21 +227,30 @@
             console.log(msg)
             if (msg === 'host') {
                 host = 1
-                info.innerText = "你是主机， 你可以用打开及同步命令"
+                info.innerText = "你是主机， 你可以用打开及同步命令, 电视操作站已为你打开"
                 start()
+                document.getElementById("video_controller").open = "open"
             } else if (msg.startsWith("client")) {
                 host = 2
                 info.innerText = "你是观看者， 你只能观看"
                 ws.send("getVideo")
+                setTimeout(() => {
+                    ws.send("doSame")
+                }, 100)
             } else if (msg.startsWith("http")) {
                 url = msg;
-                video.src = url
+                bindUrlToVideo(url)
             } else if (host === 1) {
-
+                if (msg.startsWith("join")) {
+                    onJoin(msg.substring(4))
+                    ws.send("list" + JSON.stringify(users))
+                } else if (msg.startsWith("exit")) {
+                    onExit(msg.substring(4))
+                }
             } else {
                 if (msg.startsWith("video")) {
                     url = msg.substring(5)
-                    video.src = url
+                    bindUrlToVideo(url)
                     info.innerText = "开始观看：" + url
                 } else if (msg === "play") {
                     video.play();
@@ -137,12 +268,17 @@
                     } else {
                         video.pause()
                     }
-                    info.innerText = "主机要求同步放映进度";
+                    info.innerText = "主机要求同步放映进度(有可能会静音，手动取消即可)";
                 } else if (msg.startsWith("rate")) {
                     video.playbackRate = msg.substring(4);
                     info.innerText = "主机要求更改放映速度";
-                } else if (msg === 'ping') {
-                    ws.send("pong")
+                } else if (msg.startsWith("join")) {
+                    onJoin(msg.substring(4))
+                } else if (msg.startsWith("exit")) {
+                    onExit(msg.substring(4))
+                } else if (msg.startsWith("list")) {
+                    users = JSON.parse(msg.substring(4))
+                    updateUsers()
                 }
             }
         }
@@ -150,7 +286,45 @@
         ws.onclose = function (res) {
             info.innerText = "连接已断开！"
             clearInterval(id)
+            console.log(res)
+            users = []
+            updateUsers()
+            roomId = null
         }
+    }
+
+    function onJoin(user) {
+        const oldUsers = users
+        for (let i = 0; i < oldUsers.length; ++i) {
+            if (oldUsers[i] === user) {
+                return
+            }
+        }
+        oldUsers.push(user)
+        users = oldUsers
+        updateUsers()
+    }
+
+    function onExit(user) {
+        const newUsers = []
+        for (let i = 0; i < users.length; ++i) {
+            if (users[i] !== user) {
+                newUsers.push(users[i])
+            }
+        }
+        users = newUsers
+        updateUsers()
+    }
+
+    function updateUsers() {
+        let userStr = ""
+        for (let i = 0; i < users.length; ++i) {
+            userStr += ", " + users[i]
+        }
+        if (userStr !== "") {
+            userStr = userStr.substring(2)
+        }
+        document.getElementById("watch-list").innerText = userStr
     }
 
     function bindUrl() {
@@ -161,13 +335,56 @@
             if (videoLocalUrl === "") {
                 videoLocalUrl = videoUrl
             }
-            video.src = videoLocalUrl
+            bindUrlToVideo(videoLocalUrl)
         } else {
             info.innerText = "主机才能用哦！"
         }
     }
 
-    var isPlay = false
+    function bindUrlToVideo(videoLocalUrl) {
+        document.getElementById("video_wrapper").hidden = false;
+        let btns = document.getElementById("video_addition_btns_do_same");
+        if (!btns) {
+            let controls = document.getElementsByClassName("xgplayer-controls")[0];
+            let pip = document.createElement("xg-pip");
+            let p = document.createElement("p")
+            let span = document.createElement("span")
+            span.innerText = "同步进度"
+            span.onclick = doSame
+            p.className = "name"
+            pip.className = "xgplayer-pip"
+            pip.tabIndex = 10
+            pip.id = "video_addition_btns_do_same"
+            p.appendChild(span)
+            pip.appendChild(p)
+            controls.appendChild(pip)
+        }
+        btns = document.getElementById("video_addition_btns_refresh_url");
+        if (!btns) {
+            let controls = document.getElementsByClassName("xgplayer-controls")[0];
+            let pip = document.createElement("xg-pip");
+            let p = document.createElement("p")
+            let span = document.createElement("span")
+            span.innerText = "同步视频"
+            span.onclick = refreshUrl
+            p.className = "name"
+            pip.className = "xgplayer-pip"
+            pip.tabIndex = 11
+            pip.id = "video_addition_btns_refresh_url"
+            p.appendChild(span)
+            pip.appendChild(p)
+            controls.appendChild(pip)
+        }
+
+
+        if (Hls.isSupported() && videoLocalUrl.indexOf(".m3u8") !== -1) {
+            var hls = new Hls()
+            hls.loadSource(videoLocalUrl)
+            hls.attachMedia(video)
+        } else {
+            video.src = videoLocalUrl
+        }
+    }
 
     function start() {
         video.onplay = () => {
@@ -193,20 +410,17 @@
                 ws.send("rate" + video.playbackRate)
             }
         }
-        if (id !== -1) {
-            clearInterval(id)
-        }
-        id = setInterval(() => {
-            ws.send("ping")
-        }, 1000)
     }
 
     function doSame() {
         if (host === 1) {
             ws.send("same" + (isPlay ? 't' : 'f') + video.currentTime);
         } else {
-            info.innerText = "主机才能用哦！"
+            ws.send("doSame")
         }
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
     }
 
     function disconnect() {
@@ -217,6 +431,126 @@
         if (host !== 1) {
             ws.send("getVideo")
         }
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
+    }
+
+    function searchVideo() {
+        let url = document.getElementById("search-box").value;
+        const wait = document.getElementById("search-wait-time").value;
+        const token = document.getElementById("search-token").value;
+        if (url && url.startsWith("http")) {
+            let xhr = new XMLHttpRequest()
+            if (document.getElementById("search-prefix-parwix").checked) {
+                url = document.getElementById("search-prefix-parwix").value + url
+            }
+            xhr.open("get", "http://" + hostAddress + "/video?wait=" + wait + "&url=" + encodeURI(url) + "&token=" + token)
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const urls = JSON.parse(xhr.responseText)
+                        let text = "搜索到的结果如下：\n"
+                        for (let i = 0; i < urls.length; ++i) {
+                            const url = urls[i]
+                            text += "\n"
+                            if (url.startsWith("http")) {
+                                text += "<details><summary style='user-select: none'> 结果1 <span style='cursor: pointer; color: #4a74e8' onclick='quickCopyUrl(\"" + url + "\")'>[复制链接]</span> <span style='cursor: pointer; color: blueviolet' onclick='quickInUrl(\"" + url + "\")'>[填入链接]</span></summary>" + url + "</details>"
+                            } else {
+                                text += urls[i]
+                            }
+                        }
+                        document.getElementById("search-result").innerHTML = text
+                    } else {
+                        document.getElementById("search-result").innerText = "未搜索成功..."
+                    }
+                }
+            }
+            document.getElementById("search-result").innerText = "正在搜索请稍后..."
+            xhr.send()
+        }
+    }
+
+    function getStatisticInfo() {
+        let xhr = new XMLHttpRequest()
+        xhr.open("get", "http://" + hostAddress + "/statistic")
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const result = JSON.parse(xhr.responseText)
+                    document.getElementById("statistic-info").innerHTML =
+                        "当前正在一起看的房间数有 " + result.onlineRooms.length + " 个; <br>" +
+                        "当前正在一起看的用户数有 " + result.onlineWatchers.length + " 人; <br>" +
+                        "总共创建房间 " + result.createdRoomsCount + " 次; <br>" +
+                        "总共观一起看 " + result.watchTimes + " 次; <br>" +
+                        "视频解析共计使用 " + result.useVideoUrlDogTimes + " 次."
+                }
+            }
+        }
+        xhr.send()
+    }
+
+    function quickInUrl(url) {
+        document.getElementById("video_url").value = url
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
+    }
+
+    function quickCopyUrl(url) {
+        copyContent(url)
+        var even = window.event || arguments.callee.caller.arguments[0];
+        even.preventDefault();
+        even.stopPropagation();
+    }
+
+    function shareRoom() {
+        if (roomId !== null) {
+            let url = "https://blog.smileyik.tk/watchtogether/?roomId=" + roomId
+            copyContent(url)
+            alert("分享链接已复制")
+        } else {
+            alert("你还没有加入一个房间哦")
+        }
+    }
+
+    function copyContent(content) {
+        var copyArea = document.createElement("textarea");
+        copyArea.value = content
+        document.body.appendChild(copyArea)
+        copyArea.focus()
+        copyArea.select()
+        document.execCommand("copy")
+        copyArea.remove()
+    }
+
+    function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime()+(exdays*24*60*60*1000));
+        var expires = "expires="+d.toGMTString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++)
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    function saveUsername() {
+        let username = document.getElementById("room_username").value
+        if (username === "") {
+            alert("你还没有填入一个昵称呀")
+            return
+        }
+
+        setCookie("username", username, 365)
+        alert("好啦，下次访问这个网站时候会自动填入你的用户名的~")
     }
 
 </script>
