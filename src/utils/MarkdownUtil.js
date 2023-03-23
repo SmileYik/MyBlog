@@ -71,7 +71,7 @@ export const MarkdownUtil = {
           'script', 'noscript', 'style', 'textarea', 'pre',
           'code', 'annotation', 'annotation-xml'
         ],
-      }} url="https://unpkg.com/mathjax@3.2.0/es5/tex-mml-chtml.js">
+      }} url="https://unpkg.zhimg.com/mathjax@3.2.0/es5/tex-mml-chtml.js">
         <div className="entry-content">
           <MathJax.Html html={ marked(text) } />
         </div>

@@ -38,7 +38,7 @@ export const menuItems = [
   {
     id: "menu-item-6",
     clazz: "menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-6",
-    href: "./watchtogether/index.html",
+    href: "./watchtogether",
     name: "一起看"
   }
 ];
