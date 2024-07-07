@@ -61,8 +61,8 @@ export const site = {
 
 export const blogs = {
   quickPost: {
-    requestHead: "http://1.14.193.189:8083/",
-    webSocketRequestHead: "ws://1.14.193.189:8083/"
+    requestHead: "http://quick-post.smileyik.eu.org:8081/",
+    webSocketRequestHead: "ws://quick-post.smileyik.eu.org:8081/"
   },
   "other": {
     id: "other",
