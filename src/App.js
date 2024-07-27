@@ -33,9 +33,7 @@ function App() {
 
 
 function scrollToAnchor(name) {
-  if (!name) {
-    return;
-  }
+  if (!name) return;
   const elem = document.getElementById(name);
   if (elem) {
     const temp = document.getElementsByClassName("custom-header")[0];
@@ -71,7 +69,7 @@ function LinkFixWrapper() {
       <RouteWrapper />
       <div className="scroll-to-top">
         <a href="#main" title="滚动到头顶">
-          <img height='48' width="48" src="../common/images/up-to-top.png"/>
+          <img height='48' width="48" src="../common/images/up-to-top.png" alt=""/>
         </a>
       </div>
     </div>

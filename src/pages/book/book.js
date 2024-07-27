@@ -230,7 +230,6 @@ class Book extends React.Component {
   }
 
   currentPageLink() {
-    // let url =
     return (
       <blockquote style={{width: "100%", fontSize: "12px"}}>
         <span >当前页面地址: </span>

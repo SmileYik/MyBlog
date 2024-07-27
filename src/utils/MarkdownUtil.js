@@ -16,12 +16,8 @@ export const MarkdownUtil = {
       if (headCount) {
         headCount(text, level)
       }
-      while (text.indexOf('__') !== -1) {
-        text = text.replace('__', ' ')
-      }
-      let id = text;
-      while (id.indexOf(" ") !== -1) id = id.replace(" ", "-");
-      return "<h" + level + " id='" + encodeURIComponent(id) + "'>" + text + "</h" + level + ">"
+      while (text.indexOf('__') !== -1) text = text.replace('__', ' ')
+      return "<h" + level + " id='" + encodeURIComponent(text) + "'>" + text + "</h" + level + ">"
     };
 
     render.code = (code, infostring, escaped) => {
@@ -42,9 +38,7 @@ export const MarkdownUtil = {
       }
       lineNumber += "</span></code>";
       // 将代码与行号及工具栏合并.
-      return "<div class='code-pre'><pre>" +
-              toolBar + lineNumber + oriCode +
-              "</pre></div>\n"
+      return "<div class='code-pre'><pre>" + toolBar + lineNumber + oriCode + "</pre></div>\n"
     }
     marked.setOptions({
       renderer: render,
