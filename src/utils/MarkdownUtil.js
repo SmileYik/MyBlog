@@ -17,7 +17,9 @@ export const MarkdownUtil = {
         headCount(text, level)
       }
       while (text.indexOf('__') !== -1) text = text.replace('__', ' ')
-      return "<h" + level + " id='" + encodeURIComponent(text) + "'>" + text + "</h" + level + ">"
+      let id = text;
+      while (id.indexOf(" ") !== -1) id = id.replace(" ", "-");
+      return "<span id='" + encodeURIComponent(id) + "'></span><h" + level + " id='" + encodeURIComponent(text) + "'>" + text + "</h" + level + ">"
     };
 
     render.code = (code, infostring, escaped) => {
