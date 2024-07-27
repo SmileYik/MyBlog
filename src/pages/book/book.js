@@ -114,10 +114,19 @@ class Book extends React.Component {
       return;
     }
     this.scrollToTop();
+    let targetUrl = item.markdown
+    let otherPlace = true
+    if (!targetUrl.startsWith("http")) {
+      targetUrl = this.state.blog.getMarkdownBase() + targetUrl;
+      otherPlace = false
+    }
     jQuery.ajax({
-      url: this.state.blog.getMarkdownBase() + item.markdown,
+      url: targetUrl,
       async: true,
       success: function (text) {
+        if (otherPlace) {
+          text = text.replaceAll("(./", "(" + targetUrl + "/../")
+        }
         _this.setState({
           content: text
         })
