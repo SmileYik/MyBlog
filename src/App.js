@@ -46,7 +46,7 @@ function scrollToAnchor(name) {
       elem.scrollIntoView({block: "start", behavior: "smooth"});
     } else {
       window.scrollTo({
-        top: elem.getBoundingClientRect().top - 45,
+        top: elem.getBoundingClientRect().top + window.scrollY - 65,
         left: elem.getBoundingClientRect().left,
         behavior: "smooth"
       })
