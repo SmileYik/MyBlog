@@ -134,7 +134,12 @@ samp {
 }
 
 code {
-	padding: 2px 1px 2px 1px;
+	padding: 2px 5px;
+	border-radius: 5px;
+}
+
+pre code {
+    padding: 0px;
 }
 
 dfn {
@@ -3426,7 +3431,7 @@ p > object:only-child {
 
 	.has-sidebar:not(.error404) #primary {
 		float: left;
-		width: 58%;
+		width: 60%;
 	}
 
 	.has-sidebar #secondary {
