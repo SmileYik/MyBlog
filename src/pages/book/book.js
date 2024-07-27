@@ -121,18 +121,33 @@ class Book extends React.Component {
       targetUrl = this.state.blog.getMarkdownBase() + targetUrl;
       otherPlace = false
     }
-    let pageUrl = "https://blog.smileyik.eu.org/?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + item.id
+
+    let pageUrl = window.location.origin + "/?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + item.id
     jQuery.ajax({
       url: targetUrl,
       async: true,
       success: function (text) {
-        if (otherPlace) {
-          text = text.replaceAll("(./", "(" + targetUrl + "/../")
-        }
+        if (otherPlace) text = text.replaceAll("(./", "(" + targetUrl + "/../");
         _this.setState({
           content: text,
           pageUrl: pageUrl
-        })
+        }, () => {
+          setTimeout(() => {
+            const hash = window.location.hash;
+            console.log(hash)
+            if (hash) {
+              const element = document.getElementById(hash.substring(1));
+              console.log(element)
+              if (element) {
+                window.scrollTo({
+                  top: element.getBoundingClientRect().top + window.scrollY - 65,
+                  left: element.getBoundingClientRect().left,
+                  behavior: "smooth"
+                });
+              }
+            }
+          }, 165);
+        });
       },
       error: function (text) {
         _this.setState({
