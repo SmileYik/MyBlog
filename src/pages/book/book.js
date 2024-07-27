@@ -49,7 +49,8 @@ class Book extends React.Component {
       iid: props.iid,
       blog: blogs[props.bid],
       header: {},
-      content: "加载中... 请稍候..."
+      content: "加载中... 请稍候...",
+      pageUrl: ""
     };
     this.onItemClick = this.onItemClick.bind(this);
     this.addHeader = this.addHeader.bind(this);
@@ -120,6 +121,7 @@ class Book extends React.Component {
       targetUrl = this.state.blog.getMarkdownBase() + targetUrl;
       otherPlace = false
     }
+    let pageUrl = "https://blog.smileyik.eu.org/?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + item.id
     jQuery.ajax({
       url: targetUrl,
       async: true,
@@ -128,12 +130,14 @@ class Book extends React.Component {
           text = text.replaceAll("(./", "(" + targetUrl + "/../")
         }
         _this.setState({
-          content: text
+          content: text,
+          pageUrl: pageUrl
         })
       },
       error: function (text) {
         _this.setState({
-          content: "加载失败, 请刷新重试."
+          content: "加载失败, 请刷新重试.",
+          pageUrl: pageUrl
         })
       },
     });
@@ -223,6 +227,16 @@ class Book extends React.Component {
         </span>
       </div>
     );
+  }
+
+  currentPageLink() {
+    // let url =
+    return (
+      <blockquote style={{width: "100%", fontSize: "12px"}}>
+        <span >当前页面地址: </span>
+        <input type="text" defaultValue={this.state.pageUrl} disabled style={{height: "20px", width: "80%", display: "inline", fontSize: "12px"}}/>
+      </blockquote>
+    )
   }
 
   navNextPage() {
@@ -328,6 +342,7 @@ class Book extends React.Component {
                     </header>
                     {MarkdownUtil.render(this.state.content)}
                   </article>
+                  {this.currentPageLink()}
                   <nav className="navigation post-navigation" role="navigation" aria-label="文章">
                     <h2 className="screen-reader-text">文章导航</h2>
                     <div className="nav-links">
