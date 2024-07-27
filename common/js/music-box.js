@@ -44,6 +44,8 @@ function MB_onMusicBoxInitNow() {
     MB_Button_ChangeMode.onclick = MB_changeMode;
     document.getElementById("MB_Button_Next").onclick = MB_nextMusic;
 
+    MB_Button_Start.style = MB_Button_ChangeMode.style = document.getElementById("MB_Button_Next").style = "cursor: pointer"
+
     if (MB_hasCookie(MB_COOKIE_NAMES.mode)) {
         MB_mode = Number(MB_getCookie(MB_COOKIE_NAMES.mode));
     }
@@ -91,6 +93,7 @@ function MB_onMusicBoxInitNow() {
     }
 
     MB_audio.addEventListener('ended', function () {
+        MB_setCookie(MB_COOKIE_NAMES.play, 1);
         MB_nextMusic();
     }, false);
 }
