@@ -3,7 +3,6 @@ import MyHeader from "../../components/Header/Header";
 import Article from "../../components/Article/article";
 import Footer from "../../components/Footer/footer";
 import {menuItems, site} from "../../utils/siteInfo";
-import LoadAllJs from "../../utils/JsLoader";
 
 const article = {
   background: "https://images.pexels.com/photos/924824/pexels-photo-924824.jpeg",
@@ -57,7 +56,6 @@ export default class Index extends React.Component {
           </div>
           <Footer />
         </div>
-        <LoadAllJs />
       </div>
     );
   }

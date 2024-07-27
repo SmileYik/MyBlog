@@ -7,7 +7,6 @@ import {Navigate} from "react-router-dom";
 import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
-import LoadAllJs from "../../utils/JsLoader";
 
 export default function BookWrapper(props) {
   const blog = blogs[props.bid];
@@ -20,7 +19,6 @@ export default function BookWrapper(props) {
       success: function (res) {
         if (res.items) {
           nav = <Fragment>
-                  <LoadAllJs />
                   <Book bid={props.bid}
                         album={res}
                         iid={props.iid}/>
@@ -134,7 +132,6 @@ class Book extends React.Component {
         }, () => {
           setTimeout(() => {
             const hash = window.location.hash;
-            console.log(hash)
             if (hash) {
               const element = document.getElementById(hash.substring(1));
               console.log(element)

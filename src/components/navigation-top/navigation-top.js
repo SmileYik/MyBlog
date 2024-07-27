@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+import LoadAllJs from '../../utils/JsLoader';
 
 function NavigationTopMenuItem(props) {
   const item = props.item;
@@ -24,6 +25,7 @@ export default class NavigationTop extends React.Component {
 
   render() {
     return (
+      <Fragment>
       <div className="navigation-top">
         <div className="wrap">
           <nav id="site-navigation" className="main-navigation" role="navigation" aria-label="顶部菜单">
@@ -45,6 +47,8 @@ export default class NavigationTop extends React.Component {
           </nav>
         </div>
       </div>
+      <LoadAllJs />
+      </Fragment>
     );
   }
 }

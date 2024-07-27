@@ -1,10 +1,10 @@
 import {Fragment} from "react";
 
 export default function LoadAllJs() {
-  setTimeout(function () {
-    loadJsByUrl("./common/js/global.js");
-    loadJsByUrl("./common/js/navigation.js");
-  }, 1000);
+  loadJs();
+  setTimeout(() => loadJs(), 165);
+  setTimeout(() => loadJs(), 265);
+  setTimeout(() => loadJs(), 1000);
   return <Fragment/>
 }
 
@@ -13,6 +13,11 @@ export default function LoadAllJs() {
 //   s.innerText = script;//"initGlobal(jQuery);initMainNavigation(jQuery); "
 //   document.body.appendChild(s);
 // }
+
+function loadJs() {
+  loadJsByUrl("./common/js/global.js");
+  loadJsByUrl("./common/js/navigation.js");
+}
 
 function loadJsByUrl(url) {
   const s = document.createElement("script");

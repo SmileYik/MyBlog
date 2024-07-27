@@ -7,7 +7,6 @@ import {blogs, menuItems, site} from "../../utils/siteInfo";
 import {Link, useParams} from "react-router-dom";
 import Index from "../index";
 import NewestPostAside from "../../components/Aside/newest-post-aside/newest-post-aside";
-import LoadAllJs from "../../utils/JsLoader";
 
 export default function AlbumsWrapper(props) {
   const params = useParams();
@@ -116,7 +115,6 @@ export class Albums extends React.Component {
           </div>
           <Footer />
         </div>
-        <LoadAllJs />
       </Fragment>
     );
   }
