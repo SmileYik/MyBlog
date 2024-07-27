@@ -14,6 +14,8 @@ function NavigationTopMenuItem(props) {
 }
 
 export default class NavigationTop extends React.Component {
+  first = true;
+
   constructor(props) {
     super(props);
     this.shapeItem = this.shapeItem.bind(this);
@@ -21,6 +23,15 @@ export default class NavigationTop extends React.Component {
 
   shapeItem() {
     return this.props.items.map((item) => <NavigationTopMenuItem key={item.id} item={item}/>);
+  }
+
+  loadJsFunction() {
+    if (this.first) {
+      this.first = false;
+      return (<LoadAllJs />);
+    } else {
+      return (<div></div>);
+    }
   }
 
   render() {
@@ -47,7 +58,7 @@ export default class NavigationTop extends React.Component {
           </nav>
         </div>
       </div>
-      <LoadAllJs />
+      {this.loadJsFunction()}
       </Fragment>
     );
   }

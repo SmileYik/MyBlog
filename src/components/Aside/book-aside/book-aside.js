@@ -6,7 +6,7 @@ export default function BookAside(props) {
   return (
     <aside id="secondary" className="widget-area" role="complementary" aria-label="博客边栏">
       <BookAsideIndexSection heads={props.heads}/>
-      <BookAsideBookSection items={props.items} onItemClick={props.onItemClick}/>
+      <BookAsideBookSection items={props.items} basedUrl={props.basedUrl}/>
     </aside>
   );
 }
@@ -35,18 +35,8 @@ function BookAsideIndexSection(props) {
   );
 }
 
-class BookAsideBookSection extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onItemClick = this.onItemClick.bind(this);
-  }
-
-  onItemClick(id) {
-    return this.props.onItemClick(id);
-  }
-
-  render() {
-    return (
+function BookAsideBookSection(props) {
+  return (
       <section className="widget widget_recent_entries">
         <h2 className="widget-title">
           文章目录
@@ -55,34 +45,24 @@ class BookAsideBookSection extends React.Component {
           <li>
             <ul>
               {
-                this.props.items.map((item) => {
-                  return <BookAsideSection key={item.id} item={item} onItemClick={this.onItemClick}/>
+                props.items.map((item) => {
+                  return <BookAsideSection key={item.id} item={item} basedUrl={props.basedUrl}/>
                 })
               }
             </ul>
           </li>
         </ul>
       </section>
-    );
-  }
+  );
 }
 
 class BookAsideSection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: props.id
+      id: props.id,
+      basedUrl: props.basedUrl
     }
-    this.onItemClick = this.onItemClick.bind(this);
-    this.onItemClickAside = this.onItemClickAside.bind(this);
-  }
-
-  onItemClick(event) {
-    this.props.onItemClick(event.target.id);
-  }
-
-  onItemClickAside(value) {
-    this.props.onItemClick(value);
   }
 
   render() {
@@ -90,12 +70,14 @@ class BookAsideSection extends React.Component {
       return (
         <li>
           <div>
-            <div onClick={this.onItemClick} id={this.props.item.id} className="contentItem">
+            <a href={this.props.basedUrl + this.props.item.id}>
+            <div id={this.props.item.id} className="contentItem">
               {this.props.item.title}
             </div>
+            </a>
             <ul>
               {this.props.item.items.map((item => {
-                return <BookAsideSection key={item.id} item={item} onItemClick={this.onItemClickAside}/>
+                return <BookAsideSection key={item.id} item={item} basedUrl={this.props.basedUrl}/>
               }))}
             </ul>
           </div>
@@ -104,11 +86,11 @@ class BookAsideSection extends React.Component {
     } else {
       return (
         <li>
-          <div onClick={this.onItemClick}
-               id={this.props.item.id}
-               className="contentItem">
+          <a href={this.props.basedUrl + this.props.item.id}>
+          <div id={this.props.item.id} className="contentItem">
             {this.props.item.title}
           </div>
+          </a>
         </li>
       );
     }

@@ -48,9 +48,10 @@ class Book extends React.Component {
       blog: blogs[props.bid],
       header: {},
       content: "加载中... 请稍候...",
-      pageUrl: ""
+      pageUrl: "",
+      copyedPageLink: "fadeout 0.8s ease forwards",
+      loaded: false
     };
-    this.onItemClick = this.onItemClick.bind(this);
     this.addHeader = this.addHeader.bind(this);
     MarkdownUtil.init(this.addHeader);
     this.bakeItems();
@@ -103,24 +104,20 @@ class Book extends React.Component {
   }
 
   scrollToTop() {
-    document.getElementsByClassName("scroll-to-top")[0].children[0].click()
+    document.getElementsByClassName("scroll-to-top")[0].children[0].click();
   }
 
   getPostContent(id) {
     const _this = this;
     const item = this.itemMap[id];
-    if (!item) {
-      return;
-    }
+    if (!item) return;
     this.scrollToTop();
-    let targetUrl = item.markdown
-    let otherPlace = true
+    let targetUrl = item.markdown;
+    let otherPlace = true;
     if (!targetUrl.startsWith("http")) {
       targetUrl = this.state.blog.getMarkdownBase() + targetUrl;
-      otherPlace = false
+      otherPlace = false;
     }
-
-    let pageUrl = window.location.origin + "/?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + item.id
     jQuery.ajax({
       url: targetUrl,
       async: true,
@@ -128,7 +125,8 @@ class Book extends React.Component {
         if (otherPlace) text = text.replaceAll("(./", "(" + targetUrl + "/../");
         _this.setState({
           content: text,
-          pageUrl: pageUrl
+          pageUrl: _this.spawnPageUrl(item.id),
+          loaded: true
         }, () => {
           setTimeout(() => {
             const hash = window.location.hash;
@@ -146,10 +144,10 @@ class Book extends React.Component {
           }, 165);
         });
       },
-      error: function (text) {
+      error: function (_) {
         _this.setState({
           content: "加载失败, 请刷新重试.",
-          pageUrl: pageUrl
+          pageUrl: _this.spawnPageUrl(item.id)
         })
       },
     });
@@ -190,34 +188,8 @@ class Book extends React.Component {
     }
   }
 
-  // searchItem() {
-  //   let flag = true;
-  //   this.setState((state) => {
-  //     if (!this.itemMap[state.iid]) {
-  //       this.getPostContent(this.firstItem.id);
-  //       flag = false;
-  //       return {
-  //         iid: this.firstItem.id
-  //       }
-  //     }
-  //   });
-  //   return flag;
-  // }
-
-  onItemClick(id) {
-    this.setState((state, props) => {
-      if (state.iid === id) {
-        return ;
-      }
-      jQuery("#" + state.iid).removeClass("contentItemPick");
-      jQuery("#" + id).addClass("contentItemPick");
-      this.getPostContent(id);
-      this.heads = [];
-      return {
-        iid: id,
-        content: "加载中... 请稍候..."
-      }
-    })
+  spawnPageUrl(itemId) {
+    return window.location.origin + "/?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + itemId
   }
 
   getHeaderMeta(meta) {
@@ -231,9 +203,9 @@ class Book extends React.Component {
         <span className="byline">
           由
           <span className="author vcard">
-            <a className="url fn n" id="postAuthor">
+            <span className="url fn n" id="postAuthor">
               {meta.author}
-            </a>
+            </span>
           </span>
           编辑
         </span>
@@ -242,82 +214,66 @@ class Book extends React.Component {
   }
 
   currentPageLink() {
+    if (this.state.loaded)
+      return (
+        <blockquote style={{width: "100%", fontSize: "12px"}}>
+          <span >当前页面地址: </span>
+          <input type="text" readOnly
+                defaultValue={this.state.pageUrl}
+                style={{height: "20px", width: "80%", display: "inline", fontSize: "12px", cursor: "pointer"}}
+                onClick={() => {
+                  navigator.clipboard.writeText(this.state.pageUrl)
+                  this.setState({
+                    copyedPageLink: "fadein 0.8s ease forwards"
+                  }, () => setTimeout(() => {
+                      this.setState({
+                        copyedPageLink: "fadeout 0.8s ease forwards"
+                      });
+                    }, 3000));
+                }}/>
+
+          <span style={{animation: this.state.copyedPageLink}}> √ </span>
+        </blockquote>
+      )
+    return <Fragment/>
+  }
+
+  navContent(screenRenderText, subtitle, title, idx, titleFlag) {
     return (
-      <blockquote style={{width: "100%", fontSize: "12px"}}>
-        <span >当前页面地址: </span>
-        <input type="text" defaultValue={this.state.pageUrl} disabled style={{height: "20px", width: "80%", display: "inline", fontSize: "12px"}}/>
-      </blockquote>
-    )
+      <Fragment>
+        <span className="screen-reader-text" >{screenRenderText}</span>
+        <span aria-hidden="true" className="nav-subtitle">{subtitle}</span>
+        <span className="nav-title">
+          {titleFlag ? title : this.itemMap[this.itemList[idx]].title}
+        </span>
+      </Fragment>
+    );
   }
 
   navNextPage() {
     const index = this.itemList.indexOf(this.state.iid);
-    if (index === this.itemList.length - 1) {
-      return (
-        <div className="nav-next">
-          <a rel="next" href="#" onClick={(event) => {
-            event.preventDefault();
-          }} style={{cursor: "not-allowed"}}>
-            <span className="screen-reader-text">下一篇文章</span>
-            <span aria-hidden="true" className="nav-subtitle">下一篇</span>
-            <span className="nav-title" id="navNextTitle">
-              已经是最后一篇啦!
-            </span>
-          </a>
-        </div>
-      );
-    } else {
-      const iid = this.itemList[index + 1];
-      return (
-        <div className="nav-next">
-          <a rel="next" href="#" onClick={(event) => {
-            event.preventDefault();
-            this.onItemClick(iid);
-          }}>
-            <span className="screen-reader-text">下一篇文章</span>
-            <span aria-hidden="true" className="nav-subtitle">下一篇</span>
-            <span className="nav-title" id="navNextTitle">
-              {this.itemMap[iid].title}
-            </span>
-          </a>
-        </div>
-      );
-    }
+    const flag = index === this.itemList.length - 1;
+    const inside = this.navContent("下一篇文章", "下一篇", "已经是最后一篇啦", index + 1, flag);
+
+    return (
+      <div className="nav-next"> { flag ?
+          <div rel="next" style={{cursor: "not-allowed"}}> {inside} </div> :
+          <a rel="next" href={this.spawnPageUrl(this.itemList[index + 1])}> {inside} </a>
+      }</div>
+    );
   }
 
   navPrevPage() {
     const index = this.itemList.indexOf(this.state.iid);
-    if (index === 0) {
-      return (
-        <div className="nav-previous">
-          <a rel="prev" href="#" style={{cursor: "not-allowed"}} onClick={(event) => {
-            event.preventDefault();
-          }}>
-            <span className="screen-reader-text" >上一篇文章</span>
-            <span aria-hidden="true" className="nav-subtitle">上一篇</span>
-            <span className="nav-title">
-              已经到开头啦!
-            </span>
-          </a>
-        </div>
-      );
-    } else {
-      const iid = this.itemList[index - 1];
-      return (
-        <div className="nav-previous">
-          <a rel="prev" href="#" onClick={(event) => {
-            event.preventDefault();
-            this.onItemClick(iid);
-          }}>
-            <span className="screen-reader-text" >上一篇文章</span>
-            <span aria-hidden="true" className="nav-subtitle">上一篇</span>
-            <span className="nav-title">
-              {this.itemMap[iid].title}
-            </span>
-          </a>
-        </div>
-      );
-    }
+    const flag = index === 0;
+    const inside = this.navContent("上一篇文章", "上一篇", "已经到开头啦", index - 1, flag);
+
+    return (
+      <div className="nav-previous">{ flag ?
+          <div rel="prev" style={{cursor: "not-allowed"}}> {inside} </div> :
+          <a rel="prev" href={this.spawnPageUrl(this.itemList[index - 1])}> {inside} </a>
+      }</div>
+    );
   }
 
   render() {
@@ -347,9 +303,7 @@ class Book extends React.Component {
                   <article className="post type-post status-publish format-standard hentry category-uncategorized">
                     <header className="entry-header">
                       {this.getHeaderMeta(header.meta)}
-                      <h1 className="entry-title">
-                        {header.title}
-                      </h1>
+                      <h1 className="entry-title">{header.title}</h1>
                     </header>
                     {MarkdownUtil.render(this.state.content)}
                   </article>
@@ -363,7 +317,7 @@ class Book extends React.Component {
                   </nav>
                 </main>
               </div>
-              <BookAside items={this.state.album.items} onItemClick={this.onItemClick} heads={this.heads} />
+              <BookAside items={this.state.album.items} heads={this.heads} basedUrl={this.spawnPageUrl("")} />
             </div>
           </div>
           <Footer />
