@@ -1,0 +1,46 @@
+#music-panel {
+    position: fixed;
+    bottom: 0px;
+    display: block;
+    max-height: 0;
+    width: 95vw;
+    background: #333;
+    padding: 10px 50px 0px 50px;
+    border-radius: 3px;
+    border-top: solid 1px #333;
+    left: 2.5vw;
+
+    transition:
+        max-height 0.35s ease,
+        background 0.265s linear,
+        border-top 0.265s linear,
+        padding 0.265s linear,
+        left 0.265s linear,
+        border-radius 0.265s linear,
+        width 0.265s linear;
+}
+
+#music-panel:hover {
+    height: auto;
+    max-height: 500px;
+    background: #222;
+    border-top: solid 1px #eee6;
+    padding: 25px 50px 0px 50px;
+    width: 100vw;
+    left: 0px;
+    border-radius: 10px;
+}
+
+#music-panel-fixed {
+    position: fixed;
+    bottom: 0px;
+    display: block;
+    height: auto;
+    max-height: 1000px;
+    background: #222;
+    border-top: solid 1px #eee6;
+    padding: 25px 50px 0px 50px;
+    width: 100vw;
+    left: 0px;
+    border-radius: 10px;
+}
