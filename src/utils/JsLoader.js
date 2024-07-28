@@ -2,9 +2,6 @@ import {Fragment} from "react";
 
 export default function LoadAllJs() {
   loadJs();
-  setTimeout(() => loadJs(), 165);
-  setTimeout(() => loadJs(), 265);
-  setTimeout(() => loadJs(), 1000);
   return <Fragment/>
 }
 
@@ -16,7 +13,6 @@ export default function LoadAllJs() {
 
 function loadJs() {
   loadJsByUrl("./common/js/global.js");
-  loadJsByUrl("./common/js/navigation.js");
 }
 
 function loadJsByUrl(url) {

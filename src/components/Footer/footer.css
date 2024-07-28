@@ -11,24 +11,25 @@
     left: 2.5vw;
 
     transition:
-        max-height 0.35s ease,
-        background 0.265s linear,
-        border-top 0.265s linear,
-        padding 0.265s linear,
-        left 0.265s linear,
-        border-radius 0.265s linear,
-        width 0.265s linear;
+        max-height .665s linear,
+        background .5s linear,
+        border-top .5s linear,
+        padding .5s linear,
+        left .5s linear,
+        border-radius .5s linear,
+        width .5s linear;
 }
 
 #music-panel:hover {
     height: auto;
-    max-height: 500px;
+    max-height: 400px;
     background: #222;
     border-top: solid 1px #eee6;
     padding: 25px 50px 0px 50px;
     width: 100vw;
     left: 0px;
     border-radius: 10px;
+    transition-delay: .5s;
 }
 
 #music-panel-fixed {
@@ -36,11 +37,41 @@
     bottom: 0px;
     display: block;
     height: auto;
-    max-height: 1000px;
+    max-height: 400px;
     background: #222;
     border-top: solid 1px #eee6;
     padding: 25px 50px 0px 50px;
     width: 100vw;
     left: 0px;
     border-radius: 10px;
+}
+
+#music-panel .warp,
+#music-panel-fixed .warp {
+    width: 1000px;
+    padding: 0px 2em;
+    margin: 0px auto;
+}
+
+@media screen and (max-width:768px) {
+    #music-panel {
+        padding: 10px 20px 0px 20px !important;
+    }
+
+    #music-panel-fixed {
+        padding: 25px 20px 0px 20px;
+    }
+
+    #music-panel .warp,
+    #music-panel-fixed .warp {
+        width: 92vw !important;
+        padding: 0 !important;
+    }
+
+    #music-panel .warp div,
+    #music-panel-fixed .warp div {
+        margin: 0 auto;
+        width: 325px;
+    }
+
 }

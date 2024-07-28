@@ -6,7 +6,6 @@ import jQuery from "jquery";
 import {MarkdownUtil} from "../../utils/MarkdownUtil";
 import {ArticleHeaderMetaSwitchTime} from "../../components/Article/article";
 import SimpleMdeReact from "react-simplemde-editor";
-import LoadAllJs from "../../utils/JsLoader";
 import "easymde/dist/easymde.min.css";
 import "./easymde.dark.css"
 import "./post-tool.css"
@@ -619,19 +618,6 @@ export default class PostTool extends React.Component {
     )
   }
 
-  renderJs() {
-    if (this.state.firstRender) {
-      setTimeout(() => {
-        this.setState({
-          "firstRender": false
-        })
-      }, 100)
-      return <LoadAllJs/>
-    } else {
-      return <Fragment/>
-    }
-  }
-
   render() {
     return (
       <div className={"site"}>
@@ -664,7 +650,6 @@ export default class PostTool extends React.Component {
           </div>
           <Footer/>
         </div>
-        {this.renderJs()}
       </div>
     );
   }

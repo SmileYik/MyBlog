@@ -46,7 +46,7 @@ class MusicBox extends React.Component {
 
     return (
       <div id={this.state.fixedMusicBox ? "music-panel-fixed" : "music-panel"}>
-        <div className="warp" style={{width: "1000px", padding: "0 2em", margin: "0 auto"}}>
+        <div className="warp">
         <div className="widget-column footer-widget-1">
           <section id="custom_html-3" className="widget_text widget widget_custom_html">
             <h2 className="widget-title">
