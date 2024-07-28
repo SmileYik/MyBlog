@@ -12,10 +12,7 @@
     el.style.backgroundAttachment='fixed';isSupported=('fixed'===el.style.backgroundAttachment);return isSupported;}
   catch(e){return false;}}
   $(document).ready(function(){if($navigation.length){setNavProps();adjustScrollClass();}
-    if($menuScrollDown.length){if($('body').hasClass('admin-bar')){menuTop-=32;}
-      if($('body').hasClass('blog')){menuTop-=30;}
-      if(!$navigation.length){navigationOuterHeight=0;}
-      $menuScrollDown.click(function(e){e.preventDefault();$(window).scrollTo('#primary',{duration:600,offset:{top:menuTop-navigationOuterHeight}});});}
+    if($menuScrollDown.length){if($('body').hasClass('blog')){menuTop-=30;}if(!$navigation.length){navigationOuterHeight=0;}}
     adjustHeaderHeight();setQuotesIcon();belowEntryMetaClass('blockquote.alignleft, blockquote.alignright');if(true===supportsInlineSVG()){document.documentElement.className=document.documentElement.className.replace(/(\s*)no-svg(\s*)/,'$1svg$2');}
     if(true===supportsFixedBackground()){document.documentElement.className+=' background-fixed';}});if($navigation.length){$(window).on('scroll',function(){adjustScrollClass();adjustHeaderHeight();});$(window).resize(function(){setNavProps();setTimeout(adjustScrollClass,500);});}
   $(window).resize(function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){belowEntryMetaClass('blockquote.alignleft, blockquote.alignright');},300);setTimeout(adjustHeaderHeight,1000);});$(document).on('wp-custom-header-video-loaded',function(){$body.addClass('has-header-video');});})(jQuery);
