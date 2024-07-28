@@ -82,10 +82,10 @@ function MB_onMusicBoxInitNow() {
         }
     }
 
-    MB_audio.onpause = function (e) {
-        MB_setCookie(MB_COOKIE_NAMES.play, 0);
-        MB_Button_Start.innerText = "播放";
-    }
+    // MB_audio.onpause = function (e) {
+    //     MB_setCookie(MB_COOKIE_NAMES.play, 0);
+    //     MB_Button_Start.innerText = "播放";
+    // }
 
     MB_audio.onplaying = function (e) {
         MB_setCookie(MB_COOKIE_NAMES.play, 1);

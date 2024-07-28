@@ -84,4 +84,5 @@ blockquote {
     overflow: inherit;
     background-color: #333;
     border-radius: 0 10px 10px 0;
+    margin: 16px 0;
 }
