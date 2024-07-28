@@ -2,6 +2,15 @@
   {
     "album": "MinecraftPost",
     "author": "Smile Yik",
+    "id": "NumericalRequirements-Thirst",
+    "tag": "Bukkit,Java,Minecraft,Lua,RealSurvival,",
+    "title": "NumericalRequirements - 口渴值拓展",
+    "modifyTime": 1722166236000,
+    "postTime": 1722166236000
+  },
+  {
+    "album": "MinecraftPost",
+    "author": "Smile Yik",
     "id": "NumericalRequirements-Effect",
     "tag": "Bukkit,Java,Minecraft,Lua,RealSurvival,",
     "title": "NumericalRequirements - Effect 效果",
@@ -34,14 +43,5 @@
     "title": "SkyrimAlchemy - 炼金药水价格模拟器",
     "modifyTime": 1673451015358,
     "postTime": 1673448597240
-  },
-  {
-    "album": "Games",
-    "author": "SmileYik",
-    "id": "play-game-on-linux",
-    "tag": ",插件,加密,Minecraft,",
-    "title": "在Linux下进行游戏",
-    "modifyTime": 1668355196604,
-    "postTime": 1668354341170
   }
 ]
