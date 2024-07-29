@@ -31,6 +31,8 @@
     border-right: solid #3e403c 3px;
     text-align: right;
     border-radius: 0px !important;
+    overflow: hidden;
+    max-height: 90%;
 }
 
 .code-line-number span {
@@ -71,6 +73,31 @@ span[line-row]>span::before {
 .code-pre pre {
     border-radius: 10px;
     padding: 0.8em;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.code-pre-show-all pre {
+    max-height: none !important;
+    overflow: auto !important;
+}
+
+.code-pre-show-all .code-line-number {
+    max-height: 100% !important;
+}
+
+.code-pre-show-all .code-pre-show-all-btn {
+    display: none !important;
+}
+
+.code-pre-show-all-btn {
+    position: absolute;
+    bottom: 0;
+    opacity: 0.85;
+    width: 100%;
+    border-radius: 10px;
+    background: #ccc !important;
+    color: #555 !important;
 }
 
 @font-face {

@@ -40,7 +40,9 @@ export const MarkdownUtil = {
       }
       lineNumber += "</span></code>";
       // 将代码与行号及工具栏合并.
-      return "<div class='code-pre'><pre>" + toolBar + lineNumber + oriCode + "</pre></div>\n"
+      const codePre = "<pre>" + toolBar + lineNumber + oriCode + "</pre>";
+      const showAllButton = "<button class='code-pre-show-all-btn' onclick='this.parentElement.classList.add(\"code-pre-show-all\")'>显示更多</button>"
+      return "<div class='code-pre'>" + codePre + (number >= 12 ? showAllButton : "") + "</div>\n"
     }
     marked.setOptions({
       renderer: render,
