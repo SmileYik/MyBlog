@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.a3fdfe86.css",
+    "main.css": "/static/css/main.69457c13.css",
     "main.js": "/static/js/main.ee55866d.js",
     "static/js/27.afb6aef8.chunk.js": "/static/js/27.afb6aef8.chunk.js",
     "static/media/DejaVuSansMono.ttf": "/static/media/DejaVuSansMono.b047086787f1fd8fd336.ttf",
@@ -8,7 +8,7 @@
     "index.html": "/index.html"
   },
   "entrypoints": [
-    "static/css/main.a3fdfe86.css",
+    "static/css/main.69457c13.css",
     "static/js/main.ee55866d.js"
   ]
 }
