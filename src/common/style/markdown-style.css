@@ -5,18 +5,23 @@
     top: 8px;
     animation: fadeout 0.8s ease forwards;
     background: rgba(34, 34, 34, 0.4);
-    width: 32px;
     height: 32px;
     line-height: 32px;
     border-radius: 10px;
+}
+
+.code-tool-line-item {
+    display: inline-block;
+    margin-left: 4px;
+    margin-right: 4px;
+    cursor: pointer;
 }
 
 .code-pre:hover .code-tool-line {
     animation: fadein 0.8s ease forwards;
 }
 
-.code-tool-line-copy {
-    cursor: pointer;
+.code-tool-line-item-icon {
     opacity: 1;
     margin: 8px;
 }
@@ -72,6 +77,16 @@ span[line-row]>span::before {
     font-family: "DejaVuSansMono", monospace;
 }
 
+.code-hide {
+    display: none;
+    animation: fadeout 0.8s linear forwards;
+}
+
+.code-pre-show-all .code-hide {
+    display: inline-block !important;
+    animation: fadein 0.8s linear forwards;
+}
+
 .code-pre pre {
     border-radius: 10px;
     padding: 0.8em;
@@ -83,7 +98,8 @@ span[line-row]>span::before {
 
 .code-pre-show-all pre {
     max-height: 16500px !important;
-    overflow: auto !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
 
     transition: max-height 20.625s linear;
 }
