@@ -108,15 +108,14 @@ span[line-row]>span::before {
     border-radius: 10px;
     padding: 0.8em;
     max-height: 300px;
-    overflow: hidden;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
 
     transition: max-height 0.65s ease;
 }
 
 .code-pre-show-all pre {
     max-height: 16500px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
 
     transition: max-height 20.625s linear;
 }
@@ -134,9 +133,9 @@ span[line-row]>span::before {
     bottom: 0;
     opacity: 0.85;
     width: 100%;
-    border-radius: 10px;
     background: #ccc !important;
     color: #555 !important;
+    border-radius: 0 0 10px 10px;
 }
 
 @font-face {
