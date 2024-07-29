@@ -33,6 +33,8 @@
     border-radius: 0px !important;
     overflow: hidden;
     max-height: 90%;
+
+    transition: max-height 0.65s linear;
 }
 
 .code-line-number span {
@@ -75,11 +77,15 @@ span[line-row]>span::before {
     padding: 0.8em;
     max-height: 300px;
     overflow: hidden;
+
+    transition: max-height 3s linear;
 }
 
 .code-pre-show-all pre {
-    max-height: none !important;
+    max-height: 16500px !important;
     overflow: auto !important;
+
+    transition: max-height 20.625s linear;
 }
 
 .code-pre-show-all .code-line-number {
