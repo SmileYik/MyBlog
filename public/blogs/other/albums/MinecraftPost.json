@@ -185,6 +185,17 @@
           "markdown": "https://raw.githubusercontent.com/SmileYik/NumericalRequirements/master/docs/Thirst.md",
           "modifyTime": 1722166236000,
           "postTime": 1722166236000
+        },
+        {
+          "id": "NumericalRequirements-MultiBlockCraft",
+          "author": "Smile Yik",
+          "items": [],
+          "tag": "Bukkit,Java,Minecraft,Lua,RealSurvival,",
+          "title": "NumericalRequirements - 多方块工艺拓展",
+          "prev": "进来看全文",
+          "markdown": "https://raw.githubusercontent.com/SmileYik/NumericalRequirements/master/docs/MultiBlockCraft.md",
+          "modifyTime": 1722236932813,
+          "postTime": 1722236932813
         }
       ],
       "tag": "Bukkit,Java,Minecraft,Lua,RealSurvival,",
