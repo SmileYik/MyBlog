@@ -10,15 +10,32 @@
     border-radius: 10px;
 }
 
+.code-tool-line-foot {
+    bottom: 0px;
+    top: auto;
+    animation: fadeout 0.8s ease forwards !important;
+    width: 32px;
+    height: auto;
+    right: -36px;
+    background: #333;
+}
+
+.code-tool-line-foot .code-tool-line-item {
+    display: block !important;
+    margin: 4px 0;
+}
+
 .code-tool-line-item {
     display: inline-block;
     margin-left: 4px;
     margin-right: 4px;
     cursor: pointer;
+    width: 32px !important;
+    height: 32px !important;
 }
 
 .code-pre:hover .code-tool-line {
-    animation: fadein 0.8s ease forwards;
+    animation: fadein 0.8s ease forwards !important;
 }
 
 .code-tool-line-item-icon {
@@ -93,7 +110,7 @@ span[line-row]>span::before {
     max-height: 300px;
     overflow: hidden;
 
-    transition: max-height 3s linear;
+    transition: max-height 0.65s ease;
 }
 
 .code-pre-show-all pre {

@@ -11,6 +11,17 @@ export const MarkdownUtil = {
                 "    <path fill='#bbb' fill-rule='evenodd' d='M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z'></path><path fill='#bbb' fill-rule='evenodd' d='M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z'></path>\n" +
                 "</svg>",
   hideIcon: '<svg t="1722243309093" class="code-tool-line-item-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1586" width="16" height="16"><path fill="#bbb" d="M153.6 473.6h716.8v76.8H153.6v-76.8z" p-id="1587"></path></svg>',
+  spawnToolBar(code, otherClass = "") {
+    return "<div class='code-tool-line " + otherClass + "'>" +
+              "<div class='code-tool-line-item' onclick='copyCode.copyCode(this)' title='复制'>" +
+                this.codeCopyIcon +
+                "<pre class='code-tool-line-copy-content' hidden>" + code + "</pre>" +
+              "</div>" +
+              "<div class='code-tool-line-item code-hide' onclick='const parent = this.parentElement.parentElement.parentElement; parent.className=\"code-pre\"; window.scrollTo({top: parent.getBoundingClientRect().top + window.scrollY - 65,behavior: \"smooth\"})' title='隐藏代码'>" +
+                this.hideIcon +
+              "</div>" +
+            "</div>";
+  },
   init: function (headCount) {
     const render = new marked.Renderer();
     render.heading = function (text, level) {
@@ -28,17 +39,6 @@ export const MarkdownUtil = {
       const needHideCode = number >= 12;
       let oriCode = this.defaultRenderer.code(code, infostring, escaped)
       oriCode = "<div class='ori-code'>" + oriCode.substring(5, oriCode.length - 7) + "</div>"
-      // tool bar
-      let toolBar =
-        "<div class='code-tool-line'>" +
-          "<div class='code-tool-line-item' onclick='copyCode.copyCode(this)' title='复制'>" +
-            this.codeCopyIcon +
-            "<pre class='code-tool-line-copy-content' hidden>" + code + "</pre>" +
-          "</div>" +
-          "<div class='code-tool-line-item code-hide' onclick='this.parentElement.parentElement.parentElement.className=\"code-pre\"' title='隐藏代码'>" +
-            this.hideIcon +
-          "</div>" +
-        "</div>"
       // 生成行号
       let lineNumber = "<code class='code-line-number' style='background: none'><span line-row>"
       for (let i = 1; i <= number; ++i) {
@@ -46,7 +46,7 @@ export const MarkdownUtil = {
       }
       lineNumber += "</span></code>";
       // 将代码与行号及工具栏合并.
-      const codePre = "<pre>" + toolBar + lineNumber + oriCode + "</pre>";
+      const codePre = "<pre>" + this.spawnToolBar(code, "") + lineNumber + oriCode + this.spawnToolBar(code, "code-tool-line-foot code-hide") + "</pre>";
       const showAllButton = "<button class='code-pre-show-all-btn' onclick='this.parentElement.classList.add(\"code-pre-show-all\")'>显示更多</button>"
       return "<div class='code-pre'>" + codePre + (needHideCode ? showAllButton : "") + "</div>\n"
     }
