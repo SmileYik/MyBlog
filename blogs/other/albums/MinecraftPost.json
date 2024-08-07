@@ -143,6 +143,17 @@
       "author": "Smile Yik",
       "items": [
         {
+          "id": "NumericalRequirements-Config",
+          "author": "Smile Yik",
+          "items": [],
+          "tag": "Bukkit,Java,Minecraft,Lua,RealSurvival,",
+          "title": "NumericalRequirements - 核心配置",
+          "prev": "进来看全文",
+          "markdown": "https://raw.githubusercontent.com/SmileYik/NumericalRequirements/master/docs/Config.yml.md",
+          "modifyTime": 1723005627000,
+          "postTime": 1723005627000
+        },
+        {
           "id": "NumericalRequirements-Effect",
           "author": "Smile Yik",
           "items": [],
