@@ -66,6 +66,37 @@
 
 .code-pre {
     position: relative;
+    max-width: 600px;
+}
+
+.code-hide-normal {
+    display: none;
+    animation: fadeout 0.8s linear forwards;
+}
+
+.code-expand {
+    z-index: 1;
+    width: 1000px;
+    max-width: 1000px;
+    transition: max-width 0.65s linear;
+}
+
+.code-expand .code-hide-normal {
+    display: inline-block !important;
+    animation: fadein 0.8s linear forwards;
+}
+
+.code-expand .code-hide-expand {
+    display: none !important;
+    animation: fadeout 0.8s linear forwards;
+}
+
+.code-expand .code-tool-line-foot .code-hide-normal {
+    display: block !important;
+}
+
+.code-tool-line-foot .code-hide-normal {
+    display: none !important;
 }
 
 @keyframes fadeout {
