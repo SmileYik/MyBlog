@@ -22,6 +22,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/QuickStart.md",
                     "modifyTime": 1751283877000,
                     "postTime": 1751283877000
+                },
+                {
+                    "id": "zh-EventListener",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - 事件监听器",
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/EventListener.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
+                    "modifyTime": 1751296655000,
+                    "postTime": 1751296655000
                 }
             ]
         },
@@ -45,6 +56,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/QuickStart.md",
                     "modifyTime": 1751283877000,
                     "postTime": 1751283877000
+                },
+                {
+                    "id": "en-EventListener",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - Event Listener",
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/EventListener.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
+                    "modifyTime": 1751296655000,
+                    "postTime": 1751296655000
                 }
             ]
         }
