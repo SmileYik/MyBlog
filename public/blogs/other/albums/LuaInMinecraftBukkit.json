@@ -1,0 +1,58 @@
+{
+    "id": "LuaInMinecraftBukkit",
+    "author": "Smile Yik",
+    "items": [
+        {
+            "id": "zh",
+            "author": "Smile Yik",
+            "tag": "Bukkit,Java,Minecraft,Lua,",
+            "title": "LuaInMinecraftBukkit II - 文档",
+            "prev": "目录占位符...",
+            "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+            "modifyTime": 1751283877000,
+            "postTime": 1751283877000,
+            "items": [
+                {
+                    "id": "zh-QuickStart",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - 快速开始",
+                    "prev": "> 最后更新于2025年06月29日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/QuickStart.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/QuickStart.md",
+                    "modifyTime": 1751283877000,
+                    "postTime": 1751283877000
+                }
+            ]
+        },
+        {
+            "id": "en",
+            "author": "Smile Yik",
+            "tag": "Bukkit,Java,Minecraft,Lua,",
+            "title": "LuaInMinecraftBukkit II - English Docs",
+            "prev": "placeholders...",
+            "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+            "modifyTime": 1751283877000,
+            "postTime": 1751283877000,
+            "items": [
+                {
+                    "id": "en-QuickStart",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - Quick Start",
+                    "prev": "> Last updated on June 30, 2025 | [History](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/en/QuickStart.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/QuickStart.md",
+                    "modifyTime": 1751283877000,
+                    "postTime": 1751283877000
+                }
+            ]
+        }
+    ],
+    "tag": "Bukkit,Java,Minecraft,Lua,",
+    "title": "LuaInMinecraftBukkit II - 专注于 Native Lua 的脚本引擎",
+    "prev": "占位符",
+    "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+    "modifyTime": 1722079246000,
+    "postTime": 1722079246000
+}

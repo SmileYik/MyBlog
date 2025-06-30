@@ -90,8 +90,9 @@ class Album extends React.Component {
   }
 
   render() {
+    const basedUrl = "?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post="
     if (this.state.nav) {
-      return <Navigate to={"?blog=" + this.state.blog.id + "&album=" + this.state.album.id + "&post=" + this.state.nav}/>
+      return <Navigate to={basedUrl + this.state.nav}/>
     }
     return (
       <Fragment>
@@ -105,7 +106,8 @@ class Album extends React.Component {
                 </main>
               </div>
               <BookAside items={this.state.album.items}
-                         onItemClick={this.onItemClick} />
+                         onItemClick={this.onItemClick}
+                         basedUrl={basedUrl} />
             </div>
           </div>
           <Footer />
