@@ -33,6 +33,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
                     "modifyTime": 1751296655000,
                     "postTime": 1751296655000
+                },
+                {
+                    "id": "zh-Command",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - 注册指令",
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/Command.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
+                    "modifyTime": 1751376585000,
+                    "postTime": 1751376585000
                 }
             ]
         },
@@ -67,6 +78,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
                     "modifyTime": 1751296655000,
                     "postTime": 1751296655000
+                },
+                {
+                    "id": "en-Command",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - Register Command",
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/Command.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
+                    "modifyTime": 1751376585000,
+                    "postTime": 1751376585000
                 }
             ]
         }
