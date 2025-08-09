@@ -74,10 +74,10 @@
                     "items": [],
                     "tag": "Bukkit,Java,Minecraft,Lua,",
                     "title": "LuaInMinecraftBukkit II - Event Listener",
-                    "prev": "> Last updated on July 03, 2025 | [Histroy](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/en/EventListener.md)",
-                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/EventListener.md",
-                    "modifyTime": 1751530492000,
-                    "postTime": 1751530492000
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/EventListener.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
+                    "modifyTime": 1751296655000,
+                    "postTime": 1751296655000
                 },
                 {
                     "id": "en-Command",
@@ -85,10 +85,10 @@
                     "items": [],
                     "tag": "Bukkit,Java,Minecraft,Lua,",
                     "title": "LuaInMinecraftBukkit II - Register Command",
-                    "prev": "> Last updated on July 03, 2025 | [Histroy](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/en/Command.md)",
-                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/Command.md",
-                    "modifyTime": 1751530492000,
-                    "postTime": 1751530492000
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/Command.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
+                    "modifyTime": 1751376585000,
+                    "postTime": 1751376585000
                 }
             ]
         }
