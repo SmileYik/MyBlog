@@ -8,7 +8,7 @@
             "tag": "Bukkit,Java,Minecraft,Lua,",
             "title": "LuaInMinecraftBukkit II - 文档",
             "prev": "目录占位符...",
-            "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+            "markdown": "LuaInMinecraftBukkit/placeholder.md",
             "modifyTime": 1751283877000,
             "postTime": 1751283877000,
             "items": [
@@ -64,7 +64,7 @@
             "tag": "Bukkit,Java,Minecraft,Lua,",
             "title": "LuaInMinecraftBukkit II - English Docs",
             "prev": "placeholders...",
-            "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+            "markdown": "LuaInMinecraftBukkit/placeholder.md",
             "modifyTime": 1751283877000,
             "postTime": 1751283877000,
             "items": [
@@ -86,7 +86,7 @@
                     "tag": "Bukkit,Java,Minecraft,Lua,",
                     "title": "LuaInMinecraftBukkit II - Event Listener",
                     "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/EventListener.md)",
-                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/EventListener.md",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/EventListener.md",
                     "modifyTime": 1751296655000,
                     "postTime": 1751296655000
                 },
@@ -96,8 +96,8 @@
                     "items": [],
                     "tag": "Bukkit,Java,Minecraft,Lua,",
                     "title": "LuaInMinecraftBukkit II - Register Command",
-                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/Command.md)",
-                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
+                    "prev": "> 最后更新于2025年06月30日 | [历史记录](https://github.com/SmileYik/LuaInMinecraftBukkitII/commits/gh-page/docs/en/Command.md)",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/Command.md",
                     "modifyTime": 1751376585000,
                     "postTime": 1751376585000
                 },
@@ -118,7 +118,7 @@
     "tag": "Bukkit,Java,Minecraft,Lua,",
     "title": "LuaInMinecraftBukkit II - 专注于 Native Lua 的脚本引擎",
     "prev": "占位符",
-    "markdown": "Minecraft/LuaInMinecraftBukkit/placeholder.md",
+    "markdown": "LuaInMinecraftBukkit/placeholder.md",
     "modifyTime": 1722079246000,
     "postTime": 1722079246000
 }
