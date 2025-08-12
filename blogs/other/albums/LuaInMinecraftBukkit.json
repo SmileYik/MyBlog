@@ -44,6 +44,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
                     "modifyTime": 1751376585000,
                     "postTime": 1751376585000
+                },
+                {
+                    "id": "zh-GlobalVariable",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - 全局变量",
+                    "prev": "> 最后更新于2025年08月12日 | [历史记录]\n\n> 此页面内容对应于 LuaInMinecraftBukkit II 插件的最新版本 **1.0.7**, 历史文档可以插件此页面的历史记录\n\n在 Lua 部分拥有一些全局变量, 以方便您让 Lua 与 Bukkit 服务器之间的交互更为简单.",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/GlobalVariable.md",
+                    "modifyTime": 1755013071000,
+                    "postTime": 1755013071000
                 }
             ]
         },
@@ -89,6 +100,17 @@
                     "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/Command.md",
                     "modifyTime": 1751376585000,
                     "postTime": 1751376585000
+                },
+                {
+                    "id": "en-GlobalVariable",
+                    "author": "Smile Yik",
+                    "items": [],
+                    "tag": "Bukkit,Java,Minecraft,Lua,",
+                    "title": "LuaInMinecraftBukkit II - Global Variable",
+                    "prev": "> Last updated on August 12, 2025 | [History][History]\n\n> The content of this page corresponds to the latest version of the LuaInMinecraftBukkit II plugin, **1.0.7**. For historical documentation, please check the historical records of this page.\n\n> **!! The content of this file has machine translation !!** | [Origin](./../GlobalVariable.md)\n\nThere are some global variables in the Lua section to make it easier for you to interact between Lua and the Bukkit server.\n",
+                    "markdown": "https://raw.githubusercontent.com/SmileYik/LuaInMinecraftBukkitII/refs/heads/gh-page/docs/en/GlobalVariable.md",
+                    "modifyTime": 1755013071000,
+                    "postTime": 1755013071000
                 }
             ]
         }
