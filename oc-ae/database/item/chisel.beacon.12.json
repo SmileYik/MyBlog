@@ -1,0 +1,1 @@
+{"id":"i~chisel~beacon~12","imageFilePath":"item/chisel/beacon~12.png","internalName":"beacon","itemDamage":12,"itemId":2005,"localizedName":"信标","maxDamage":0,"maxStackSize":64,"modId":"chisel","nbt":"","tooltip":"信标 (#2005/12)\n淡蓝定向信标\n生物不会在这个方块上生成","unlocalizedName":"tile.chisel.beacon"}

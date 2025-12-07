@@ -1,0 +1,1 @@
+{"id":"i~Railcraft~machine.beta~9","imageFilePath":"item/Railcraft/machine.beta~9.png","internalName":"machine.beta","itemDamage":9,"itemId":1069,"localizedName":"工业蒸汽引擎","maxDamage":0,"maxStackSize":64,"modId":"Railcraft","nbt":"","tooltip":"工业蒸汽引擎 (#1069/9)\n输出为80 RF/t\n每秒消耗 800L 蒸汽\n生物不会在这个方块上生成","unlocalizedName":"tile.railcraft.machine.beta.engine.steam.high"}
