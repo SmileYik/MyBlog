@@ -1,0 +1,1 @@
+{"id":"i~miscutils~blockFishTrap~0","imageFilePath":"item/miscutils/blockFishTrap~0.png","internalName":"blockFishTrap","itemDamage":0,"itemId":3534,"localizedName":"捕鱼者","maxDamage":0,"maxStackSize":64,"modId":"miscutils","nbt":"","tooltip":"捕鱼者 (#3534)\n这个陷阱周围的水方块越多，捕鱼速度越快\n也可以与最多4个其他渔栅并排放置\n至少需要两个面接触水\n1/1000的几率产出三倍战利品。","unlocalizedName":"tile.blockFishTrap"}
