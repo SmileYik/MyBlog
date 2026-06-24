@@ -1,0 +1,347 @@
+{
+    "vinculum": {
+        "description": "Trap, Imprison",
+        "name": "Vinculum",
+        "primal": false
+    },
+    "mortuus": {
+        "description": "Death",
+        "name": "Mortuus",
+        "primal": false
+    },
+    "potentia": {
+        "description": "Energy",
+        "name": "Potentia",
+        "primal": false
+    },
+    "terra": {
+        "description": "Earth",
+        "name": "Terra",
+        "primal": true
+    },
+    "motus": {
+        "description": "Motion, Animation",
+        "name": "Motus",
+        "primal": false
+    },
+    "corpus": {
+        "description": "Flesh",
+        "name": "Corpus",
+        "primal": false
+    },
+    "aequalitas": {
+        "description": "Equality, Balance, Uniformity",
+        "name": "Aequalitas",
+        "primal": false
+    },
+    "fames": {
+        "description": "Hunger",
+        "name": "Fames",
+        "primal": false
+    },
+    "tenebrae": {
+        "description": "Darkness",
+        "name": "Tenebrae",
+        "primal": false
+    },
+    "limus": {
+        "description": "Slime, Sticky",
+        "name": "Limus",
+        "primal": false
+    },
+    "permutatio": {
+        "description": "Exchange, Barter",
+        "name": "Permutatio",
+        "primal": false
+    },
+    "cognitio": {
+        "description": "Mind, Memory, Cognition",
+        "name": "Cognitio",
+        "primal": false
+    },
+    "lux": {
+        "description": "Light",
+        "name": "Lux",
+        "primal": false
+    },
+    "tabernus": {
+        "description": "Boots, Traversal",
+        "name": "Tabernus",
+        "primal": false
+    },
+    "radio": {
+        "description": "Radiation",
+        "name": "Radio",
+        "primal": false
+    },
+    "aqua": {
+        "description": "Water",
+        "name": "Aqua",
+        "primal": true
+    },
+    "perfodio": {
+        "description": "Mine",
+        "name": "Perfodio",
+        "primal": false
+    },
+    "venenum": {
+        "description": "Poison",
+        "name": "Venenum",
+        "primal": false
+    },
+    "strontio": {
+        "description": "Stupidness, Incompetence",
+        "name": "Strontio",
+        "primal": false
+    },
+    "ordo": {
+        "description": "Order, Regularity, Purity",
+        "name": "Ordo",
+        "primal": true
+    },
+    "praecantatio": {
+        "description": "Magic",
+        "name": "Praecantatio",
+        "primal": false
+    },
+    "luxuria": {
+        "description": "Lust, Desire, Excess",
+        "name": "Luxuria",
+        "primal": false
+    },
+    "meto": {
+        "description": "Harvest",
+        "name": "Meto",
+        "primal": false
+    },
+    "tempestas": {
+        "description": "Weather",
+        "name": "Tempestas",
+        "primal": false
+    },
+    "iter": {
+        "description": "Travel, Journey",
+        "name": "Iter",
+        "primal": false
+    },
+    "magneto": {
+        "description": "Magnetism, Attraction",
+        "name": "Magneto",
+        "primal": false
+    },
+    "caelum": {
+        "description": "Celestial Space",
+        "name": "Caelum",
+        "primal": false
+    },
+    "metallum": {
+        "description": "Metal",
+        "name": "Metallum",
+        "primal": false
+    },
+    "fabrico": {
+        "description": "Craft",
+        "name": "Fabrico",
+        "primal": false
+    },
+    "invidia": {
+        "description": "Envy, Jealousy, Insecurity",
+        "name": "Invidia",
+        "primal": false
+    },
+    "lucrum": {
+        "description": "Greed, Avarice",
+        "name": "Lucrum",
+        "primal": false
+    },
+    "sano": {
+        "description": "Heal, Cure",
+        "name": "Sano",
+        "primal": false
+    },
+    "primordium": {
+        "description": "Beginning, Origin, Source",
+        "name": "Primordium",
+        "primal": false
+    },
+    "gelum": {
+        "description": "Ice, Frost, Cold",
+        "name": "Gelum",
+        "primal": false
+    },
+    "nebrisum": {
+        "description": "Cheatyness, Raiding",
+        "name": "Nebrisum",
+        "primal": false
+    },
+    "ignis": {
+        "description": "Fire",
+        "name": "Ignis",
+        "primal": true
+    },
+    "tempus": {
+        "description": "Time, Moment, Eternity",
+        "name": "Tempus",
+        "primal": false
+    },
+    "gloria": {
+        "description": "Glory, Honor, Fame",
+        "name": "Gloria",
+        "primal": false
+    },
+    "spiritus": {
+        "description": "Soul",
+        "name": "Spiritus",
+        "primal": false
+    },
+    "desidia": {
+        "description": "Sloth, Laziness, Procrastination",
+        "name": "Desidia",
+        "primal": false
+    },
+    "volatus": {
+        "description": "Flight",
+        "name": "Volatus",
+        "primal": false
+    },
+    "alienis": {
+        "description": "Alien, Strange, The Eldritch",
+        "name": "Alienis",
+        "primal": false
+    },
+    "aer": {
+        "description": "Air",
+        "name": "Aer",
+        "primal": true
+    },
+    "victus": {
+        "description": "Life",
+        "name": "Victus",
+        "primal": false
+    },
+    "vesania": {
+        "description": "Insanity, Madness, Craziness",
+        "name": "Vesania",
+        "primal": false
+    },
+    "gula": {
+        "description": "Gluttony, Consumption, Indulgence",
+        "name": "Gula",
+        "primal": false
+    },
+    "vitreus": {
+        "description": "Crystal, Glass, Clear",
+        "name": "Vitreus",
+        "primal": false
+    },
+    "humanus": {
+        "description": "Man",
+        "name": "Humanus",
+        "primal": false
+    },
+    "astrum": {
+        "description": "Star, Constellation, Heaven",
+        "name": "Astrum",
+        "primal": false
+    },
+    "ira": {
+        "description": "Wrath, Anger, Rage",
+        "name": "Ira",
+        "primal": false
+    },
+    "vitium": {
+        "description": "Taint",
+        "name": "Vitium",
+        "primal": false
+    },
+    "instrumentum": {
+        "description": "Tool, Instrument",
+        "name": "Instrumentum",
+        "primal": false
+    },
+    "superbia": {
+        "description": "Pride, Arrogance, Disdain",
+        "name": "Superbia",
+        "primal": false
+    },
+    "vacuos": {
+        "description": "Void",
+        "name": "Vacuos",
+        "primal": false
+    },
+    "electrum": {
+        "description": "Electricity, Lightning",
+        "name": "Electrum",
+        "primal": false
+    },
+    "telum": {
+        "description": "Weapon, Attack, Harm",
+        "name": "Telum",
+        "primal": false
+    },
+    "tutamen": {
+        "description": "Armor, Protection",
+        "name": "Tutamen",
+        "primal": false
+    },
+    "infernus": {
+        "description": "The Nether, Demons, Hellfire",
+        "name": "Infernus",
+        "primal": false
+    },
+    "exanimis": {
+        "description": "Undead",
+        "name": "Exanimis",
+        "primal": false
+    },
+    "pannus": {
+        "description": "Cloth, Material, Covering",
+        "name": "Pannus",
+        "primal": false
+    },
+    "auram": {
+        "description": "Aura",
+        "name": "Auram",
+        "primal": false
+    },
+    "messis": {
+        "description": "Crop",
+        "name": "Messis",
+        "primal": false
+    },
+    "perditio": {
+        "description": "Entropy, Chaos, Destruction",
+        "name": "Perditio",
+        "primal": true
+    },
+    "machina": {
+        "description": "Mechanism, Machine",
+        "name": "Machina",
+        "primal": false
+    },
+    "sensus": {
+        "description": "Senses",
+        "name": "Sensus",
+        "primal": false
+    },
+    "arbor": {
+        "description": "Tree, Wood",
+        "name": "Arbor",
+        "primal": false
+    },
+    "terminus": {
+        "description": "The End of Games, Apocalypse, Grindstones",
+        "name": "Terminus",
+        "primal": false
+    },
+    "bestia": {
+        "description": "Beast",
+        "name": "Bestia",
+        "primal": false
+    },
+    "herba": {
+        "description": "Plant",
+        "name": "Herba",
+        "primal": false
+    }
+}
