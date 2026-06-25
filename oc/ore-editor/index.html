@@ -8,10 +8,140 @@
       name="description"
       content="离线浏览、编辑和导出 OC 矿处配置文件的 Vite + React + TypeScript 工具。"
     />
-    <script type="module" crossorigin src="/oc/ore-editor/assets/index-XDU-nu8U.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background:
+          radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 34%),
+          radial-gradient(circle at 84% 8%, rgba(122, 97, 20, 0.14), transparent 28%),
+          linear-gradient(180deg, #f5f8f6, #e8efea);
+      }
+
+      body {
+        font-family:
+          Inter, 'Aptos', 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+        color: #1b2320;
+      }
+
+      #root {
+        min-height: 100vh;
+      }
+
+      .app-preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 32%),
+          radial-gradient(circle at 80% 12%, rgba(122, 97, 20, 0.12), transparent 26%),
+          linear-gradient(180deg, rgba(245, 248, 246, 0.98), rgba(232, 239, 234, 0.98));
+      }
+
+      .app-preloader__card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 22px 24px;
+        border-radius: 24px;
+        border: 1px solid rgba(53, 74, 66, 0.12);
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: 0 24px 60px rgba(25, 44, 38, 0.14);
+        backdrop-filter: blur(18px);
+      }
+
+      .app-preloader__spinner {
+        position: relative;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 4px solid rgba(15, 118, 110, 0.16);
+        border-top-color: #0f766e;
+        animation: app-preloader-spin 1s linear infinite;
+        flex: 0 0 auto;
+      }
+
+      .app-preloader__spinner::before,
+      .app-preloader__spinner::after {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        border-radius: 50%;
+        border: 2px solid rgba(122, 97, 20, 0.16);
+        animation: app-preloader-pulse 1.8s ease-in-out infinite;
+      }
+
+      .app-preloader__spinner::after {
+        inset: 20px;
+        animation-delay: 0.35s;
+      }
+
+      .app-preloader__eyebrow {
+        font-size: 0.74rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #667772;
+        margin-bottom: 6px;
+      }
+
+      .app-preloader__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 4px;
+      }
+
+      .app-preloader__text {
+        font-size: 0.92rem;
+        color: #44524c;
+      }
+
+      @keyframes app-preloader-spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes app-preloader-pulse {
+        0%,
+        100% {
+          transform: scale(0.9);
+          opacity: 0.55;
+        }
+
+        50% {
+          transform: scale(1.08);
+          opacity: 1;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/oc/ore-editor/assets/index-CKkxHWDV.js"></script>
     <link rel="stylesheet" crossorigin href="/oc/ore-editor/assets/index-374wF1sx.css">
   </head>
   <body>
+    <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="页面加载中">
+      <div class="app-preloader__card">
+        <div class="app-preloader__spinner" aria-hidden="true"></div>
+        <div>
+          <div class="app-preloader__eyebrow">Offline GTNH OC Ore Processing Editor</div>
+          <div class="app-preloader__title">正在加载编辑器</div>
+          <div class="app-preloader__text">正在准备离线配置和资源数据库，请稍候。</div>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
   </body>
 </html>
