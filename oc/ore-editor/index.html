@@ -11,6 +11,18 @@
     <style>
       :root {
         color-scheme: light;
+        --preloader-bg-0: #eef3f1;
+        --preloader-bg-1: #dde7e3;
+        --preloader-surface: rgba(255, 255, 255, 0.88);
+        --preloader-surface-strong: rgba(255, 255, 255, 0.96);
+        --preloader-surface-soft: #e8efeb;
+        --preloader-border: #cfd9d4;
+        --preloader-text-0: #1f2b28;
+        --preloader-text-1: #52635d;
+        --preloader-text-2: #77857f;
+        --preloader-primary: #2f6f68;
+        --preloader-primary-soft: #dcebe6;
+        --preloader-shadow: 0 24px 60px rgba(31, 48, 45, 0.12);
       }
 
       html,
@@ -19,15 +31,15 @@
         min-width: 320px;
         min-height: 100%;
         background:
-          radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 34%),
-          radial-gradient(circle at 84% 8%, rgba(122, 97, 20, 0.14), transparent 28%),
-          linear-gradient(180deg, #f5f8f6, #e8efea);
+          radial-gradient(circle at top left, rgba(47, 111, 104, 0.12), transparent 34%),
+          radial-gradient(circle at 84% 8%, rgba(154, 106, 20, 0.1), transparent 28%),
+          linear-gradient(180deg, var(--preloader-bg-0), var(--preloader-bg-1));
       }
 
       body {
         font-family:
           Inter, 'Aptos', 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
-        color: #1b2320;
+        color: var(--preloader-text-0);
       }
 
       #root {
@@ -42,70 +54,145 @@
         place-items: center;
         padding: 24px;
         background:
-          radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 32%),
-          radial-gradient(circle at 80% 12%, rgba(122, 97, 20, 0.12), transparent 26%),
-          linear-gradient(180deg, rgba(245, 248, 246, 0.98), rgba(232, 239, 234, 0.98));
+          radial-gradient(circle at top left, rgba(47, 111, 104, 0.1), transparent 32%),
+          radial-gradient(circle at 80% 12%, rgba(154, 106, 20, 0.08), transparent 26%),
+          linear-gradient(180deg, rgba(238, 243, 241, 0.98), rgba(221, 231, 227, 0.98));
       }
 
       .app-preloader__card {
+        width: min(560px, calc(100vw - 32px));
         display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 18px;
-        padding: 22px 24px;
-        border-radius: 24px;
-        border: 1px solid rgba(53, 74, 66, 0.12);
-        background: rgba(255, 255, 255, 0.78);
-        box-shadow: 0 24px 60px rgba(25, 44, 38, 0.14);
+        padding: 24px;
+        border-radius: 28px;
+        border: 1px solid var(--preloader-border);
+        background: var(--preloader-surface);
+        box-shadow: var(--preloader-shadow);
         backdrop-filter: blur(18px);
       }
 
-      .app-preloader__spinner {
+      .app-preloader__header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .app-preloader__indicator {
         position: relative;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        border: 4px solid rgba(15, 118, 110, 0.16);
-        border-top-color: #0f766e;
-        animation: app-preloader-spin 1s linear infinite;
+        width: 52px;
+        height: 52px;
         flex: 0 0 auto;
       }
 
-      .app-preloader__spinner::before,
-      .app-preloader__spinner::after {
+      .app-preloader__indicator::before {
         content: '';
         position: absolute;
-        inset: 12px;
+        inset: 0;
         border-radius: 50%;
-        border: 2px solid rgba(122, 97, 20, 0.16);
-        animation: app-preloader-pulse 1.8s ease-in-out infinite;
+        background:
+          conic-gradient(
+            from 180deg,
+            transparent 0deg 118deg,
+            var(--preloader-primary) 118deg 282deg,
+            transparent 282deg 360deg
+          );
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0);
+        mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0);
+        animation: app-preloader-rotate 1.15s linear infinite;
       }
 
-      .app-preloader__spinner::after {
-        inset: 20px;
-        animation-delay: 0.35s;
+      .app-preloader__indicator::after {
+        content: '';
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        background: var(--preloader-surface-strong);
+        box-shadow: inset 0 0 0 1px rgba(47, 111, 104, 0.08);
+      }
+
+      .app-preloader__copy {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
 
       .app-preloader__eyebrow {
-        font-size: 0.74rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #667772;
-        margin-bottom: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--preloader-text-2);
       }
 
       .app-preloader__title {
-        font-size: 1.1rem;
-        font-weight: 700;
+        font-size: 1.16rem;
+        font-weight: 600;
         line-height: 1.2;
-        margin-bottom: 4px;
       }
 
       .app-preloader__text {
         font-size: 0.92rem;
-        color: #44524c;
+        color: var(--preloader-text-1);
       }
 
-      @keyframes app-preloader-spin {
+      .app-preloader__progress {
+        position: relative;
+        overflow: hidden;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--preloader-primary-soft);
+      }
+
+      .app-preloader__progress::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 -36%;
+        width: 36%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(47, 111, 104, 0), var(--preloader-primary), rgba(47, 111, 104, 0.24));
+        animation: app-preloader-slide 1.4s ease-in-out infinite;
+      }
+
+      .app-preloader__skeleton {
+        display: grid;
+        gap: 10px;
+      }
+
+      .app-preloader__line {
+        position: relative;
+        overflow: hidden;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--preloader-surface-soft);
+      }
+
+      .app-preloader__line::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.7) 48%,
+          transparent 100%
+        );
+        transform: translateX(-100%);
+        animation: app-preloader-sheen 1.8s ease-in-out infinite;
+      }
+
+      .app-preloader__line--primary {
+        width: min(72%, 320px);
+      }
+
+      .app-preloader__line--secondary {
+        width: min(92%, 420px);
+      }
+
+      .app-preloader__line--tertiary {
+        width: min(56%, 260px);
+      }
+
+      @keyframes app-preloader-rotate {
         from {
           transform: rotate(0deg);
         }
@@ -115,30 +202,70 @@
         }
       }
 
-      @keyframes app-preloader-pulse {
-        0%,
-        100% {
-          transform: scale(0.9);
-          opacity: 0.55;
+      @keyframes app-preloader-slide {
+        0% {
+          transform: translateX(0);
         }
 
-        50% {
-          transform: scale(1.08);
-          opacity: 1;
+        100% {
+          transform: translateX(380%);
+        }
+      }
+
+      @keyframes app-preloader-sheen {
+        0% {
+          transform: translateX(-100%);
+        }
+
+        100% {
+          transform: translateX(180%);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app-preloader {
+          padding: 16px;
+        }
+
+        .app-preloader__card {
+          width: min(100vw - 16px, 560px);
+          padding: 18px;
+          border-radius: 24px;
+        }
+
+        .app-preloader__header {
+          align-items: flex-start;
+        }
+
+        .app-preloader__indicator {
+          width: 44px;
+          height: 44px;
+        }
+
+        .app-preloader__title {
+          font-size: 1.04rem;
         }
       }
     </style>
-    <script type="module" crossorigin src="/oc/ore-editor/assets/index-CKkxHWDV.js"></script>
-    <link rel="stylesheet" crossorigin href="/oc/ore-editor/assets/index-374wF1sx.css">
+    <script type="module" crossorigin src="/assets/index-tf0azTXe.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D7MHZUeS.css">
   </head>
   <body>
     <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="页面加载中">
       <div class="app-preloader__card">
-        <div class="app-preloader__spinner" aria-hidden="true"></div>
-        <div>
-          <div class="app-preloader__eyebrow">Offline GTNH OC Ore Processing Editor</div>
-          <div class="app-preloader__title">正在加载编辑器</div>
-          <div class="app-preloader__text">正在准备离线配置和资源数据库，请稍候。</div>
+        <div class="app-preloader__header">
+          <div class="app-preloader__indicator" aria-hidden="true"></div>
+          <div class="app-preloader__copy">
+            <div class="app-preloader__eyebrow">GTNH OC 矿处配置编辑器</div>
+            <div class="app-preloader__title">正在加载编辑器</div>
+            <div class="app-preloader__text">正在准备离线配置和资源数据库，请稍候。</div>
+          </div>
+        </div>
+        <div class="app-preloader__progress" aria-hidden="true"></div>
+        <div class="app-preloader__skeleton" aria-hidden="true">
+          <div class="app-preloader__line app-preloader__line--primary"></div>
+          <div class="app-preloader__line app-preloader__line--secondary"></div>
+          <div class="app-preloader__line app-preloader__line--tertiary"></div>
         </div>
       </div>
     </div>
