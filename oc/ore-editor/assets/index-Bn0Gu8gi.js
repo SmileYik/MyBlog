@@ -41,801 +41,801 @@ Error generating stack: `+u.message+`
 `:s+="\\n";break;case"\r":s+="\\r";break;case"	":s+="\\t";break;case"\b":s+="\\b";break;case"\f":s+="\\f";break;case"\v":s+="\\v";break;case"\0":s+="\\0";break;default:s+=a;break}return`"${s}"`}function Bm(l){return Um(l)?l:`[${Fd(l)}]`}function Wm(l){return typeof l=="string"?Fd(l):Ad(l)}function Ad(l){if(typeof l=="string")return l;if(typeof l=="number"||typeof l=="boolean")return String(l);if(l===null)return"nil";throw new Error("Expected a scalar Lua value")}class Vm{constructor(s){tt(this,"index",0);tt(this,"line",1);tt(this,"column",1);this.text=s}parse(){this.skipWhitespaceAndComments(),this.matchKeyword("return")&&this.skipWhitespaceAndComments();const s=this.parseValue();if(!Ts(s))throw this.error("根节点必须是一个 Lua table");if(this.skipWhitespaceAndComments(),!this.isEOF())throw this.error("根节点后存在无法识别的内容");return s}parseValue(){this.skipWhitespaceAndComments();const s=this.peek();if(!s)throw this.error("意外结束");if(s==="{")return this.parseTable();if(s==='"'||s==="'")return this.parseString();if(s==="-"||this.isDigit(s))return this.parseNumber();if(zo(s)){const a=this.parseIdentifier();return a==="true"?!0:a==="false"?!1:a==="nil"?null:a}throw this.error(`无法解析的字符: ${s}`)}parseTable(){this.expect("{");const s=[];for(this.skipWhitespaceAndComments();!this.peekIs("}")&&(this.skipWhitespaceAndComments(),!this.peekIs("}"));){let a;if(this.peekIs("[")){this.advance();const c=this.parseValue();if(Ts(c)||c===null)throw this.error("方括号键必须是字符串、数字或布尔值");this.skipWhitespaceAndComments(),this.expect("]"),this.skipWhitespaceAndComments(),this.expect("=");const p=this.parseValue();a={kind:"keyed",key:String(c),value:p}}else if(zo(this.peek())){const c={index:this.index,line:this.line,column:this.column},p=this.parseIdentifier();if(this.skipWhitespaceAndComments(),this.peekIs("=")){this.advance();const f=this.parseValue();a={kind:"keyed",key:p,value:f}}else this.index=c.index,this.line=c.line,this.column=c.column,a={kind:"array",value:this.parseValue()}}else a={kind:"array",value:this.parseValue()};if(s.push(a),this.skipWhitespaceAndComments(),this.peekIs(",")||this.peekIs(";")){this.advance(),this.skipWhitespaceAndComments();continue}if(this.peekIs("}"))break;throw this.error("表字段之间缺少分隔符")}return this.expect("}"),{fields:s}}parseString(){const s=this.peek();if(s!=='"'&&s!=="'")throw this.error("字符串必须以引号开头");this.advance();let a="";for(;!this.isEOF();){const c=this.advance();if(c===s)return a;if(c==="\\"){if(this.isEOF())throw this.error("字符串转义未完成");const p=this.advance();switch(p){case"\\":a+="\\";break;case'"':a+='"';break;case"'":a+="'";break;case"n":a+=`
 `;break;case"r":a+="\r";break;case"t":a+="	";break;case"b":a+="\b";break;case"f":a+="\f";break;case"v":a+="\v";break;case"0":a+="\0";break;default:a+=p;break}continue}a+=c}throw this.error("字符串缺少结束引号")}parseNumber(){const s=this.index;for(this.peekIs("-")&&this.advance();this.isDigit(this.peek());)this.advance();if(this.peekIs("."))for(this.advance();this.isDigit(this.peek());)this.advance();if(this.peekIs("e")||this.peekIs("E"))for(this.advance(),(this.peekIs("+")||this.peekIs("-"))&&this.advance();this.isDigit(this.peek());)this.advance();const a=this.text.slice(s,this.index),c=Number(a);if(Number.isNaN(c))throw this.error(`无法解析数字: ${a}`);return c}parseIdentifier(){const s=this.index;if(!zo(this.peek()))throw this.error("标识符必须以字母或下划线开头");for(this.advance();od(this.peek());)this.advance();return this.text.slice(s,this.index)}matchKeyword(s){if(this.text.slice(this.index,this.index+s.length)!==s)return!1;const a=this.text[this.index+s.length];return od(a)?!1:(this.advance(s.length),!0)}skipWhitespaceAndComments(){for(;!this.isEOF();){const s=this.peek();if(s===void 0)return;if(/\s/.test(s)){this.advance();continue}if(s==="-"&&this.peek(1)==="-"){if(this.advance(2),this.peekIs("[")&&this.peek(1)==="["){for(this.advance(2);!this.isEOF()&&!(this.peekIs("]")&&this.peek(1)==="]");)this.advance();this.peekIs("]")&&this.peek(1)==="]"&&this.advance(2);continue}for(;!this.isEOF()&&!/[\r\n]/.test(this.peek()??"");)this.advance();continue}break}}expect(s){if(!this.peekIs(s))throw this.error(`期望 "${s}"`);this.advance(s.length)}peek(s=0){return this.text[this.index+s]}peekIs(s){return this.text.startsWith(s,this.index)}advance(s=1){let a="";for(let c=0;c<s;c+=1){const p=this.text[this.index];if(p===void 0)break;a+=p,this.index+=1,p===`
 `?(this.line+=1,this.column=1):this.column+=1}return a}isDigit(s){return!!(s&&/[0-9]/.test(s))}isEOF(){return this.index>=this.text.length}error(s){const a=new Error(`${s} (第 ${this.line} 行，第 ${this.column} 列)`);return a.name="LuaParseError",a}}class Hm{toLuaValue(s){if(s==null)return null;if(typeof s=="number"||typeof s=="boolean"||typeof s=="string")return s;if(s instanceof Array)return this.arrayToLuaTable(s);if(typeof s=="object")return this.objectToLuaTable(s);throw new Error("Expected a scalar Lua value")}arrayToLuaTable(s){const a={fields:[]};for(let c of s)a.fields.push({kind:"array",value:this.toLuaValue(c)});return a}objectToLuaTable(s){const a={fields:[]};return Object.entries(s).forEach(([c,p])=>{a.fields.push({kind:"keyed",key:Ad(this.toLuaValue(c)),value:this.toLuaValue(p)})}),a}serialization(s,a=0,c=" ",p=2,f=`
-`){return this.doStringify(this.objectToLuaTable(s),a,c,p,f)}doStringify(s,a,c,p,f){a+=1;const m=[];return s.fields.forEach(v=>{const w=v.value;let h;Ts(w)?h=`${this.doStringify(w,a,c,p,f)}`:h=`${Wm(w)}`;let b=`${c.repeat(a*p)}`;v.kind==="array"?b+=`${h}`:v.kind==="keyed"&&(b+=`${Bm(v.key)}${c}=${c}${h}`),m.push(b)}),m.length===0?"{}":`{${f}${m.join(","+f)}${f}${c.repeat((a-1)*p)}}`}unserialization(s,a){const p=new Vm(s.replace(/^\uFEFF/,"")).parse();let f=null;if(typeof a=="function")try{f=new a}catch{f=Object.create(a.prototype)}return this.luaValueToJS(p,f)}luaValueToJS(s,a){if(!Ts(s))return s;const c=s.fields;let p=!1;if(c.length>0?p=c[0].kind==="array":p=Array.isArray(a),p){const f=[];return c.forEach((m,v)=>{const w=Array.isArray(a)?a[v]:void 0;f.push(this.luaValueToJS(m.value,w))}),f}else{let f;if(a&&typeof a=="object"&&!Array.isArray(a)){const m=Object.getPrototypeOf(a);if(m&&m.constructor&&m.constructor!==Object)try{f=new m.constructor}catch{f=Object.create(m)}else f={}}else f={};return c.forEach(m=>{var v;if(m.kind==="keyed"){const w=m.key;let h=a?a[w]:void 0;if(!h&&((v=a==null?void 0:a.constructor)!=null&&v.__indexType__)){const E=a.constructor.__indexType__;h=new E}const b=this.luaValueToJS(m.value,h),C=a==null?void 0:a.constructor;C&&typeof C.__validateIndex__=="function"&&C.__validateIndex__(w,b),f[w]=b}}),a&&typeof a=="object"&&!Array.isArray(a)&&Object.keys(a).forEach(m=>{!(m in f)&&a[m]!==void 0&&(f[m]=a[m])}),f}}}class Ko{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}}class fl{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}}tt(fl,"__indexType__",Array);class xr{constructor(){tt(this,"enable",!1);tt(this,"comments","")}}class gl{static __validateIndex__(s,a){if(typeof a!="boolean"&&!(a instanceof xr))throw new Error(`Ilegal value for key '${s}':  ${a}`)}*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}convertValueToRuleMeta(){for(let[s,a]of this)typeof a=="boolean"&&(this[s]={enable:a,comments:""})}}tt(gl,"__indexType__",xr);class vr{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}convertValueToRuleMeta(){for(let[s,a]of this)a.convertValueToRuleMeta()}}tt(vr,"__indexType__",gl);class la{constructor(){tt(this,"interfaces",new Ko);tt(this,"role",new Ko);tt(this,"process",new fl);tt(this,"processReverse",new fl);tt(this,"idWhitelist",new vr);tt(this,"idBlacklist",new vr);tt(this,"logicalRules",new vr)}renew(){this.idWhitelist.convertValueToRuleMeta(),this.idBlacklist.convertValueToRuleMeta(),this.logicalRules.convertValueToRuleMeta()}setOrDeleteStringMap(s,a,c){c?s[a]=c:delete s[a]}setInterface(s,a){this.setOrDeleteStringMap(this.interfaces,s,a)}setRole(s,a){this.setOrDeleteStringMap(this.role,s,a)}oreProcessToString(s,a="=>"){return s.join(a)}deleteOreInProcessReverse(s){const a={};Object.entries(this.processReverse).forEach(([c,p])=>{const f=p.filter(m=>m!==s);f.length!==p.length&&(a[c]=f)}),Object.entries(a).forEach(([c,p])=>{this.setOrDeleteStringMap(this.processReverse,c,s.length===0?void 0:p)})}setOreProcess(s,a){if(this.setOrDeleteStringMap(this.process,s,a),this.deleteOreInProcessReverse(s),a){const c=this.oreProcessToString(a);this.processReverse[c]=[...this.processReverse[c]||[],s]}}getOreRuleByRole(s,a){return s[a]=s[a]||new gl,s[a]}getIdWhitelistRule(s){return this.getOreRuleByRole(this.idWhitelist,s)}getIdBlacklistRule(s){return this.getOreRuleByRole(this.idBlacklist,s)}getLogicalRule(s){return this.getOreRuleByRole(this.logicalRules,s)}}const Km=new la,Go=new Hm;function Gm(l){const s=new xr;return s.enable=l.enable,s.comments=l.comments,s}function Ud(l){return l instanceof xr?Gm(l):l}function Bd(l){const s=new gl;for(const[a,c]of Object.entries(l))s[a]=Ud(c);return s}function Oo(l){const s=new vr;for(const[a,c]of Object.entries(l))s[a]=Bd(c);return s}function ad(l){const s=new Ko;for(const[a,c]of Object.entries(l))s[a]=c;return s}function ud(l){const s=new fl;for(const[a,c]of Object.entries(l))s[a]=[...c];return s}function en(l){const s=new la;return s.interfaces=ad(l.interfaces),s.role=ad(l.role),s.process=ud(l.process),s.processReverse=ud(l.processReverse),s.idWhitelist=Oo(l.idWhitelist),s.idBlacklist=Oo(l.idBlacklist),s.logicalRules=Oo(l.logicalRules),s}function sa(l){const s=new fl;for(const[a,c]of Object.entries(l.process)){const p=l.oreProcessToString(c),f=s[p]??[];f.push(a),s[p]=f}l.processReverse=s}function Wd(l){const s=en(l);return s.renew(),sa(s),s}function Qm(l){return Object.keys(l).length>0}function $o(l,s,a){if(s===a)return;const c=l[s];if(!c)return;const p=l[a];if(p)for(const[f,m]of Object.entries(c))f in p||(p[f]=Ud(m));else l[a]=Bd(c);delete l[s]}function Fo(l,s){delete l[s]}function Ym(l,s,a){if(s!==a){for(const[c,p]of Object.entries(l.interfaces))p===s&&(l.interfaces[c]=a);for(const[c,p]of Object.entries(l.process))l.process[c]=p.map(f=>f===s?a:f);$o(l.idWhitelist,s,a),$o(l.idBlacklist,s,a),$o(l.logicalRules,s,a),sa(l)}}function Xm(l,s){for(const[a,c]of Object.entries(l.interfaces))c===s&&delete l.interfaces[a];for(const[a,c]of Object.entries(l.process))l.process[a]=c.filter(p=>p!==s);Fo(l.idWhitelist,s),Fo(l.idBlacklist,s),Fo(l.logicalRules,s),sa(l)}function qm(l){const s=new gl;for(const a of l){const c=new xr;c.enable=a.enable,c.comments=a.comments,s[a.rule]=c}return s}function Qo(l){return Wd(Go.unserialization(l,la))}function Vd(l,s={}){const a=Wd(l),c={role:a.role,interfaces:a.interfaces,idBlacklist:a.idBlacklist,process:a.process,idWhitelist:a.idWhitelist,processReverse:a.processReverse};return Qm(a.logicalRules)&&(c.logicalRules=a.logicalRules),s.compact?Go.serialization(c,0,"",0,""):Go.serialization(c)}function Zm(l){return Object.entries(l.role).map(([s,a])=>({name:s,machine:a}))}function Jm(l){return Object.entries(l.interfaces).map(([s,a])=>({id:s,role:a}))}function eh(l){return Object.entries(l.process).map(([s,a])=>({mineral:s,steps:[...a]}))}function Ao(l,s){return dh(l[s])}function th(l){const s=new Map;for(const[a,c]of Object.entries(l.process)){const p=l.oreProcessToString(c),f=s.get(p);if(f){f.minerals.push(a);continue}s.set(p,{signature:p,steps:[...c],minerals:[a]})}return Array.from(s.values())}function Hd(l){const s=[],a=new Set,c=p=>{a.has(p)||(a.add(p),s.push(p))};for(const p of Object.keys(l.role))c(p);for(const p of Object.values(l.process))for(const f of p)c(f);for(const p of Object.keys(l.idWhitelist))c(p);for(const p of Object.keys(l.idBlacklist))c(p);for(const p of Object.keys(l.logicalRules))c(p);return s}function nh(l){return l.length===0?"空流程":l.join(" => ")}function rh(l,s){const a=en(l);return delete a.role[s],Xm(a,s),a}function lh(l,s,a){const c=a.name.trim(),p=a.machine.trim();if(!c)throw new Error("职责名称不能为空");if(!p)throw new Error("机器名称不能为空");const f=en(l);if(s&&s!==c&&(Ym(f,s,c),delete f.role[s]),!s&&f.role[c]!==void 0)throw new Error(`职责 "${c}" 已存在`);return f.setRole(c,p),f}function sh(l,s){return rh(l,s)}function ih(l,s,a){const c=a.id.trim(),p=a.role.trim();if(!c)throw new Error("输出口 ID 不能为空");if(!p)throw new Error("职责不能为空");const f=en(l);if(!Hd(f).includes(p))throw new Error(`职责 "${p}" 不存在`);if(!s&&f.interfaces[c]!==void 0)throw new Error(`输出口 "${c}" 已存在`);if(s&&s!==c&&f.interfaces[c]!==void 0)throw new Error(`输出口 "${c}" 已存在`);return s&&s!==c&&delete f.interfaces[s],f.setInterface(c,p),f}function oh(l,s){const a=en(l);return delete a.interfaces[s],a}function ah(l,s,a,c={}){const p=a.mineral.trim(),f=a.steps.map(C=>C.trim()).filter(Boolean),m=!!c.forceReplace;if(!p)throw new Error("矿物名称不能为空");if(f.length===0)throw new Error("至少需要一个处理步骤");const v=en(l),w=v.process[p],h=s!==null&&s!==p;if(w!==void 0&&s!==p&&!m)throw new Error(`矿物 "${p}" 已存在`);return h&&v.setOreProcess(s,void 0),v.setOreProcess(p,f),v}function uh(l,s){const a=en(l);return a.setOreProcess(s,void 0),a}function ch(l){return{rule:l.rule,enable:l.enable,comments:l.comments}}function pl(l){return l.comments.trim()||l.rule}function Yo(l){return l.map(s=>({role:s.role,rules:s.rules.map(a=>ch(a))}))}function dh(l){return Object.entries(l).map(([s,a])=>({role:s,rules:Object.entries(a).map(([c,p])=>p instanceof xr?{rule:c,enable:p.enable,comments:p.comments}:typeof p=="boolean"?{rule:c,enable:p,comments:""}:{rule:c,enable:!0,comments:""})}))}function fh(l,s,a){const c=en(l),p=new vr;for(const f of a)p[f.role]=qm(f.rules);return c[s]=p,c.renew(),c}const Kd=`{\r
-  role = {\r
-    ["热离"] = "热力离心机",\r
-    ["过硫酸钠洗"] = "洗矿机",\r
-    ["汞洗"] = "洗矿机",\r
-    ["水洗"] = "洗矿机",\r
-    ["电解"] = "电解机",\r
-    ["离心"] = "离心机",\r
-    ["粉碎"] = "粉碎机",\r
-    ["筛选"] = "筛选机",\r
-  },\r
-  interfaces = {\r
-    ["8a88e9bd-66ac-42c5-9277-47eb5cc064dc"] = "热离",\r
-    ["06378172-5f73-4b11-802c-ee6c747216f8"] = "粉碎",\r
-    ["ffa6d4e2-bce3-4767-812d-1cadb910afbb"] = "离心",\r
-    ["4dacd021-bb68-43c7-8f76-bac3912e2fc3"] = "水洗",\r
-    ["805411fb-41f1-4f02-8cad-f963d7a54815"] = "汞洗",\r
-    ["280d73d8-c5d2-445c-a127-ce2fba9ecdac"] = "筛选",\r
-  },\r
-  idBlacklist = {},\r
-  process = {\r
-    Coal = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    ["Nether Quartz"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Lazurite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Silver = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Ruby = {\r
-      "粉碎",\r
-      "水洗",\r
-      "离心",\r
-    },\r
-    Naquadah = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Emerald = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Molybdenum = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Perditio = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Platinum = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Bismuth = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Basaltic Mineral Sand"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Pitchblende = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Ordo = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Pollucite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    Uraninite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Cassiterite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Soapstone = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Garnierite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Asbestos = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Salt = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    Amber = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Monazite = {\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Uranium 238"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Malachite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Diamond = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Tetrahedrite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Antimony = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Sphalerite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "离心",\r
-    },\r
-    Oriharukon = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Plutonium 239"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Titanium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Sodalite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Thorium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    ["Granitic Mineral"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Nether Star"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Gallium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Graphite = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Stibnite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Terra = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Cryolite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    Chromite = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Magnetite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Iron = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Tin = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Ardite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Banded Iron"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Nickel = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Neodymium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Granitic Mineral Sand"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Pyrolusite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Pyrite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Molybdenite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Roasted Iron"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Pentlandite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "离心",\r
-    },\r
-    Tantalite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Pyrochlore = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    Aqua = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Draconium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Sulfur = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Mica = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Electrotine = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Yellow Limonite"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Copper = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Ignis = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Galena = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "离心",\r
-    },\r
-    Tungsten = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Firestone = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    ["Naquadah Enriched"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Uranium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Tricalcium Phosphate"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Redstone = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Certus Quartz"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Lapis = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Air = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Bastnasite = {\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Lepidolite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    Apatite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Arsenic = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Iridium = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Chalcopyrite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "离心",\r
-    },\r
-    ["Rock Salt"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    ["Vanadium Magnetite"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Aer = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    ["Basaltic Mineral"] = {\r
-      "粉碎",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Cobalt = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Shadow = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Saltpeter = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Meteoric Iron"] = {\r
-      "粉碎",\r
-      "汞洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Cinnabar = {\r
-      "粉碎",\r
-      "水洗",\r
-      "筛选",\r
-      "离心",\r
-    },\r
-    Zinc = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Gold = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    ["Brown Limonite"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Cobaltite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-      "电解",\r
-    },\r
-    ["Shadow Metal"] = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Uvarovite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Aluminium = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Scheelite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Tungstate = {\r
-      "粉碎",\r
-      "水洗",\r
-      "热离",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Desh = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-    Perlite = {\r
-      "粉碎",\r
-      "水洗",\r
-      "粉碎",\r
-      "离心",\r
-    },\r
-  },\r
-  idWhitelist = {\r
-    ["离心"] = {\r
-      ["gregtech:gt.comb#25"] = true,\r
-      ["ExtraBees:honeyComb#37"] = true,\r
-      ["gregtech:gt.metaitem.01#2241"] = true,\r
-      ["Forestry:propolis#3"] = true,\r
-      ["bartworks:gt.bwMetaGenerateddust#71"] = true,\r
-      ["bartworks:gt.bwMetaGenerateddust#77"] = true,\r
-      ["gregtech:gt.comb#11"] = true,\r
-      ["gregtech:gt.comb#9"] = true,\r
-      ["gregtech:gt.comb#14"] = true,\r
-      ["gregtech:gt.comb#19"] = true,\r
-      ["gregtech:gt.comb#10"] = true,\r
-      ["gregtech:gt.comb#13"] = true,\r
-      ["gregtech:gt.comb#141"] = true,\r
-      ["gregtech:gt.comb#140"] = true,\r
-      ["gregtech:gt.comb#54"] = true,\r
-      ["gregtech:gt.metaitem.01#2925"] = true,\r
-      ["gregtech:gt.metaitem.01#2528"] = true,\r
-    },\r
-    ["筛选"] = {},\r
-    ["电解"] = {\r
-      ["gregtech:gt.metaitem.01#2697"] = true,\r
-      ["gregtech:gt.metaitem.01#2941"] = true,\r
-    },\r
-    ["粉碎"] = {\r
-      ["gregtech:gt.metaitem.01#9059"] = true,\r
-    },\r
-  },\r
-  processReverse = {\r
-    ["粉碎=>水洗=>筛选=>离心"] = {\r
-      "Coal",\r
-      "Nether Quartz",\r
-      "Lazurite",\r
-      "Emerald",\r
-      "Perditio",\r
-      "Pitchblende",\r
-      "Ordo",\r
-      "Cassiterite",\r
-      "Amber",\r
-      "Diamond",\r
-      "Sodalite",\r
-      "Thorium",\r
-      "Nether Star",\r
-      "Terra",\r
-      "Tin",\r
-      "Aqua",\r
-      "Ignis",\r
-      "Firestone",\r
-      "Certus Quartz",\r
-      "Lapis",\r
-      "Air",\r
-      "Aer",\r
-      "Cinnabar",\r
-    },\r
-    ["粉碎=>汞洗=>粉碎=>离心"] = {\r
-      "Silver",\r
-      "Nickel",\r
-    },\r
-    ["粉碎=>水洗=>离心"] = {\r
-      "Ruby",\r
-      "Sphalerite",\r
-      "Pentlandite",\r
-      "Chalcopyrite",\r
-    },\r
-    ["粉碎=>水洗=>热离=>粉碎=>离心"] = {\r
-      "Naquadah",\r
-      "Uraninite",\r
-      "Soapstone",\r
-      "Garnierite",\r
-      "Pyrolusite",\r
-      "Pyrite",\r
-      "Tantalite",\r
-      "Naquadah Enriched",\r
-      "Tricalcium Phosphate",\r
-      "Apatite",\r
-      "Shadow",\r
-      "Gold",\r
-      "Tungstate",\r
-    },\r
-    ["粉碎=>水洗=>粉碎=>离心"] = {\r
-      "Molybdenum",\r
-      "Bismuth",\r
-      "Uranium 238",\r
-      "Malachite",\r
-      "Tetrahedrite",\r
-      "Antimony",\r
-      "Oriharukon",\r
-      "Plutonium 239",\r
-      "Titanium",\r
-      "Gallium",\r
-      "Stibnite",\r
-      "Magnetite",\r
-      "Iron",\r
-      "Ardite",\r
-      "Banded Iron",\r
-      "Neodymium",\r
-      "Molybdenite",\r
-      "Draconium",\r
-      "Sulfur",\r
-      "Mica",\r
-      "Electrotine",\r
-      "Copper",\r
-      "Tungsten",\r
-      "Uranium",\r
-      "Redstone",\r
-      "Arsenic",\r
-      "Vanadium Magnetite",\r
-      "Cobalt",\r
-      "Saltpeter",\r
-      "Zinc",\r
-      "Brown Limonite",\r
-      "Shadow Metal",\r
-      "Uvarovite",\r
-      "Aluminium",\r
-      "Scheelite",\r
-      "Desh",\r
-      "Perlite",\r
-    },\r
-    ["粉碎=>汞洗=>热离=>粉碎=>离心"] = {\r
-      "Platinum",\r
-      "Iridium",\r
-      "Meteoric Iron",\r
-    },\r
-    ["粉碎=>粉碎=>离心"] = {\r
-      "Basaltic Mineral Sand",\r
-      "Asbestos",\r
-      "Granitic Mineral",\r
-      "Graphite",\r
-      "Chromite",\r
-      "Granitic Mineral Sand",\r
-      "Roasted Iron",\r
-      "Yellow Limonite",\r
-      "Basaltic Mineral",\r
-    },\r
-    ["粉碎=>水洗=>热离=>粉碎=>离心=>电解"] = {\r
-      "Pollucite",\r
-      "Pyrochlore",\r
-    },\r
-    ["粉碎=>水洗=>粉碎=>离心=>电解"] = {\r
-      "Salt",\r
-      "Cryolite",\r
-      "Lepidolite",\r
-      "Rock Salt",\r
-      "Cobaltite",\r
-    },\r
-    ["粉碎=>离心"] = {\r
-      "Monazite",\r
-      "Bastnasite",\r
-    },\r
-    ["粉碎=>汞洗=>离心"] = {\r
-      "Galena",\r
-    },\r
-  },\r
-}\r
-`,ol="ore.config";var ph=Td();let al=0,Gd="",Qd="",Yd="",cd=0;const ml=[];function mh(){const l=cd+1;return cd=l,ml.push(l),l}function hh(l){const s=ml.indexOf(l);s>=0&&ml.splice(s,1)}function gh(l){return ml[ml.length-1]===l}function vh(){if(!(typeof document>"u")){if(al===0){const{body:l,documentElement:s}=document;Gd=l.style.overflow,Qd=l.style.paddingRight,Yd=s.style.overflow;const a=window.innerWidth-s.clientWidth;if(a>0){const c=Number.parseFloat(window.getComputedStyle(l).paddingRight||"0");l.style.paddingRight=`${c+a}px`}l.style.overflow="hidden",s.style.overflow="hidden"}al+=1}}function yh(){if(typeof document>"u"||(al=Math.max(0,al-1),al!==0))return;const{body:l,documentElement:s}=document;l.style.overflow=Gd,l.style.paddingRight=Qd,s.style.overflow=Yd}function Dt({open:l,title:s,subtitle:a,wide:c,sheetClassName:p,closeOnEscape:f=!0,onClose:m,children:v,footer:w}){const h=j.useRef(null);return j.useEffect(()=>{if(!l)return;const b=mh();return h.current=b,vh(),()=>{yh(),hh(b),h.current===b&&(h.current=null)}},[l]),j.useEffect(()=>{if(!l||!f)return;const b=C=>{C.key==="Escape"&&h.current!==null&&gh(h.current)&&m()};return window.addEventListener("keydown",b),()=>window.removeEventListener("keydown",b)},[l,f,m]),l?ph.createPortal(i.jsx("div",{className:"modal-backdrop",role:"presentation",onClick:m,children:i.jsxs("div",{className:`modal-sheet${c?" modal-sheet--wide":""}${p?` ${p}`:""}`,role:"dialog","aria-modal":"true","aria-label":s,onClick:b=>b.stopPropagation(),children:[i.jsxs("header",{className:"modal-header",children:[i.jsxs("div",{children:[i.jsx("h2",{className:"modal-title",children:s}),a?i.jsx("p",{className:"modal-subtitle",children:a}):null]}),i.jsx("button",{type:"button",className:"icon-button",onClick:m,"aria-label":"关闭弹窗",children:"×"})]}),i.jsx("div",{className:"modal-body",children:v}),w?i.jsx("footer",{className:"modal-footer",children:w}):null]})}),document.body):null}async function xh(l){const s=await l.arrayBuffer(),a=["utf-8","gb18030"];for(const c of a)try{return new TextDecoder(c,c==="utf-8"?{fatal:!0}:void 0).decode(s)}catch{}return new TextDecoder().decode(s)}function kh({open:l,initialFileName:s,onClose:a,onImport:c}){const[p,f]=j.useState(s),[m,v]=j.useState(""),[w,h]=j.useState(""),b=j.useRef(null);j.useEffect(()=>{l&&(f(s),v(""),h(""))},[l,s]);const C=async()=>{try{const D=await navigator.clipboard.readText();if(!D.trim()){h("剪贴板里没有可导入的文本");return}v(D),h("")}catch(D){h(D instanceof Error?D.message:String(D))}},E=()=>{var D;(D=b.current)==null||D.click()},P=async D=>{var X;const K=(X=D.target.files)==null?void 0:X[0];if(D.target.value="",!!K)try{const oe=await xh(K);v(oe),f(K.name),h("")}catch(oe){h(oe instanceof Error?oe.message:String(oe))}},B=()=>{const D=m.trim();if(!D){h("请输入或粘贴配置文本");return}c(D,p.trim())};return i.jsxs(Dt,{open:l,title:"导入配置",subtitle:"支持直接粘贴剪贴板内容，也支持从文件读取后自动填入文本框。",wide:!0,onClose:a,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:a,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:B,children:"导入"})]}),children:[i.jsx("input",{ref:b,className:"sr-only",type:"file",accept:".new,.lua,.txt,text/plain",onChange:P}),i.jsxs("div",{className:"modal-form",children:[i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:"文件名"}),i.jsx("div",{className:"field-control",children:i.jsx("input",{className:"input",value:p,onChange:D=>f(D.target.value),placeholder:"setting.new"})}),i.jsx("span",{className:"field-hint",children:"这个名字会用于下载时的文件名。"})]}),i.jsxs("label",{className:"field field--full",children:[i.jsx("span",{className:"field-label",children:"配置文本"}),i.jsxs("div",{className:"field-control field-control--stack",children:[i.jsx("textarea",{className:"input import-textarea",value:m,onChange:D=>v(D.target.value),placeholder:"把 Lua 配置粘贴到这里，或者点下面按钮从剪贴板或文件读取。"}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:C,children:"从剪贴板中读取"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:E,children:"从文件中读取"})]})]}),i.jsx("span",{className:"field-hint",children:"导入过程完全在本地浏览器中完成，不会上传到服务器。"})]}),w?i.jsx("div",{className:"form-error",children:w}):null]})]})}function ge(l,s,a){return i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control",children:s}),a?i.jsx("span",{className:"field-hint",children:a}):null]})}function wh({open:l,mode:s,initial:a,existingNames:c,onClose:p,onSave:f}){const[m,v]=j.useState(a.name),[w,h]=j.useState(a.machine),[b,C]=j.useState("");j.useEffect(()=>{l&&(v(a.name),h(a.machine),C(""))},[l,a]);const E=()=>{const P=m.trim(),B=w.trim();if(!P){C("职责名称不能为空");return}if(!B){C("机器名称不能为空");return}if(c.some(D=>D!==a.name&&D===P)){C(`职责 "${P}" 已存在`);return}f({name:P,machine:B})};return i.jsx(Dt,{open:l,title:s==="add"?"新增职责":"编辑职责",subtitle:"职责名称会联动流程、ME接口和白名单/黑名单。",onClose:p,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:p,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:E,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("职责名称",i.jsx("input",{className:"input",value:m,onChange:P=>v(P.target.value),onKeyDown:P=>{P.key==="Enter"&&(P.preventDefault(),E())},placeholder:"例如：粉碎"}),"职责名称会作为配置里的 key。"),ge("机器名称",i.jsx("input",{className:"input",value:w,onChange:P=>h(P.target.value),onKeyDown:P=>{P.key==="Enter"&&(P.preventDefault(),E())},placeholder:"例如：粉碎机"}),"这里保存对应的机器类型名称。"),b?i.jsx("div",{className:"form-error",children:b}):null]})})}function Nh({open:l,mode:s,initial:a,availableRoles:c,existingIds:p,onClose:f,onSave:m}){const[v,w]=j.useState(a.id),[h,b]=j.useState(a.role),[C,E]=j.useState("");j.useEffect(()=>{l&&(w(a.id),b(a.role||c[0]||""),E(""))},[l,a,c]);const P=()=>{const B=v.trim(),D=h.trim();if(!B){E("ME 接口地址不能为空");return}if(!D){E("职责不能为空");return}if(!c.includes(D)){E("职责必须来自当前配置");return}if(p.some(K=>K!==a.id&&K===B)){E(`ME 接口地址 "${B}" 已存在`);return}m({id:B,role:D})};return i.jsx(Dt,{open:l,title:s==="add"?"新增 ME 接口地址":"编辑 ME 接口地址",subtitle:"ME 接口地址 需要唯一，并且要指向一个职责。",onClose:f,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:f,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:P,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("ME 接口地址",i.jsx("input",{className:"input",value:v,onChange:B=>w(B.target.value),onKeyDown:B=>{B.key==="Enter"&&(B.preventDefault(),P())},placeholder:"例如：c6220ff-e6bb-452f-b505-ec45ac813170"}),"可以通过 OpenComputer 中的调试器右击 ME 接口贴着的适配器即可获取到 ME 接口地址"),ge("职责",i.jsx("select",{className:"input",value:h,onChange:B=>b(B.target.value),onKeyDown:B=>{B.key==="Enter"&&(B.preventDefault(),P())},disabled:c.length===0,children:c.length===0?i.jsx("option",{value:"",children:"暂无可用职责"}):i.jsxs(i.Fragment,{children:[i.jsx("option",{value:"",disabled:!0,children:"选择职责"}),c.map(B=>i.jsx("option",{value:B,children:B},B))]})}),"只能选择当前配置中已有的职责。"),C?i.jsx("div",{className:"form-error",children:C}):null]})})}const jh={item:"items.json",fluid:"fluids.json"},Xd=[{value:"zh_CN",label:"简体中文"},{value:"en_US",label:"English (US)"}],_n="zh_CN",qd={item:"物品",fluid:"流体"},Zd={zh_CN:"简体中文",en_US:"English (US)"},_h=new Set(Xd.map(l=>l.value)),Jd=j.createContext(null),Xo=new Map,ef=new Map,Ds=new Map;function Sn(l){const s=(l??_n).trim().replace("-","_");return _h.has(s)?s:_n}function ia(l,s){return`${l}:${s}`}function tf(l,s){return ef.get(ia(l,s))??0}function Sh(l,s,a){const c=ia(l,s);let p=Ds.get(c);return p||(p=new Set,Ds.set(c,p)),p.add(a),()=>{p==null||p.delete(a),p&&p.size===0&&Ds.delete(c)}}function Ch(l,s){var c;const a=ia(l,s);ef.set(a,tf(l,s)+1),(c=Ds.get(a))==null||c.forEach(p=>p())}function gr(l){const s=Sn(l);return Zd[s]}function dd(l,s){const a=ul(s,l);return a?{status:"ready",database:a,error:""}:{status:"idle",database:null,error:""}}function oa(l){return{item:dd(l,"item"),fluid:dd(l,"fluid")}}function Eh(){const l={};for(const[s]of Xo.entries())l[s]=oa(s);return l}function Mh(l,s){return l[s]??oa(s)}function Rh(l,s){const a=Mh(l,s.locale),c=a[s.kind];return s.type==="request"?c.status==="loading"||c.status==="ready"?l:{...l,[s.locale]:{...a,[s.kind]:{status:"loading",database:null,error:""}}}:s.type==="success"?c.status==="ready"&&c.database===s.database&&c.error===""?l:{...l,[s.locale]:{...a,[s.kind]:{status:"ready",database:s.database,error:""}}}:c.status==="error"&&c.error===s.error?l:{...l,[s.locale]:{...a,[s.kind]:{status:"error",database:null,error:s.error}}}}function bh({children:l}){const[s,a]=j.useReducer(Rh,void 0,Eh),c=j.useRef(!0);j.useEffect(()=>(c.current=!0,()=>{c.current=!1}),[]);const p=j.useCallback(v=>{c.current&&a(v)},[a]),f=j.useCallback((v,w=_n)=>{const h=Sn(w),b=aa(v,h);return b.snapshot?(p({type:"success",locale:h,kind:v,database:b.snapshot}),Promise.resolve(b.snapshot)):(p({type:"request",locale:h,kind:v}),lf(v,h).then(C=>(p({type:"success",locale:h,kind:v,database:C}),C)).catch(C=>{throw p({type:"failure",locale:h,kind:v,error:C instanceof Error?C.message:String(C)}),C}))},[p]),m=j.useMemo(()=>({state:s,ensureDatabase:f}),[f,s]);return j.createElement(Jd.Provider,{value:m},l)}function Ih(l,s=_n){return Dh(l,s)}function Dh(l,s){var v;const a=j.useContext(Jd);if(!a)throw new Error("useResourceDatabase must be used within ResourceDatabaseProvider");const{state:c,ensureDatabase:p}=a,f=Sn(s),m=((v=c[f])==null?void 0:v[l])??oa(f)[l];return j.useEffect(()=>{p(l,f)},[p,l,f]),m}function Lh(l){return l.endsWith("/")?l:`${l}/`}function Ph(l,s){return`${Lh("/oc/ore-editor/")}static/database/${s}/${jh[l]}`}function Zt(l,s=0){if(typeof l=="number"&&Number.isFinite(l))return l;if(typeof l=="string"&&l.trim()){const a=Number(l);if(Number.isFinite(a))return a}return s}function Th(l){return typeof l=="boolean"?l:typeof l=="string"?l.toLowerCase()==="true":!!l}function nf(l,s){const a=l.trim(),c=s.trim();return a?c?`${a}(${c})`:a:c}function rf(l){return l.map(s=>String(s??"")).join("\0").toLowerCase()}function zh(l,s){const a=String(s.localizedName??""),c=String(s.internalName??""),p=String(s.modId??""),f=Zt(s.itemId),m=Zt(s.itemDamage),v=Zt(s.maxDamage),w=Zt(s.maxStackSize,1),h=String(s.tooltip??""),b=String(s.unlocalizedName??"");return{kind:"item",key:l,localizedName:a,modId:p,internalName:c,displayName:nf(a,l),searchText:rf([l,a,p,c,f,m,v,w,h,b]),itemId:f,itemDamage:m,maxDamage:v,maxStackSize:w,tooltip:h,unlocalizedName:b}}function Oh(l,s){const a=String(s.localizedName??""),c=String(s.internalName??""),p=String(s.modId??""),f=Zt(s.fluidId),m=Zt(s.density),v=Th(s.gaseous),w=Zt(s.luminosity),h=Zt(s.temperature),b=Zt(s.viscosity),C=String(s.unlocalizedName??"");return{kind:"fluid",key:l,localizedName:a,modId:p,internalName:c,displayName:nf(a,l),searchText:rf([l,a,p,c,f,m,v,w,h,b,C]),fluidId:f,density:m,gaseous:v,luminosity:w,temperature:h,viscosity:b,unlocalizedName:C}}async function $h(l,s){if(typeof window>"u")return[];const a=await fetch(Ph(l,s),{headers:{Accept:"application/json"}});if(!a.ok)throw new Error(`加载${Zd[s]} ${qd[l]}数据库失败: ${a.status} ${a.statusText}`);const c=await a.json();return Object.entries(c).map(([f,m])=>l==="item"?zh(f,m):Oh(f,m))}function Fh(l){const s=new Map,a=new Map,c=new Map;for(const p of l){s.has(p.key)||s.set(p.key,p);const f=p.localizedName.trim();f&&!a.has(f)&&a.set(f,p);const m=p.internalName.trim();m&&!c.has(m)&&c.set(m,p)}return{byKey:s,byLocalizedName:a,byInternalName:c}}function Ah(l){let s=Xo.get(l);return s||(s=new Map,Xo.set(l,s)),s}function aa(l,s){const a=Ah(s);let c=a.get(l);return c||(c={pending:null,snapshot:null},a.set(l,c)),c}function Uh(l){return{records:l,index:Fh(l)}}function lf(l,s){const a=aa(l,s);return a.snapshot?Promise.resolve(a.snapshot):(a.pending||(a.pending=$h(l,s).then(c=>{const p=Uh(c);return a.snapshot=p,a.pending=null,Ch(l,s),p}).catch(c=>{throw a.pending=null,c})),a.pending)}async function Bh(l,s=_n){return lf(l,Sn(s))}function ul(l,s=_n){return aa(l,Sn(s)).snapshot}function Wh(l){return qd[l]}function sf(l){return l.displayName}function Vh(l,s){return s==="label"?l.localizedName.trim()||l.key:l.kind==="item"?`${l.modId.trim()}:${l.internalName.trim()}:${l.itemDamage}`:l.internalName.trim()}function Hh(l){return!Array.isArray(l)}function yr(l,s,a="id"){const c=s.trim();if(!c)return null;let p=c.replace("#",":").toLowerCase();if(Hh(l)){const{index:m}=l;return a==="label"?m.byLocalizedName.get(c)??m.byKey.get(p)??m.byInternalName.get(c)??null:m.byKey.get(p)??m.byInternalName.get(c)??m.byLocalizedName.get(c)??null}const f=a==="label"?[m=>m.localizedName===c,m=>m.key===p,m=>m.internalName===c]:[m=>m.key===p,m=>m.internalName===c,m=>m.localizedName===c];for(const m of f){const v=l.find(w=>m(w));if(v)return v}return null}function of(l,s,a,c){const p=ul(l,a);return(p?yr(p,s,"id"):c)??c}function Kh(l,s,a){if(a.length===0)return null;const c=Sn(a[0]),p=Array.from(new Set(a.slice(1).map(m=>Sn(m))));let f=null;for(const m of p){const v=ul(l,m),w=v?yr(v,s,"label"):null;if(w){f=w;break}}if(f){const m=ul(l,c);return m?yr(m,f.key,"id")??f:f}else{const m=ul(l,c);return m?yr(m,s,"label"):null}}function kr(l,s,a,c){const p={};let f=null;return s?f=of(l,a,c.display,p):f=Kh(l,a,[c.display,c.game]),f===p?null:f}function hl(l,s=_n){const a=Sn(s);return j.useSyncExternalStore(c=>Sh(l,a,c),()=>tf(l,a),()=>0)}const Uo=new Intl.Collator(void 0,{numeric:!0,sensitivity:"base"});function fd(l){const s=l.trim();if(!s)return null;const a=Number(s);return Number.isFinite(a)?a:null}function ll(l,s){const a=l.trim().toLowerCase();return!a||s.includes(a)}function pd(l,s){return s in l?l[s]:l.displayName}function Gh(l,s,a,c){const p=c==="asc"?1:-1,f=pd(l,a),m=pd(s,a);let v=0;if(typeof f=="string"&&typeof m=="string"?v=Uo.compare(f,m):v=Number(f)-Number(m),v!==0)return v*p;const w=Uo.compare(l.displayName,s.displayName);return w!==0?w*p:Uo.compare(l.key,s.key)*p}function Qh(l,s){return ll(s.query,l.searchText)&&ll(s.modId,l.modId)&&ll(s.key,l.key)&&ll(s.localizedName,l.localizedName)&&ll(s.internalName,l.internalName)}function Xt(l,s,a){const c=fd(s),p=fd(a);return!(c!==null&&l<c||p!==null&&l>p)}function Yh(l,s){return l.kind==="item"?Xt(l.itemId,s.itemIdMin,s.itemIdMax)&&Xt(l.itemDamage,s.itemDamageMin,s.itemDamageMax)&&Xt(l.maxDamage,s.maxDamageMin,s.maxDamageMax)&&Xt(l.maxStackSize,s.maxStackSizeMin,s.maxStackSizeMax):s.gaseous==="yes"&&!l.gaseous||s.gaseous==="no"&&l.gaseous?!1:Xt(l.fluidId,s.fluidIdMin,s.fluidIdMax)&&Xt(l.density,s.densityMin,s.densityMax)&&Xt(l.viscosity,s.viscosityMin,s.viscosityMax)&&Xt(l.temperature,s.temperatureMin,s.temperatureMax)&&Xt(l.luminosity,s.luminosityMin,s.luminosityMax)}function md(l,s){const a=[];for(let c=0;c<l.length;c+=1){const p=l[c];!Qh(p,s)||!Yh(p,s)||a.push(c)}return a.sort((c,p)=>Gh(l[c],l[p],s.sortKey,s.sortDirection)),Uint32Array.from(a)}function hd(l,s){return`${l}:${s}`}let sl=null,zs=!1,gd=0;const cl=new Map,vd=new Set;function Xh(){return gd+=1,`resource-picker-${gd}`}function qh(){if(zs)throw new Error("Resource picker worker is unavailable.");if(!sl)try{sl=new Worker(new URL("/oc/ore-editor/assets/resourcePicker.worker-D3JfDlVJ.js",import.meta.url),{type:"module"}),sl.addEventListener("message",Zh),sl.addEventListener("error",eg)}catch(l){throw zs=!0,l}return sl}function Zh(l){const s=l.data,a=cl.get(s.channelId);a&&a.forEach(c=>c(s))}function Jh(l){for(const[s,a]of cl.entries()){const c={type:"error",channelId:s,message:l};a.forEach(p=>p(c))}}function eg(l){zs=!0;const s=l.error instanceof Error?l.error.message:l.message||"Resource picker worker crashed";console.error("Resource picker worker crashed",l.error??l.message),Jh(s)}function tg(l,s){let a=cl.get(l);return a||(a=new Set,cl.set(l,a)),a.add(s),()=>{a==null||a.delete(s),a&&a.size===0&&cl.delete(l)}}function yd(l){try{return qh().postMessage(l),!0}catch(s){return zs=!0,console.error("Failed to post resource picker worker message",s),!1}}function ng(l){return{status:"idle",indices:new Uint32Array,totalCount:0,error:"",datasetKey:l,isCurrentDatasetReady:!1}}function rg(l,s,a,c){const[p]=j.useState(()=>Xh()),f=j.useRef(0),m=j.useRef(hd(l,s)),[v,w]=j.useState(()=>ng(m.current)),h=hd(l,s);return j.useEffect(()=>{m.current=h,w(b=>({...b,status:"loading",error:"",datasetKey:h,isCurrentDatasetReady:!1}))},[h]),j.useEffect(()=>tg(p,b=>{if(b.type==="result"){if(b.datasetKey!==m.current||b.requestId!==f.current)return;w({status:"ready",indices:b.indices,totalCount:b.totalCount,error:"",datasetKey:b.datasetKey,isCurrentDatasetReady:!0});return}b.datasetKey!==void 0&&b.datasetKey!==m.current||b.requestId!==void 0&&b.requestId!==f.current||w(C=>({...C,status:"error",error:b.message,datasetKey:b.datasetKey??m.current,isCurrentDatasetReady:C.isCurrentDatasetReady}))}),[]),j.useEffect(()=>{if(!a.length)return;const b={type:"dataset",channelId:p,datasetKey:h,kind:l,locale:s,records:a};if(!vd.has(h))if(yd(b))vd.add(h);else{const C=md(a,c);w({status:"ready",indices:C,totalCount:C.length,error:"",datasetKey:h,isCurrentDatasetReady:!0});return}},[h,l,s,a]),j.useEffect(()=>{if(!a.length)return;const b=f.current+1;if(f.current=b,w(E=>({...E,status:"loading",error:"",datasetKey:h,isCurrentDatasetReady:E.datasetKey===h?E.isCurrentDatasetReady:!1})),!yd({type:"query",channelId:p,requestId:b,datasetKey:h,kind:l,locale:s,filters:c})){const E=md(a,c);w({status:"ready",indices:E,totalCount:E.length,error:"",datasetKey:h,isCurrentDatasetReady:!0})}},[p,h,c,l,s,a]),v}const Bo=96,lg=6;function sg(l,s,a){const c=j.useRef(null),p=j.useRef(null),[f,m]=j.useState({scrollTop:0,height:0});j.useEffect(()=>{const h=c.current;if(!h)return;const b=()=>{p.current!==null&&window.cancelAnimationFrame(p.current),p.current=null,m({scrollTop:h.scrollTop,height:h.clientHeight})},C=()=>{p.current===null&&(p.current=window.requestAnimationFrame(b))};C(),h.addEventListener("scroll",C,{passive:!0});const E=typeof ResizeObserver<"u"?new ResizeObserver(()=>{C()}):null;E==null||E.observe(h);const P=()=>C();return window.addEventListener("resize",P),()=>{h.removeEventListener("scroll",C),E==null||E.disconnect(),window.removeEventListener("resize",P),p.current!==null&&(window.cancelAnimationFrame(p.current),p.current=null)}},[l,s,a]);const v=Math.max(0,Math.floor(f.scrollTop/s)-a),w=Math.min(l,Math.ceil((f.scrollTop+f.height)/s)+a);return{containerRef:c,startIndex:v,endIndex:w,topSpacerHeight:v*s,bottomSpacerHeight:Math.max(0,(l-w)*s)}}function ig(l,s,a){const c=s.trim();return c?a==="label"?l.localizedName===c||l.key===c:l.key===c||l.internalName===c||l.localizedName===c:!1}function og({records:l,recordIndices:s,currentValue:a,valueMode:c,selectionScrollKey:p,onSelect:f,formatSubtitle:m,formatDetail:v}){const w=It(),{containerRef:h,startIndex:b,endIndex:C,topSpacerHeight:E,bottomSpacerHeight:P}=sg(s.length,Bo,lg),B=j.useRef(null),D=yr(l,a,c),K=D?l.indexOf(D):-1,X=K>=0?s.indexOf(K):-1,oe=j.useMemo(()=>a.replace("#",":"),[a]);j.useLayoutEffect(()=>{const T=h.current;if(!T||B.current===p)return;B.current=p;const q=X>=0?Math.max(0,X*Bo-Math.floor((T.clientHeight-Bo)/2)):0;T.scrollTo({top:q})},[h,p,X]);const J=Array.from(s.slice(b,C));return i.jsxs("div",{className:"resource-picker-modal__list",ref:h,children:[i.jsx("div",{style:{height:E},"aria-hidden":"true"}),J.map(T=>{const q=l[T];if(!q)return null;const ee=of(q.kind,q.key,w.lang.game,q),we=ig(q,oe,c),ae=Vh(ee,c);let xe=q.displayName;return"tooltip"in q&&(xe+=`
+`){return this.doStringify(this.objectToLuaTable(s),a,c,p,f)}doStringify(s,a,c,p,f){a+=1;const m=[];return s.fields.forEach(v=>{const w=v.value;let h;Ts(w)?h=`${this.doStringify(w,a,c,p,f)}`:h=`${Wm(w)}`;let b=`${c.repeat(a*p)}`;v.kind==="array"?b+=`${h}`:v.kind==="keyed"&&(b+=`${Bm(v.key)}${c}=${c}${h}`),m.push(b)}),m.length===0?"{}":`{${f}${m.join(","+f)}${f}${c.repeat((a-1)*p)}}`}unserialization(s,a){const p=new Vm(s.replace(/^\uFEFF/,"")).parse();let f=null;if(typeof a=="function")try{f=new a}catch{f=Object.create(a.prototype)}return this.luaValueToJS(p,f)}luaValueToJS(s,a){if(!Ts(s))return s;const c=s.fields;let p=!1;if(c.length>0?p=c[0].kind==="array":p=Array.isArray(a),p){const f=[];return c.forEach((m,v)=>{const w=Array.isArray(a)?a[v]:void 0;f.push(this.luaValueToJS(m.value,w))}),f}else{let f;if(a&&typeof a=="object"&&!Array.isArray(a)){const m=Object.getPrototypeOf(a);if(m&&m.constructor&&m.constructor!==Object)try{f=new m.constructor}catch{f=Object.create(m)}else f={}}else f={};return c.forEach(m=>{var v;if(m.kind==="keyed"){const w=m.key;let h=a?a[w]:void 0;if(!h&&((v=a==null?void 0:a.constructor)!=null&&v.__indexType__)){const E=a.constructor.__indexType__;h=new E}const b=this.luaValueToJS(m.value,h),C=a==null?void 0:a.constructor;C&&typeof C.__validateIndex__=="function"&&C.__validateIndex__(w,b),f[w]=b}}),a&&typeof a=="object"&&!Array.isArray(a)&&Object.keys(a).forEach(m=>{!(m in f)&&a[m]!==void 0&&(f[m]=a[m])}),f}}}class Ko{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}}class fl{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}}tt(fl,"__indexType__",Array);class xr{constructor(){tt(this,"enable",!1);tt(this,"comments","")}}class gl{static __validateIndex__(s,a){if(typeof a!="boolean"&&!(a instanceof xr))throw new Error(`Ilegal value for key '${s}':  ${a}`)}*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}convertValueToRuleMeta(){for(let[s,a]of this)typeof a=="boolean"&&(this[s]={enable:a,comments:""})}}tt(gl,"__indexType__",xr);class vr{*[Symbol.iterator](){for(const[s,a]of Object.entries(this))yield[s,a]}convertValueToRuleMeta(){for(let[s,a]of this)a.convertValueToRuleMeta()}}tt(vr,"__indexType__",gl);class la{constructor(){tt(this,"interfaces",new Ko);tt(this,"role",new Ko);tt(this,"process",new fl);tt(this,"processReverse",new fl);tt(this,"idWhitelist",new vr);tt(this,"idBlacklist",new vr);tt(this,"logicalRules",new vr)}renew(){this.idWhitelist.convertValueToRuleMeta(),this.idBlacklist.convertValueToRuleMeta(),this.logicalRules.convertValueToRuleMeta()}setOrDeleteStringMap(s,a,c){c?s[a]=c:delete s[a]}setInterface(s,a){this.setOrDeleteStringMap(this.interfaces,s,a)}setRole(s,a){this.setOrDeleteStringMap(this.role,s,a)}oreProcessToString(s,a="=>"){return s.join(a)}deleteOreInProcessReverse(s){const a={};Object.entries(this.processReverse).forEach(([c,p])=>{const f=p.filter(m=>m!==s);f.length!==p.length&&(a[c]=f)}),Object.entries(a).forEach(([c,p])=>{this.setOrDeleteStringMap(this.processReverse,c,s.length===0?void 0:p)})}setOreProcess(s,a){if(this.setOrDeleteStringMap(this.process,s,a),this.deleteOreInProcessReverse(s),a){const c=this.oreProcessToString(a);this.processReverse[c]=[...this.processReverse[c]||[],s]}}getOreRuleByRole(s,a){return s[a]=s[a]||new gl,s[a]}getIdWhitelistRule(s){return this.getOreRuleByRole(this.idWhitelist,s)}getIdBlacklistRule(s){return this.getOreRuleByRole(this.idBlacklist,s)}getLogicalRule(s){return this.getOreRuleByRole(this.logicalRules,s)}}const Km=new la,Go=new Hm;function Gm(l){const s=new xr;return s.enable=l.enable,s.comments=l.comments,s}function Ud(l){return l instanceof xr?Gm(l):l}function Bd(l){const s=new gl;for(const[a,c]of Object.entries(l))s[a]=Ud(c);return s}function Oo(l){const s=new vr;for(const[a,c]of Object.entries(l))s[a]=Bd(c);return s}function ad(l){const s=new Ko;for(const[a,c]of Object.entries(l))s[a]=c;return s}function ud(l){const s=new fl;for(const[a,c]of Object.entries(l))s[a]=[...c];return s}function en(l){const s=new la;return s.interfaces=ad(l.interfaces),s.role=ad(l.role),s.process=ud(l.process),s.processReverse=ud(l.processReverse),s.idWhitelist=Oo(l.idWhitelist),s.idBlacklist=Oo(l.idBlacklist),s.logicalRules=Oo(l.logicalRules),s}function sa(l){const s=new fl;for(const[a,c]of Object.entries(l.process)){const p=l.oreProcessToString(c),f=s[p]??[];f.push(a),s[p]=f}l.processReverse=s}function Wd(l){const s=en(l);return s.renew(),sa(s),s}function Qm(l){return Object.keys(l).length>0}function $o(l,s,a){if(s===a)return;const c=l[s];if(!c)return;const p=l[a];if(p)for(const[f,m]of Object.entries(c))f in p||(p[f]=Ud(m));else l[a]=Bd(c);delete l[s]}function Fo(l,s){delete l[s]}function Ym(l,s,a){if(s!==a){for(const[c,p]of Object.entries(l.interfaces))p===s&&(l.interfaces[c]=a);for(const[c,p]of Object.entries(l.process))l.process[c]=p.map(f=>f===s?a:f);$o(l.idWhitelist,s,a),$o(l.idBlacklist,s,a),$o(l.logicalRules,s,a),sa(l)}}function Xm(l,s){for(const[a,c]of Object.entries(l.interfaces))c===s&&delete l.interfaces[a];for(const[a,c]of Object.entries(l.process))l.process[a]=c.filter(p=>p!==s);Fo(l.idWhitelist,s),Fo(l.idBlacklist,s),Fo(l.logicalRules,s),sa(l)}function qm(l){const s=new gl;for(const a of l){const c=new xr;c.enable=a.enable,c.comments=a.comments,s[a.rule]=c}return s}function Qo(l){return Wd(Go.unserialization(l,la))}function Vd(l,s={}){const a=Wd(l),c={role:a.role,interfaces:a.interfaces,idBlacklist:a.idBlacklist,process:a.process,idWhitelist:a.idWhitelist,processReverse:a.processReverse};return Qm(a.logicalRules)&&(c.logicalRules=a.logicalRules),s.compact?Go.serialization(c,0,"",0,""):Go.serialization(c)}function Zm(l){return Object.entries(l.role).map(([s,a])=>({name:s,machine:a}))}function Jm(l){return Object.entries(l.interfaces).map(([s,a])=>({id:s,role:a}))}function eh(l){return Object.entries(l.process).map(([s,a])=>({mineral:s,steps:[...a]}))}function Ao(l,s){return dh(l[s])}function th(l){const s=new Map;for(const[a,c]of Object.entries(l.process)){const p=l.oreProcessToString(c),f=s.get(p);if(f){f.minerals.push(a);continue}s.set(p,{signature:p,steps:[...c],minerals:[a]})}return Array.from(s.values())}function Hd(l){const s=[],a=new Set,c=p=>{a.has(p)||(a.add(p),s.push(p))};for(const p of Object.keys(l.role))c(p);for(const p of Object.values(l.process))for(const f of p)c(f);for(const p of Object.keys(l.idWhitelist))c(p);for(const p of Object.keys(l.idBlacklist))c(p);for(const p of Object.keys(l.logicalRules))c(p);return s}function nh(l){return l.length===0?"空流程":l.join(" => ")}function rh(l,s){const a=en(l);return delete a.role[s],Xm(a,s),a}function lh(l,s,a){const c=a.name.trim(),p=a.machine.trim();if(!c)throw new Error("职责名称不能为空");if(!p)throw new Error("机器名称不能为空");const f=en(l);if(s&&s!==c&&(Ym(f,s,c),delete f.role[s]),!s&&f.role[c]!==void 0)throw new Error(`职责 "${c}" 已存在`);return f.setRole(c,p),f}function sh(l,s){return rh(l,s)}function ih(l,s,a){const c=a.id.trim(),p=a.role.trim();if(!c)throw new Error("输出口 ID 不能为空");if(!p)throw new Error("职责不能为空");const f=en(l);if(!Hd(f).includes(p))throw new Error(`职责 "${p}" 不存在`);if(!s&&f.interfaces[c]!==void 0)throw new Error(`输出口 "${c}" 已存在`);if(s&&s!==c&&f.interfaces[c]!==void 0)throw new Error(`输出口 "${c}" 已存在`);return s&&s!==c&&delete f.interfaces[s],f.setInterface(c,p),f}function oh(l,s){const a=en(l);return delete a.interfaces[s],a}function ah(l,s,a,c={}){const p=a.mineral.trim(),f=a.steps.map(C=>C.trim()).filter(Boolean),m=!!c.forceReplace;if(!p)throw new Error("矿物名称不能为空");if(f.length===0)throw new Error("至少需要一个处理步骤");const v=en(l),w=v.process[p],h=s!==null&&s!==p;if(w!==void 0&&s!==p&&!m)throw new Error(`矿物 "${p}" 已存在`);return h&&v.setOreProcess(s,void 0),v.setOreProcess(p,f),v}function uh(l,s){const a=en(l);return a.setOreProcess(s,void 0),a}function ch(l){return{rule:l.rule,enable:l.enable,comments:l.comments}}function pl(l){return l.comments.trim()||l.rule}function Yo(l){return l.map(s=>({role:s.role,rules:s.rules.map(a=>ch(a))}))}function dh(l){return Object.entries(l).map(([s,a])=>({role:s,rules:Object.entries(a).map(([c,p])=>p instanceof xr?{rule:c,enable:p.enable,comments:p.comments}:typeof p=="boolean"?{rule:c,enable:p,comments:""}:{rule:c,enable:!0,comments:""})}))}function fh(l,s,a){const c=en(l),p=new vr;for(const f of a)p[f.role]=qm(f.rules);return c[s]=p,c.renew(),c}const Kd=`{
+  role = {
+    ["热离"] = "热力离心机",
+    ["过硫酸钠洗"] = "洗矿机",
+    ["汞洗"] = "洗矿机",
+    ["水洗"] = "洗矿机",
+    ["电解"] = "电解机",
+    ["离心"] = "离心机",
+    ["粉碎"] = "粉碎机",
+    ["筛选"] = "筛选机",
+  },
+  interfaces = {
+    ["8a88e9bd-66ac-42c5-9277-47eb5cc064dc"] = "热离",
+    ["06378172-5f73-4b11-802c-ee6c747216f8"] = "粉碎",
+    ["ffa6d4e2-bce3-4767-812d-1cadb910afbb"] = "离心",
+    ["4dacd021-bb68-43c7-8f76-bac3912e2fc3"] = "水洗",
+    ["805411fb-41f1-4f02-8cad-f963d7a54815"] = "汞洗",
+    ["280d73d8-c5d2-445c-a127-ce2fba9ecdac"] = "筛选",
+  },
+  idBlacklist = {},
+  process = {
+    Coal = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    ["Nether Quartz"] = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Lazurite = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Silver = {
+      "粉碎",
+      "汞洗",
+      "粉碎",
+      "离心",
+    },
+    Ruby = {
+      "粉碎",
+      "水洗",
+      "离心",
+    },
+    Naquadah = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Emerald = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Molybdenum = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Perditio = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Platinum = {
+      "粉碎",
+      "汞洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Bismuth = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Basaltic Mineral Sand"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Pitchblende = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Ordo = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Pollucite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    Uraninite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Cassiterite = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Soapstone = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Garnierite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Asbestos = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Salt = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    Amber = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Monazite = {
+      "粉碎",
+      "离心",
+    },
+    ["Uranium 238"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Malachite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Diamond = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Tetrahedrite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Antimony = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Sphalerite = {
+      "粉碎",
+      "水洗",
+      "离心",
+    },
+    Oriharukon = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Plutonium 239"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Titanium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Sodalite = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Thorium = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    ["Granitic Mineral"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    ["Nether Star"] = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Gallium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Graphite = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Stibnite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Terra = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Cryolite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    Chromite = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Magnetite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Iron = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Tin = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Ardite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Banded Iron"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Nickel = {
+      "粉碎",
+      "汞洗",
+      "粉碎",
+      "离心",
+    },
+    Neodymium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Granitic Mineral Sand"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Pyrolusite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Pyrite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Molybdenite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Roasted Iron"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Pentlandite = {
+      "粉碎",
+      "水洗",
+      "离心",
+    },
+    Tantalite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Pyrochlore = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    Aqua = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Draconium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Sulfur = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Mica = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Electrotine = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Yellow Limonite"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Copper = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Ignis = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Galena = {
+      "粉碎",
+      "汞洗",
+      "离心",
+    },
+    Tungsten = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Firestone = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    ["Naquadah Enriched"] = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Uranium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Tricalcium Phosphate"] = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Redstone = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Certus Quartz"] = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Lapis = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Air = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Bastnasite = {
+      "粉碎",
+      "离心",
+    },
+    Lepidolite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    Apatite = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Arsenic = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Iridium = {
+      "粉碎",
+      "汞洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Chalcopyrite = {
+      "粉碎",
+      "水洗",
+      "离心",
+    },
+    ["Rock Salt"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    ["Vanadium Magnetite"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Aer = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    ["Basaltic Mineral"] = {
+      "粉碎",
+      "粉碎",
+      "离心",
+    },
+    Cobalt = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Shadow = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Saltpeter = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    ["Meteoric Iron"] = {
+      "粉碎",
+      "汞洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Cinnabar = {
+      "粉碎",
+      "水洗",
+      "筛选",
+      "离心",
+    },
+    Zinc = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Gold = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    ["Brown Limonite"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Cobaltite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+      "电解",
+    },
+    ["Shadow Metal"] = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Uvarovite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Aluminium = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Scheelite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Tungstate = {
+      "粉碎",
+      "水洗",
+      "热离",
+      "粉碎",
+      "离心",
+    },
+    Desh = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+    Perlite = {
+      "粉碎",
+      "水洗",
+      "粉碎",
+      "离心",
+    },
+  },
+  idWhitelist = {
+    ["离心"] = {
+      ["gregtech:gt.comb#25"] = true,
+      ["ExtraBees:honeyComb#37"] = true,
+      ["gregtech:gt.metaitem.01#2241"] = true,
+      ["Forestry:propolis#3"] = true,
+      ["bartworks:gt.bwMetaGenerateddust#71"] = true,
+      ["bartworks:gt.bwMetaGenerateddust#77"] = true,
+      ["gregtech:gt.comb#11"] = true,
+      ["gregtech:gt.comb#9"] = true,
+      ["gregtech:gt.comb#14"] = true,
+      ["gregtech:gt.comb#19"] = true,
+      ["gregtech:gt.comb#10"] = true,
+      ["gregtech:gt.comb#13"] = true,
+      ["gregtech:gt.comb#141"] = true,
+      ["gregtech:gt.comb#140"] = true,
+      ["gregtech:gt.comb#54"] = true,
+      ["gregtech:gt.metaitem.01#2925"] = true,
+      ["gregtech:gt.metaitem.01#2528"] = true,
+    },
+    ["筛选"] = {},
+    ["电解"] = {
+      ["gregtech:gt.metaitem.01#2697"] = true,
+      ["gregtech:gt.metaitem.01#2941"] = true,
+    },
+    ["粉碎"] = {
+      ["gregtech:gt.metaitem.01#9059"] = true,
+    },
+  },
+  processReverse = {
+    ["粉碎=>水洗=>筛选=>离心"] = {
+      "Coal",
+      "Nether Quartz",
+      "Lazurite",
+      "Emerald",
+      "Perditio",
+      "Pitchblende",
+      "Ordo",
+      "Cassiterite",
+      "Amber",
+      "Diamond",
+      "Sodalite",
+      "Thorium",
+      "Nether Star",
+      "Terra",
+      "Tin",
+      "Aqua",
+      "Ignis",
+      "Firestone",
+      "Certus Quartz",
+      "Lapis",
+      "Air",
+      "Aer",
+      "Cinnabar",
+    },
+    ["粉碎=>汞洗=>粉碎=>离心"] = {
+      "Silver",
+      "Nickel",
+    },
+    ["粉碎=>水洗=>离心"] = {
+      "Ruby",
+      "Sphalerite",
+      "Pentlandite",
+      "Chalcopyrite",
+    },
+    ["粉碎=>水洗=>热离=>粉碎=>离心"] = {
+      "Naquadah",
+      "Uraninite",
+      "Soapstone",
+      "Garnierite",
+      "Pyrolusite",
+      "Pyrite",
+      "Tantalite",
+      "Naquadah Enriched",
+      "Tricalcium Phosphate",
+      "Apatite",
+      "Shadow",
+      "Gold",
+      "Tungstate",
+    },
+    ["粉碎=>水洗=>粉碎=>离心"] = {
+      "Molybdenum",
+      "Bismuth",
+      "Uranium 238",
+      "Malachite",
+      "Tetrahedrite",
+      "Antimony",
+      "Oriharukon",
+      "Plutonium 239",
+      "Titanium",
+      "Gallium",
+      "Stibnite",
+      "Magnetite",
+      "Iron",
+      "Ardite",
+      "Banded Iron",
+      "Neodymium",
+      "Molybdenite",
+      "Draconium",
+      "Sulfur",
+      "Mica",
+      "Electrotine",
+      "Copper",
+      "Tungsten",
+      "Uranium",
+      "Redstone",
+      "Arsenic",
+      "Vanadium Magnetite",
+      "Cobalt",
+      "Saltpeter",
+      "Zinc",
+      "Brown Limonite",
+      "Shadow Metal",
+      "Uvarovite",
+      "Aluminium",
+      "Scheelite",
+      "Desh",
+      "Perlite",
+    },
+    ["粉碎=>汞洗=>热离=>粉碎=>离心"] = {
+      "Platinum",
+      "Iridium",
+      "Meteoric Iron",
+    },
+    ["粉碎=>粉碎=>离心"] = {
+      "Basaltic Mineral Sand",
+      "Asbestos",
+      "Granitic Mineral",
+      "Graphite",
+      "Chromite",
+      "Granitic Mineral Sand",
+      "Roasted Iron",
+      "Yellow Limonite",
+      "Basaltic Mineral",
+    },
+    ["粉碎=>水洗=>热离=>粉碎=>离心=>电解"] = {
+      "Pollucite",
+      "Pyrochlore",
+    },
+    ["粉碎=>水洗=>粉碎=>离心=>电解"] = {
+      "Salt",
+      "Cryolite",
+      "Lepidolite",
+      "Rock Salt",
+      "Cobaltite",
+    },
+    ["粉碎=>离心"] = {
+      "Monazite",
+      "Bastnasite",
+    },
+    ["粉碎=>汞洗=>离心"] = {
+      "Galena",
+    },
+  },
+}
+`,ol="ore.config";var ph=Td();let al=0,Gd="",Qd="",Yd="",cd=0;const ml=[];function mh(){const l=cd+1;return cd=l,ml.push(l),l}function hh(l){const s=ml.indexOf(l);s>=0&&ml.splice(s,1)}function gh(l){return ml[ml.length-1]===l}function vh(){if(!(typeof document>"u")){if(al===0){const{body:l,documentElement:s}=document;Gd=l.style.overflow,Qd=l.style.paddingRight,Yd=s.style.overflow;const a=window.innerWidth-s.clientWidth;if(a>0){const c=Number.parseFloat(window.getComputedStyle(l).paddingRight||"0");l.style.paddingRight=`${c+a}px`}l.style.overflow="hidden",s.style.overflow="hidden"}al+=1}}function yh(){if(typeof document>"u"||(al=Math.max(0,al-1),al!==0))return;const{body:l,documentElement:s}=document;l.style.overflow=Gd,l.style.paddingRight=Qd,s.style.overflow=Yd}function Dt({open:l,title:s,subtitle:a,wide:c,sheetClassName:p,closeOnEscape:f=!0,onClose:m,children:v,footer:w}){const h=j.useRef(null);return j.useEffect(()=>{if(!l)return;const b=mh();return h.current=b,vh(),()=>{yh(),hh(b),h.current===b&&(h.current=null)}},[l]),j.useEffect(()=>{if(!l||!f)return;const b=C=>{C.key==="Escape"&&h.current!==null&&gh(h.current)&&m()};return window.addEventListener("keydown",b),()=>window.removeEventListener("keydown",b)},[l,f,m]),l?ph.createPortal(i.jsx("div",{className:"modal-backdrop",role:"presentation",onClick:m,children:i.jsxs("div",{className:`modal-sheet${c?" modal-sheet--wide":""}${p?` ${p}`:""}`,role:"dialog","aria-modal":"true","aria-label":s,onClick:b=>b.stopPropagation(),children:[i.jsxs("header",{className:"modal-header",children:[i.jsxs("div",{children:[i.jsx("h2",{className:"modal-title",children:s}),a?i.jsx("p",{className:"modal-subtitle",children:a}):null]}),i.jsx("button",{type:"button",className:"icon-button",onClick:m,"aria-label":"关闭弹窗",children:"×"})]}),i.jsx("div",{className:"modal-body",children:v}),w?i.jsx("footer",{className:"modal-footer",children:w}):null]})}),document.body):null}async function xh(l){const s=await l.arrayBuffer(),a=["utf-8","gb18030"];for(const c of a)try{return new TextDecoder(c,c==="utf-8"?{fatal:!0}:void 0).decode(s)}catch{}return new TextDecoder().decode(s)}function kh({open:l,initialFileName:s,onClose:a,onImport:c}){const[p,f]=j.useState(s),[m,v]=j.useState(""),[w,h]=j.useState(""),b=j.useRef(null);j.useEffect(()=>{l&&(f(s),v(""),h(""))},[l,s]);const C=async()=>{try{const D=await navigator.clipboard.readText();if(!D.trim()){h("剪贴板里没有可导入的文本");return}v(D),h("")}catch(D){h(D instanceof Error?D.message:String(D))}},E=()=>{var D;(D=b.current)==null||D.click()},P=async D=>{var X;const K=(X=D.target.files)==null?void 0:X[0];if(D.target.value="",!!K)try{const oe=await xh(K);v(oe),f(K.name),h("")}catch(oe){h(oe instanceof Error?oe.message:String(oe))}},B=()=>{const D=m.trim();if(!D){h("请输入或粘贴配置文本");return}c(D,p.trim())};return i.jsxs(Dt,{open:l,title:"导入配置",subtitle:"支持直接粘贴剪贴板内容，也支持从文件读取后自动填入文本框。",wide:!0,onClose:a,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:a,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:B,children:"导入"})]}),children:[i.jsx("input",{ref:b,className:"sr-only",type:"file",accept:".config,.lua,.txt,text/plain",onChange:P}),i.jsxs("div",{className:"modal-form",children:[i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:"文件名"}),i.jsx("div",{className:"field-control",children:i.jsx("input",{className:"input",value:p,onChange:D=>f(D.target.value),placeholder:"ore.config"})}),i.jsx("span",{className:"field-hint",children:"这个名字会用于下载时的文件名。"})]}),i.jsxs("label",{className:"field field--full",children:[i.jsx("span",{className:"field-label",children:"配置文本"}),i.jsxs("div",{className:"field-control field-control--stack",children:[i.jsx("textarea",{className:"input import-textarea",value:m,onChange:D=>v(D.target.value),placeholder:"把 Lua 配置粘贴到这里，或者点下面按钮从剪贴板或文件读取。"}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:C,children:"从剪贴板中读取"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:E,children:"从文件中读取"})]})]}),i.jsx("span",{className:"field-hint",children:"导入过程完全在本地浏览器中完成，不会上传到服务器。"})]}),w?i.jsx("div",{className:"form-error",children:w}):null]})]})}function ge(l,s,a){return i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control",children:s}),a?i.jsx("span",{className:"field-hint",children:a}):null]})}function wh({open:l,mode:s,initial:a,existingNames:c,onClose:p,onSave:f}){const[m,v]=j.useState(a.name),[w,h]=j.useState(a.machine),[b,C]=j.useState("");j.useEffect(()=>{l&&(v(a.name),h(a.machine),C(""))},[l,a]);const E=()=>{const P=m.trim(),B=w.trim();if(!P){C("职责名称不能为空");return}if(!B){C("机器名称不能为空");return}if(c.some(D=>D!==a.name&&D===P)){C(`职责 "${P}" 已存在`);return}f({name:P,machine:B})};return i.jsx(Dt,{open:l,title:s==="add"?"新增职责":"编辑职责",subtitle:"职责名称会联动流程、ME接口和白名单/黑名单。",onClose:p,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:p,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:E,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("职责名称",i.jsx("input",{className:"input",value:m,onChange:P=>v(P.target.value),onKeyDown:P=>{P.key==="Enter"&&(P.preventDefault(),E())},placeholder:"例如：粉碎"}),"职责名称会作为配置里的 key。"),ge("机器名称",i.jsx("input",{className:"input",value:w,onChange:P=>h(P.target.value),onKeyDown:P=>{P.key==="Enter"&&(P.preventDefault(),E())},placeholder:"例如：粉碎机"}),"这里保存对应的机器类型名称。"),b?i.jsx("div",{className:"form-error",children:b}):null]})})}function Nh({open:l,mode:s,initial:a,availableRoles:c,existingIds:p,onClose:f,onSave:m}){const[v,w]=j.useState(a.id),[h,b]=j.useState(a.role),[C,E]=j.useState("");j.useEffect(()=>{l&&(w(a.id),b(a.role||c[0]||""),E(""))},[l,a,c]);const P=()=>{const B=v.trim(),D=h.trim();if(!B){E("ME 接口地址不能为空");return}if(!D){E("职责不能为空");return}if(!c.includes(D)){E("职责必须来自当前配置");return}if(p.some(K=>K!==a.id&&K===B)){E(`ME 接口地址 "${B}" 已存在`);return}m({id:B,role:D})};return i.jsx(Dt,{open:l,title:s==="add"?"新增 ME 接口地址":"编辑 ME 接口地址",subtitle:"ME 接口地址 需要唯一，并且要指向一个职责。",onClose:f,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:f,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:P,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("ME 接口地址",i.jsx("input",{className:"input",value:v,onChange:B=>w(B.target.value),onKeyDown:B=>{B.key==="Enter"&&(B.preventDefault(),P())},placeholder:"例如：c6220ff-e6bb-452f-b505-ec45ac813170"}),"可以通过 OpenComputer 中的调试器右击 ME 接口贴着的适配器即可获取到 ME 接口地址"),ge("职责",i.jsx("select",{className:"input",value:h,onChange:B=>b(B.target.value),onKeyDown:B=>{B.key==="Enter"&&(B.preventDefault(),P())},disabled:c.length===0,children:c.length===0?i.jsx("option",{value:"",children:"暂无可用职责"}):i.jsxs(i.Fragment,{children:[i.jsx("option",{value:"",disabled:!0,children:"选择职责"}),c.map(B=>i.jsx("option",{value:B,children:B},B))]})}),"只能选择当前配置中已有的职责。"),C?i.jsx("div",{className:"form-error",children:C}):null]})})}const jh={item:"items.json",fluid:"fluids.json"},Xd=[{value:"zh_CN",label:"简体中文"},{value:"en_US",label:"English (US)"}],_n="zh_CN",qd={item:"物品",fluid:"流体"},Zd={zh_CN:"简体中文",en_US:"English (US)"},_h=new Set(Xd.map(l=>l.value)),Jd=j.createContext(null),Xo=new Map,ef=new Map,Ds=new Map;function Sn(l){const s=(l??_n).trim().replace("-","_");return _h.has(s)?s:_n}function ia(l,s){return`${l}:${s}`}function tf(l,s){return ef.get(ia(l,s))??0}function Sh(l,s,a){const c=ia(l,s);let p=Ds.get(c);return p||(p=new Set,Ds.set(c,p)),p.add(a),()=>{p==null||p.delete(a),p&&p.size===0&&Ds.delete(c)}}function Ch(l,s){var c;const a=ia(l,s);ef.set(a,tf(l,s)+1),(c=Ds.get(a))==null||c.forEach(p=>p())}function gr(l){const s=Sn(l);return Zd[s]}function dd(l,s){const a=ul(s,l);return a?{status:"ready",database:a,error:""}:{status:"idle",database:null,error:""}}function oa(l){return{item:dd(l,"item"),fluid:dd(l,"fluid")}}function Eh(){const l={};for(const[s]of Xo.entries())l[s]=oa(s);return l}function Mh(l,s){return l[s]??oa(s)}function Rh(l,s){const a=Mh(l,s.locale),c=a[s.kind];return s.type==="request"?c.status==="loading"||c.status==="ready"?l:{...l,[s.locale]:{...a,[s.kind]:{status:"loading",database:null,error:""}}}:s.type==="success"?c.status==="ready"&&c.database===s.database&&c.error===""?l:{...l,[s.locale]:{...a,[s.kind]:{status:"ready",database:s.database,error:""}}}:c.status==="error"&&c.error===s.error?l:{...l,[s.locale]:{...a,[s.kind]:{status:"error",database:null,error:s.error}}}}function bh({children:l}){const[s,a]=j.useReducer(Rh,void 0,Eh),c=j.useRef(!0);j.useEffect(()=>(c.current=!0,()=>{c.current=!1}),[]);const p=j.useCallback(v=>{c.current&&a(v)},[a]),f=j.useCallback((v,w=_n)=>{const h=Sn(w),b=aa(v,h);return b.snapshot?(p({type:"success",locale:h,kind:v,database:b.snapshot}),Promise.resolve(b.snapshot)):(p({type:"request",locale:h,kind:v}),lf(v,h).then(C=>(p({type:"success",locale:h,kind:v,database:C}),C)).catch(C=>{throw p({type:"failure",locale:h,kind:v,error:C instanceof Error?C.message:String(C)}),C}))},[p]),m=j.useMemo(()=>({state:s,ensureDatabase:f}),[f,s]);return j.createElement(Jd.Provider,{value:m},l)}function Ih(l,s=_n){return Dh(l,s)}function Dh(l,s){var v;const a=j.useContext(Jd);if(!a)throw new Error("useResourceDatabase must be used within ResourceDatabaseProvider");const{state:c,ensureDatabase:p}=a,f=Sn(s),m=((v=c[f])==null?void 0:v[l])??oa(f)[l];return j.useEffect(()=>{p(l,f)},[p,l,f]),m}function Lh(l){return l.endsWith("/")?l:`${l}/`}function Ph(l,s){return`${Lh("/oc/ore-editor/")}static/database/${s}/${jh[l]}`}function Zt(l,s=0){if(typeof l=="number"&&Number.isFinite(l))return l;if(typeof l=="string"&&l.trim()){const a=Number(l);if(Number.isFinite(a))return a}return s}function Th(l){return typeof l=="boolean"?l:typeof l=="string"?l.toLowerCase()==="true":!!l}function nf(l,s){const a=l.trim(),c=s.trim();return a?c?`${a}(${c})`:a:c}function rf(l){return l.map(s=>String(s??"")).join("\0").toLowerCase()}function zh(l,s){const a=String(s.localizedName??""),c=String(s.internalName??""),p=String(s.modId??""),f=Zt(s.itemId),m=Zt(s.itemDamage),v=Zt(s.maxDamage),w=Zt(s.maxStackSize,1),h=String(s.tooltip??""),b=String(s.unlocalizedName??"");return{kind:"item",key:l,localizedName:a,modId:p,internalName:c,displayName:nf(a,l),searchText:rf([l,a,p,c,f,m,v,w,h,b]),itemId:f,itemDamage:m,maxDamage:v,maxStackSize:w,tooltip:h,unlocalizedName:b}}function Oh(l,s){const a=String(s.localizedName??""),c=String(s.internalName??""),p=String(s.modId??""),f=Zt(s.fluidId),m=Zt(s.density),v=Th(s.gaseous),w=Zt(s.luminosity),h=Zt(s.temperature),b=Zt(s.viscosity),C=String(s.unlocalizedName??"");return{kind:"fluid",key:l,localizedName:a,modId:p,internalName:c,displayName:nf(a,l),searchText:rf([l,a,p,c,f,m,v,w,h,b,C]),fluidId:f,density:m,gaseous:v,luminosity:w,temperature:h,viscosity:b,unlocalizedName:C}}async function $h(l,s){if(typeof window>"u")return[];const a=await fetch(Ph(l,s),{headers:{Accept:"application/json"}});if(!a.ok)throw new Error(`加载${Zd[s]} ${qd[l]}数据库失败: ${a.status} ${a.statusText}`);const c=await a.json();return Object.entries(c).map(([f,m])=>l==="item"?zh(f,m):Oh(f,m))}function Fh(l){const s=new Map,a=new Map,c=new Map;for(const p of l){s.has(p.key)||s.set(p.key,p);const f=p.localizedName.trim();f&&!a.has(f)&&a.set(f,p);const m=p.internalName.trim();m&&!c.has(m)&&c.set(m,p)}return{byKey:s,byLocalizedName:a,byInternalName:c}}function Ah(l){let s=Xo.get(l);return s||(s=new Map,Xo.set(l,s)),s}function aa(l,s){const a=Ah(s);let c=a.get(l);return c||(c={pending:null,snapshot:null},a.set(l,c)),c}function Uh(l){return{records:l,index:Fh(l)}}function lf(l,s){const a=aa(l,s);return a.snapshot?Promise.resolve(a.snapshot):(a.pending||(a.pending=$h(l,s).then(c=>{const p=Uh(c);return a.snapshot=p,a.pending=null,Ch(l,s),p}).catch(c=>{throw a.pending=null,c})),a.pending)}async function Bh(l,s=_n){return lf(l,Sn(s))}function ul(l,s=_n){return aa(l,Sn(s)).snapshot}function Wh(l){return qd[l]}function sf(l){return l.displayName}function Vh(l,s){return s==="label"?l.localizedName.trim()||l.key:l.kind==="item"?`${l.modId.trim()}:${l.internalName.trim()}:${l.itemDamage}`:l.internalName.trim()}function Hh(l){return!Array.isArray(l)}function yr(l,s,a="id"){const c=s.trim();if(!c)return null;let p=c.replace("#",":").toLowerCase();if(Hh(l)){const{index:m}=l;return a==="label"?m.byLocalizedName.get(c)??m.byKey.get(p)??m.byInternalName.get(c)??null:m.byKey.get(p)??m.byInternalName.get(c)??m.byLocalizedName.get(c)??null}const f=a==="label"?[m=>m.localizedName===c,m=>m.key===p,m=>m.internalName===c]:[m=>m.key===p,m=>m.internalName===c,m=>m.localizedName===c];for(const m of f){const v=l.find(w=>m(w));if(v)return v}return null}function of(l,s,a,c){const p=ul(l,a);return(p?yr(p,s,"id"):c)??c}function Kh(l,s,a){if(a.length===0)return null;const c=Sn(a[0]),p=Array.from(new Set(a.slice(1).map(m=>Sn(m))));let f=null;for(const m of p){const v=ul(l,m),w=v?yr(v,s,"label"):null;if(w){f=w;break}}if(f){const m=ul(l,c);return m?yr(m,f.key,"id")??f:f}else{const m=ul(l,c);return m?yr(m,s,"label"):null}}function kr(l,s,a,c){const p={};let f=null;return s?f=of(l,a,c.display,p):f=Kh(l,a,[c.display,c.game]),f===p?null:f}function hl(l,s=_n){const a=Sn(s);return j.useSyncExternalStore(c=>Sh(l,a,c),()=>tf(l,a),()=>0)}const Uo=new Intl.Collator(void 0,{numeric:!0,sensitivity:"base"});function fd(l){const s=l.trim();if(!s)return null;const a=Number(s);return Number.isFinite(a)?a:null}function ll(l,s){const a=l.trim().toLowerCase();return!a||s.includes(a)}function pd(l,s){return s in l?l[s]:l.displayName}function Gh(l,s,a,c){const p=c==="asc"?1:-1,f=pd(l,a),m=pd(s,a);let v=0;if(typeof f=="string"&&typeof m=="string"?v=Uo.compare(f,m):v=Number(f)-Number(m),v!==0)return v*p;const w=Uo.compare(l.displayName,s.displayName);return w!==0?w*p:Uo.compare(l.key,s.key)*p}function Qh(l,s){return ll(s.query,l.searchText)&&ll(s.modId,l.modId)&&ll(s.key,l.key)&&ll(s.localizedName,l.localizedName)&&ll(s.internalName,l.internalName)}function Xt(l,s,a){const c=fd(s),p=fd(a);return!(c!==null&&l<c||p!==null&&l>p)}function Yh(l,s){return l.kind==="item"?Xt(l.itemId,s.itemIdMin,s.itemIdMax)&&Xt(l.itemDamage,s.itemDamageMin,s.itemDamageMax)&&Xt(l.maxDamage,s.maxDamageMin,s.maxDamageMax)&&Xt(l.maxStackSize,s.maxStackSizeMin,s.maxStackSizeMax):s.gaseous==="yes"&&!l.gaseous||s.gaseous==="no"&&l.gaseous?!1:Xt(l.fluidId,s.fluidIdMin,s.fluidIdMax)&&Xt(l.density,s.densityMin,s.densityMax)&&Xt(l.viscosity,s.viscosityMin,s.viscosityMax)&&Xt(l.temperature,s.temperatureMin,s.temperatureMax)&&Xt(l.luminosity,s.luminosityMin,s.luminosityMax)}function md(l,s){const a=[];for(let c=0;c<l.length;c+=1){const p=l[c];!Qh(p,s)||!Yh(p,s)||a.push(c)}return a.sort((c,p)=>Gh(l[c],l[p],s.sortKey,s.sortDirection)),Uint32Array.from(a)}function hd(l,s){return`${l}:${s}`}let sl=null,zs=!1,gd=0;const cl=new Map,vd=new Set;function Xh(){return gd+=1,`resource-picker-${gd}`}function qh(){if(zs)throw new Error("Resource picker worker is unavailable.");if(!sl)try{sl=new Worker(new URL("/oc/ore-editor/assets/resourcePicker.worker-D3JfDlVJ.js",import.meta.url),{type:"module"}),sl.addEventListener("message",Zh),sl.addEventListener("error",eg)}catch(l){throw zs=!0,l}return sl}function Zh(l){const s=l.data,a=cl.get(s.channelId);a&&a.forEach(c=>c(s))}function Jh(l){for(const[s,a]of cl.entries()){const c={type:"error",channelId:s,message:l};a.forEach(p=>p(c))}}function eg(l){zs=!0;const s=l.error instanceof Error?l.error.message:l.message||"Resource picker worker crashed";console.error("Resource picker worker crashed",l.error??l.message),Jh(s)}function tg(l,s){let a=cl.get(l);return a||(a=new Set,cl.set(l,a)),a.add(s),()=>{a==null||a.delete(s),a&&a.size===0&&cl.delete(l)}}function yd(l){try{return qh().postMessage(l),!0}catch(s){return zs=!0,console.error("Failed to post resource picker worker message",s),!1}}function ng(l){return{status:"idle",indices:new Uint32Array,totalCount:0,error:"",datasetKey:l,isCurrentDatasetReady:!1}}function rg(l,s,a,c){const[p]=j.useState(()=>Xh()),f=j.useRef(0),m=j.useRef(hd(l,s)),[v,w]=j.useState(()=>ng(m.current)),h=hd(l,s);return j.useEffect(()=>{m.current=h,w(b=>({...b,status:"loading",error:"",datasetKey:h,isCurrentDatasetReady:!1}))},[h]),j.useEffect(()=>tg(p,b=>{if(b.type==="result"){if(b.datasetKey!==m.current||b.requestId!==f.current)return;w({status:"ready",indices:b.indices,totalCount:b.totalCount,error:"",datasetKey:b.datasetKey,isCurrentDatasetReady:!0});return}b.datasetKey!==void 0&&b.datasetKey!==m.current||b.requestId!==void 0&&b.requestId!==f.current||w(C=>({...C,status:"error",error:b.message,datasetKey:b.datasetKey??m.current,isCurrentDatasetReady:C.isCurrentDatasetReady}))}),[]),j.useEffect(()=>{if(!a.length)return;const b={type:"dataset",channelId:p,datasetKey:h,kind:l,locale:s,records:a};if(!vd.has(h))if(yd(b))vd.add(h);else{const C=md(a,c);w({status:"ready",indices:C,totalCount:C.length,error:"",datasetKey:h,isCurrentDatasetReady:!0});return}},[h,l,s,a]),j.useEffect(()=>{if(!a.length)return;const b=f.current+1;if(f.current=b,w(E=>({...E,status:"loading",error:"",datasetKey:h,isCurrentDatasetReady:E.datasetKey===h?E.isCurrentDatasetReady:!1})),!yd({type:"query",channelId:p,requestId:b,datasetKey:h,kind:l,locale:s,filters:c})){const E=md(a,c);w({status:"ready",indices:E,totalCount:E.length,error:"",datasetKey:h,isCurrentDatasetReady:!0})}},[p,h,c,l,s,a]),v}const Bo=96,lg=6;function sg(l,s,a){const c=j.useRef(null),p=j.useRef(null),[f,m]=j.useState({scrollTop:0,height:0});j.useEffect(()=>{const h=c.current;if(!h)return;const b=()=>{p.current!==null&&window.cancelAnimationFrame(p.current),p.current=null,m({scrollTop:h.scrollTop,height:h.clientHeight})},C=()=>{p.current===null&&(p.current=window.requestAnimationFrame(b))};C(),h.addEventListener("scroll",C,{passive:!0});const E=typeof ResizeObserver<"u"?new ResizeObserver(()=>{C()}):null;E==null||E.observe(h);const P=()=>C();return window.addEventListener("resize",P),()=>{h.removeEventListener("scroll",C),E==null||E.disconnect(),window.removeEventListener("resize",P),p.current!==null&&(window.cancelAnimationFrame(p.current),p.current=null)}},[l,s,a]);const v=Math.max(0,Math.floor(f.scrollTop/s)-a),w=Math.min(l,Math.ceil((f.scrollTop+f.height)/s)+a);return{containerRef:c,startIndex:v,endIndex:w,topSpacerHeight:v*s,bottomSpacerHeight:Math.max(0,(l-w)*s)}}function ig(l,s,a){const c=s.trim();return c?a==="label"?l.localizedName===c||l.key===c:l.key===c||l.internalName===c||l.localizedName===c:!1}function og({records:l,recordIndices:s,currentValue:a,valueMode:c,selectionScrollKey:p,onSelect:f,formatSubtitle:m,formatDetail:v}){const w=It(),{containerRef:h,startIndex:b,endIndex:C,topSpacerHeight:E,bottomSpacerHeight:P}=sg(s.length,Bo,lg),B=j.useRef(null),D=yr(l,a,c),K=D?l.indexOf(D):-1,X=K>=0?s.indexOf(K):-1,oe=j.useMemo(()=>a.replace("#",":"),[a]);j.useLayoutEffect(()=>{const T=h.current;if(!T||B.current===p)return;B.current=p;const q=X>=0?Math.max(0,X*Bo-Math.floor((T.clientHeight-Bo)/2)):0;T.scrollTo({top:q})},[h,p,X]);const J=Array.from(s.slice(b,C));return i.jsxs("div",{className:"resource-picker-modal__list",ref:h,children:[i.jsx("div",{style:{height:E},"aria-hidden":"true"}),J.map(T=>{const q=l[T];if(!q)return null;const ee=of(q.kind,q.key,w.lang.game,q),we=ig(q,oe,c),ae=Vh(ee,c);let xe=q.displayName;return"tooltip"in q&&(xe+=`
 
 `+q.tooltip),i.jsxs("button",{type:"button",className:`resource-picker-modal__result${we?" is-selected":""}`,onClick:()=>f(ae,ee),title:xe,children:[i.jsx("span",{className:"resource-picker-modal__result-title",children:sf(q)}),i.jsx("span",{className:"resource-picker-modal__result-subtitle",children:m(q)}),i.jsx("span",{className:"resource-picker-modal__result-detail",children:v(q)})]},q.key)}),i.jsx("div",{style:{height:P},"aria-hidden":"true"})]})}function af(){return{query:"",modId:"",key:"",localizedName:"",internalName:"",sortKey:"displayName",sortDirection:"asc",gaseous:"all",itemIdMin:"",itemIdMax:"",itemDamageMin:"",itemDamageMax:"",maxDamageMin:"",maxDamageMax:"",maxStackSizeMin:"",maxStackSizeMax:"",fluidIdMin:"",fluidIdMax:"",densityMin:"",densityMax:"",viscosityMin:"",viscosityMax:"",temperatureMin:"",temperatureMax:"",luminosityMin:"",luminosityMax:""}}function uf(){return i.jsx("div",{className:"resource-picker-skeleton__list",children:Array.from({length:10}).map((l,s)=>i.jsxs("div",{className:"resource-picker-skeleton__card",children:[i.jsx("div",{className:"skeleton skeleton--line skeleton--card-title"}),i.jsx("div",{className:"skeleton skeleton--line skeleton--card-subtitle"}),i.jsx("div",{className:"skeleton skeleton--line skeleton--card-detail"})]},s))})}function ag(){return i.jsxs("div",{className:"resource-picker-skeleton","aria-busy":"true","aria-live":"polite",children:[i.jsxs("section",{className:"editor-card resource-picker-skeleton__panel resource-picker-skeleton__panel--filters",children:[i.jsxs("div",{className:"resource-picker-skeleton__header",children:[i.jsxs("div",{className:"resource-picker-skeleton__title-block",children:[i.jsx("div",{className:"skeleton skeleton--line skeleton--wide"}),i.jsx("div",{className:"skeleton skeleton--line skeleton--medium"})]}),i.jsx("div",{className:"skeleton skeleton--pill"})]}),i.jsxs("div",{className:"resource-picker-skeleton__group",children:[i.jsx("div",{className:"skeleton skeleton--label"}),i.jsx("div",{className:"skeleton skeleton--field"})]}),i.jsxs("div",{className:"resource-picker-skeleton__group",children:[i.jsx("div",{className:"skeleton skeleton--label"}),i.jsx("div",{className:"skeleton skeleton--field"})]}),i.jsxs("div",{className:"resource-picker-skeleton__group",children:[i.jsx("div",{className:"skeleton skeleton--label"}),i.jsx("div",{className:"skeleton skeleton--field"})]}),i.jsxs("div",{className:"resource-picker-skeleton__group",children:[i.jsx("div",{className:"skeleton skeleton--label"}),i.jsx("div",{className:"skeleton skeleton--field"})]}),i.jsxs("div",{className:"resource-picker-skeleton__group",children:[i.jsx("div",{className:"skeleton skeleton--label"}),i.jsx("div",{className:"skeleton skeleton--field"})]})]}),i.jsx("section",{className:"editor-card resource-picker-skeleton__panel resource-picker-skeleton__panel--results",children:i.jsx(uf,{})})]})}function cf({spec:l,currentValue:s,valueMode:a,onClose:c,onSelect:p}){const[f,m]=j.useState(()=>l.createDefaultFilters()),[v,w]=j.useState(_n),{status:h,database:b,error:C}=Ih(l.kind,v),E=(b==null?void 0:b.records)??[],P=j.useDeferredValue(f.query),B=j.useMemo(()=>({...f,query:P}),[P,f]),D=j.useMemo(()=>b?yr(b,s,a):null,[s,b,a]),K=j.useMemo(()=>D?`${l.kind}:${v}:${a}:${D.key}`:`${l.kind}:${v}:${a}:${s.trim().toLowerCase()}`,[s,v,D,l.kind,a]),X=rg(l.kind,v,E,B),oe=X.isCurrentDatasetReady?X.totalCount:0,J=h==="idle"||h==="loading",T=J?`数据库加载中 · ${gr(v)}`:h==="error"?`数据库加载失败 · ${gr(v)}`:X.status==="error"?`结果计算失败 · ${gr(v)}`:X.isCurrentDatasetReady?X.status==="loading"?`数据库已加载 ${E.length} 条 · ${gr(v)} · 结果重新计算中`:`数据库已加载 ${E.length} 条 · ${gr(v)}`:`数据库已加载 ${E.length} 条 · ${gr(v)} · 结果计算中`,q=J||!X.isCurrentDatasetReady&&X.status!=="error",ee=X.isCurrentDatasetReady?X.status==="loading"?`${oe}/${E.length} · 计算中`:`${oe}/${E.length}`:`0/${E.length}`,we=()=>{m(l.createDefaultFilters())};return i.jsx(Dt,{open:!0,title:`选择${Wh(l.kind)}`,subtitle:T+(D?` · 匹配 ${sf(D)}`:""),wide:!0,sheetClassName:"modal-sheet--resource-picker",onClose:c,footer:i.jsxs(i.Fragment,{children:[i.jsx("select",{className:"input",value:v,onChange:ae=>w(ae.target.value),disabled:q,children:Xd.map(ae=>i.jsx("option",{value:ae.value,children:ae.label},ae.value))}),i.jsx("button",{type:"button",className:"button button--filled",onClick:c,children:"关闭"})]}),children:i.jsxs("div",{className:"resource-picker-modal",children:[h==="error"?i.jsx("div",{className:"form-error",children:C||"数据库加载失败"}):null,q?i.jsx(ag,{}):i.jsxs("div",{className:"resource-picker-modal__layout",children:[i.jsxs("section",{className:"editor-card resource-picker-modal__filters",children:[i.jsxs("div",{className:"resource-picker-modal__section-header",children:[i.jsx("div",{children:i.jsx("h3",{className:"editor-card__title",children:"筛选与排序"})}),i.jsx("div",{className:"button-row",children:i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:we,title:"重置筛选",children:ee})})]}),ge("快速搜索",i.jsx("input",{className:"input input--search",autoFocus:!0,value:f.query,onChange:ae=>m(xe=>({...xe,query:ae.target.value})),placeholder:"搜索名称、ID、模组、内部名等"})),ge("排序字段",i.jsxs("div",{className:"resource-picker-modal__sort-row",children:[i.jsx("select",{className:"input input--sort",value:f.sortKey,onChange:ae=>m(xe=>({...xe,sortKey:ae.target.value})),children:l.sortOptions.map(ae=>i.jsx("option",{value:ae.value,children:ae.label},ae.value))}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>m(ae=>({...ae,sortDirection:ae.sortDirection==="asc"?"desc":"asc"})),children:f.sortDirection==="asc"?"升序":"降序"})]})),ge("模组 ID",i.jsx("input",{className:"input",value:f.modId,onChange:ae=>m(xe=>({...xe,modId:ae.target.value})),placeholder:"例如 gregtech"})),ge(l.keyFieldLabel,i.jsx("input",{className:"input",value:f.key,onChange:ae=>m(xe=>({...xe,key:ae.target.value})),placeholder:l.keyPlaceholder})),ge("本地名称",i.jsx("input",{className:"input",value:f.localizedName,onChange:ae=>m(xe=>({...xe,localizedName:ae.target.value})),placeholder:l.localizedNamePlaceholder})),ge("内部名",i.jsx("input",{className:"input",value:f.internalName,onChange:ae=>m(xe=>({...xe,internalName:ae.target.value})),placeholder:"例如 molten.iron"})),l.renderSpecificFields(f,m)]}),i.jsx("section",{className:"editor-card resource-picker-modal__results",children:X.status==="error"&&!X.isCurrentDatasetReady?i.jsx("div",{className:"empty-state empty-state--compact",children:"结果计算失败。"}):X.isCurrentDatasetReady&&X.totalCount===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"空空如也。"}):X.isCurrentDatasetReady&&X.status==="loading"?i.jsx(uf,{}):i.jsx(og,{records:E,recordIndices:X.indices,currentValue:s,valueMode:a,selectionScrollKey:K,onSelect:p,formatSubtitle:l.formatSubtitle,formatDetail:l.formatDetail})})]})]})})}function df({spec:l,value:s,onChange:a,valueMode:c,placeholder:p,actionLabel:f="从列表选择"}){const[m,v]=j.useState(!1);return i.jsxs("div",{className:"resource-picker-control",children:[i.jsxs("div",{className:"resource-picker-control__row",children:[i.jsx("input",{className:"input resource-picker-control__input",value:s,placeholder:p,onChange:w=>a(w.target.value)}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>v(!0),children:f})]}),m?i.jsx(cf,{spec:l,currentValue:s,valueMode:c,onClose:()=>v(!1),onSelect:w=>{a(w),v(!1)}}):null]})}const ug=[{value:"displayName",label:"本地名称"},{value:"key",label:"物品 ID"},{value:"modId",label:"模组 ID"},{value:"internalName",label:"内部名"},{value:"itemId",label:"数值 ID"},{value:"itemDamage",label:"损伤值"},{value:"maxStackSize",label:"堆叠上限"},{value:"maxDamage",label:"最大耐久"}];function jn(l){const s=l.trim();if(!s)return null;const a=Number(s);return Number.isFinite(a)?a:null}function cg(l,s){if(l.kind!=="item")return!1;const a=jn(s.itemIdMin),c=jn(s.itemIdMax),p=jn(s.itemDamageMin),f=jn(s.itemDamageMax),m=jn(s.maxDamageMin),v=jn(s.maxDamageMax),w=jn(s.maxStackSizeMin),h=jn(s.maxStackSizeMax);return!(a!==null&&l.itemId<a||c!==null&&l.itemId>c||p!==null&&l.itemDamage<p||f!==null&&l.itemDamage>f||m!==null&&l.maxDamage<m||v!==null&&l.maxDamage>v||w!==null&&l.maxStackSize<w||h!==null&&l.maxStackSize>h)}function dg(l){return l.kind!=="item"?"":`模组 ${l.modId} · 数值 ID ${l.itemId} · 损伤值 ${l.itemDamage}`}function fg(l){return l.kind!=="item"?"":`内部名 ${l.internalName} · 堆叠 ${l.maxStackSize} · 耐久 ${l.maxDamage}`}function pg(l,s){return i.jsxs(i.Fragment,{children:[ge("数值 ID",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.itemIdMin,onChange:a=>s(c=>({...c,itemIdMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.itemIdMax,onChange:a=>s(c=>({...c,itemIdMax:a.target.value}))})]})),ge("损伤值",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.itemDamageMin,onChange:a=>s(c=>({...c,itemDamageMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.itemDamageMax,onChange:a=>s(c=>({...c,itemDamageMax:a.target.value}))})]})),ge("堆叠上限",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.maxStackSizeMin,onChange:a=>s(c=>({...c,maxStackSizeMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.maxStackSizeMax,onChange:a=>s(c=>({...c,maxStackSizeMax:a.target.value}))})]})),ge("最大耐久",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.maxDamageMin,onChange:a=>s(c=>({...c,maxDamageMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.maxDamageMax,onChange:a=>s(c=>({...c,maxDamageMax:a.target.value}))})]}))]})}const vl={kind:"item",sortOptions:ug,keyFieldLabel:"物品 ID",keyPlaceholder:"例如 minecraft:stone:0",localizedNamePlaceholder:"例如 铁锭",sectionCopy:"",createDefaultFilters:af,matchesSpecificFilters:cg,formatSubtitle:dg,formatDetail:fg,renderSpecificFields:pg},mg=[{value:"displayName",label:"本地名称"},{value:"key",label:"流体 ID"},{value:"modId",label:"模组 ID"},{value:"internalName",label:"内部名"},{value:"fluidId",label:"数值 ID"},{value:"density",label:"密度"},{value:"viscosity",label:"粘度"},{value:"temperature",label:"温度"},{value:"luminosity",label:"亮度"},{value:"gaseous",label:"气态"}];function Ft(l){const s=l.trim();if(!s)return null;const a=Number(s);return Number.isFinite(a)?a:null}function hg(l,s){if(l.kind!=="fluid")return!1;const a=Ft(s.fluidIdMin),c=Ft(s.fluidIdMax),p=Ft(s.densityMin),f=Ft(s.densityMax),m=Ft(s.viscosityMin),v=Ft(s.viscosityMax),w=Ft(s.temperatureMin),h=Ft(s.temperatureMax),b=Ft(s.luminosityMin),C=Ft(s.luminosityMax);return!(a!==null&&l.fluidId<a||c!==null&&l.fluidId>c||p!==null&&l.density<p||f!==null&&l.density>f||m!==null&&l.viscosity<m||v!==null&&l.viscosity>v||w!==null&&l.temperature<w||h!==null&&l.temperature>h||b!==null&&l.luminosity<b||C!==null&&l.luminosity>C||s.gaseous==="yes"&&!l.gaseous||s.gaseous==="no"&&l.gaseous)}function gg(l){return l.kind!=="fluid"?"":`模组 ${l.modId} · 数值 ID ${l.fluidId} · 密度 ${l.density} · 粘度 ${l.viscosity}`}function vg(l){return l.kind!=="fluid"?"":`内部名 ${l.internalName} · 温度 ${l.temperature} · 亮度 ${l.luminosity} · ${l.gaseous?"气态":"非气态"}`}function yg(l,s){return i.jsxs(i.Fragment,{children:[ge("数值 ID",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.fluidIdMin,onChange:a=>s(c=>({...c,fluidIdMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.fluidIdMax,onChange:a=>s(c=>({...c,fluidIdMax:a.target.value}))})]})),ge("密度",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最小",value:l.densityMin,onChange:a=>s(c=>({...c,densityMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最大",value:l.densityMax,onChange:a=>s(c=>({...c,densityMax:a.target.value}))})]})),ge("粘度",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最小",value:l.viscosityMin,onChange:a=>s(c=>({...c,viscosityMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最大",value:l.viscosityMax,onChange:a=>s(c=>({...c,viscosityMax:a.target.value}))})]})),ge("温度",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最小",value:l.temperatureMin,onChange:a=>s(c=>({...c,temperatureMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"decimal",step:"any",placeholder:"最大",value:l.temperatureMax,onChange:a=>s(c=>({...c,temperatureMax:a.target.value}))})]})),ge("亮度",i.jsxs("div",{className:"resource-picker-modal__range-row",children:[i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最小",value:l.luminosityMin,onChange:a=>s(c=>({...c,luminosityMin:a.target.value}))}),i.jsx("span",{className:"resource-picker-modal__range-separator",children:"~"}),i.jsx("input",{className:"input input--compact",type:"number",inputMode:"numeric",step:"1",placeholder:"最大",value:l.luminosityMax,onChange:a=>s(c=>({...c,luminosityMax:a.target.value}))})]})),ge("是否气态",i.jsxs("select",{className:"input",value:l.gaseous,onChange:a=>s(c=>({...c,gaseous:a.target.value})),children:[i.jsx("option",{value:"all",children:"全部"}),i.jsx("option",{value:"yes",children:"气态"}),i.jsx("option",{value:"no",children:"非气态"})]}))]})}const ff={kind:"fluid",sortOptions:mg,keyFieldLabel:"流体 ID",keyPlaceholder:"例如 water",localizedNamePlaceholder:"例如 蒸汽",sectionCopy:"按流体字段搜索、排序和过滤，可在上方切换语言。",createDefaultFilters:af,matchesSpecificFilters:hg,formatSubtitle:gg,formatDetail:vg,renderSpecificFields:yg};function yl({title:l,subtitle:s,actions:a,children:c,className:p=""}){return i.jsxs("section",{className:`panel ${p}`,children:[i.jsxs("header",{className:"panel__header",children:[i.jsxs("div",{className:"panel__heading",children:[i.jsx("h2",{children:l}),s?i.jsx("p",{children:s}):null]}),a?i.jsx("div",{className:"panel__actions",children:a}):null]}),i.jsx("div",{className:"panel__body",children:c})]})}function qo({steps:l}){return l.length===0?i.jsx("span",{className:"empty-chip",children:"空流程"}):i.jsx("div",{className:"path-chips",children:l.map((s,a)=>i.jsxs(j.Fragment,{children:[i.jsx("span",{className:"chip chip--path",children:s}),a<l.length-1?i.jsx("span",{className:"path-arrow",children:"→"}):null]},`${s}-${a}`))})}function ua(l,s){const a=["%s Ore","Raw %s Ore","%s Infused Stone","%s Sand#gregtech:gt.blockores","Raw %s Sand Ore","%s"];for(const c of a){const p=kr("item",!1,c.replace("%s",l),s);if(p)return p.localizedName}return l}function xg(l,s){return l.map(a=>ua(a,s))}function kg({minerals:l,lang:s}){const a=hl("item",s.display),c=hl("item",s.game),p=j.useMemo(()=>l.length===0?[]:xg(l,s),[l,s.display,s.game,a,c]);return p.length===0?i.jsx("span",{className:"empty-chip",children:"暂无矿物"}):i.jsx("div",{className:"tag-list",children:p.map((f,m)=>i.jsx("span",{className:"chip chip--soft",children:f},`${f}-${m}`))})}function pf(l,s){let a=[];for(const c of l)a.push({role:c.role,rules:c.rules.map(p=>{const f={...p};if(!f.comments){const m=kr("item",!0,p.rule,s);m&&(f.rule=m.localizedName)}return f})});return a}function wg({title:l,groups:s}){const a=It(),c=hl("item",a.lang.display),p=j.useMemo(()=>pf(s,a.lang),[s,a.lang.display,a.lang.game,c]);return i.jsxs("div",{className:"tree-root scroll-stack",children:[i.jsx("div",{className:"tree-root__title",children:l}),s.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无数据"}):p.map(f=>i.jsxs("div",{className:"tree-group tree-group--readonly",children:[i.jsxs("div",{className:"tree-group__header tree-group__header--readonly",children:[i.jsx("span",{children:f.role}),i.jsx("span",{className:"tree-group__count",children:f.rules.length})]}),i.jsx("div",{className:"tree-group__items",children:f.rules.length===0?i.jsx("span",{className:"tree-group__empty",children:"空"}):f.rules.map((m,v)=>i.jsxs("span",{className:`tree-item tree-item--readonly${m.enable?"":" tree-item--disabled"}`,title:`规则: ${m.rule}${m.comments.trim()?`
 注释: ${m.comments.trim()}`:""}
 状态: ${m.enable?"启用":"停用"}`,children:[i.jsx("span",{className:"tree-item__label",children:pl(m)}),i.jsx("span",{className:`tree-item__status${m.enable?" tree-item__status--on":" tree-item__status--off"}`,"aria-label":m.enable?"已启用":"已停用",children:m.enable?"启用":"停用"})]},`${f.role}-${m.rule}-${v}`))})]},`${f.role}-${l}`))]})}function bt(){return{rule:"",enable:!0,comments:""}}function bs(l){return{rule:l.rule,enable:l.enable,comments:l.comments}}function xd({value:l,onChange:s,onEnterDown:a,userConfig:c}){const[p,f]=j.useState(!1),m=kr("item",!0,l,c.lang);return i.jsxs("div",{className:"resource-picker-control__row",children:[ge("规则文本",i.jsx("input",{className:"input",value:l,onChange:v=>s({rule:v.target.value}),onKeyDown:v=>{v.key==="Enter"&&(v.preventDefault(),a())},placeholder:"输入规则文本"}),m?`当前填入的为: ${m.localizedName}`:"规则文本是物品的ID。"),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>f(!0),children:"选择"}),p?i.jsx(cf,{spec:vl,currentValue:l,valueMode:"id",onClose:()=>f(!1),onSelect:(v,w)=>{s({rule:v,comments:w.localizedName}),f(!1)}}):null]})}function Ng({open:l,title:s,groups:a,availableRoles:c,onClose:p,onSave:f}){const m=It(),[v,w]=j.useState([]),[h,b]=j.useState(null),[C,E]=j.useState(""),[P,B]=j.useState(""),[D,K]=j.useState(bt()),[X,oe]=j.useState(bt()),[J,T]=j.useState(""),q=j.useMemo(()=>pf(v,m.lang),[v,m.lang]);j.useEffect(()=>{var I,A;if(!l)return;const R=Yo(a);w(R),b(R[0]?{kind:"group",index:0}:null),E(c[0]||""),B(((I=R[0])==null?void 0:I.role)??c[0]??""),K(bt()),oe((A=R[0])!=null&&A.rules[0]?bs(R[0].rules[0]):bt()),T("")},[l,a,c]),j.useEffect(()=>{if(!l||!h)return;if(h.kind==="group"){const A=v[h.index];if(!A){b(v[0]?{kind:"group",index:0}:null);return}B(A.role),K(bt());return}const R=v[h.groupIndex],I=R==null?void 0:R.rules[h.ruleIndex];if(!I){b({kind:"group",index:h.groupIndex});return}oe(bs(I))},[l,h,v]);const ee=R=>c.includes(R),we=()=>{if(c.length===0){T("当前没有可用职责");return}const R=C.trim();if(!R){T("请选择职责");return}if(!ee(R)){T("职责必须来自当前配置");return}if(v.some(A=>A.role===R)){T(`职责组 "${R}" 已存在`);return}const I=[...v,{role:R,rules:[]}];w(I),b({kind:"group",index:I.length-1}),B(R),K(bt()),T("")},ae=()=>{if(!h||h.kind!=="group")return;const R=P.trim();if(!R){T("职责名称不能为空");return}if(!ee(R)){T("职责必须来自当前配置");return}if(v.some((I,A)=>A!==h.index&&I.role===R)){T(`职责组 "${R}" 已存在`);return}w(I=>I.map((A,Q)=>Q===h.index?{...A,role:R}:A)),T("")},xe=()=>{if(!h||h.kind!=="group")return;const R=v[h.index];if(!R)return;const I={rule:D.rule.trim(),enable:D.enable,comments:D.comments.trim()};if(!I.rule){T("规则文本不能为空");return}if(R.rules.some(te=>te.rule===I.rule)){T(`规则 "${I.rule}" 已存在于当前职责组`);return}const A=R.rules.length,Q=v.map((te,L)=>L===h.index?{...te,rules:[...te.rules,I]}:te);w(Q),b({kind:"rule",groupIndex:h.index,ruleIndex:A}),oe(I),K(bt()),T("")},Y=()=>{if(!h||h.kind!=="rule")return;const R=v[h.groupIndex];if(!R)return;const I={rule:X.rule.trim(),enable:X.enable,comments:X.comments.trim()};if(!I.rule){T("规则文本不能为空");return}if(R.rules.some((A,Q)=>Q!==h.ruleIndex&&A.rule===I.rule)){T(`规则 "${I.rule}" 已存在于当前职责组`);return}w(A=>A.map((Q,te)=>te===h.groupIndex?{...Q,rules:Q.rules.map((L,se)=>se===h.ruleIndex?I:L)}:Q)),oe(I),T("")},ue=()=>{var A,Q;if(!h||h.kind!=="group")return;const R=v[h.index];if(!R||!window.confirm(`确认删除职责组 "${R.role}" 吗？`))return;const I=v.filter((te,L)=>L!==h.index);w(I),b(I[0]?{kind:"group",index:0}:null),B(((A=I[0])==null?void 0:A.role)??c[0]??""),K(bt()),oe((Q=I[0])!=null&&Q.rules[0]?bs(I[0].rules[0]):bt()),T("")},de=()=>{var Q;if(!h||h.kind!=="rule")return;const R=v[h.groupIndex],I=R==null?void 0:R.rules[h.ruleIndex];if(!R||!I||!window.confirm(`确认删除规则 "${pl(I)}" 吗？`))return;const A=v.map((te,L)=>L===h.groupIndex?{...te,rules:te.rules.filter((se,G)=>G!==h.ruleIndex)}:te);w(A),b({kind:"group",index:h.groupIndex}),K(bt()),oe((Q=A[h.groupIndex])!=null&&Q.rules[0]?bs(A[h.groupIndex].rules[0]):bt()),T("")};return i.jsx(Dt,{open:l,title:s,subtitle:"支持对职责组内规则进行新增、编辑、启用和注释维护，保存后会直接写回 Lua 配置。",wide:!0,onClose:p,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:p,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:()=>f(v),children:"保存"})]}),children:i.jsxs("div",{className:"list-editor",children:[i.jsxs("div",{className:"list-editor__sidebar",children:[i.jsxs("div",{className:"toolbar toolbar--compact",children:[i.jsx("span",{className:"toolbar__label",children:"新增职责组"}),i.jsx("select",{className:"input input--compact",value:C,onChange:R=>E(R.target.value),onKeyDown:R=>{R.key==="Enter"&&(R.preventDefault(),we())},disabled:c.length===0,children:c.length===0?i.jsx("option",{value:"",children:"暂无可选职责"}):i.jsxs(i.Fragment,{children:[i.jsx("option",{value:"",disabled:!0,children:"选择职责"}),c.map(R=>i.jsx("option",{value:R,children:R},R))]})}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:we,disabled:c.length===0,children:"添加"})]}),i.jsxs("div",{className:"tree-root",children:[i.jsx("div",{className:"tree-root__title",children:s}),q.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无职责组"}):q.map((R,I)=>{const A=(h==null?void 0:h.kind)==="group"&&h.index===I;return i.jsxs("section",{className:`tree-group${A?" is-selected":""}`,children:[i.jsxs("button",{type:"button",className:"tree-group__header",onClick:()=>b({kind:"group",index:I}),children:[i.jsx("span",{children:R.role}),i.jsx("span",{className:"tree-group__count",children:R.rules.length})]}),i.jsx("div",{className:"tree-group__items",children:R.rules.length===0?i.jsx("span",{className:"tree-group__empty",children:"空"}):R.rules.map((Q,te)=>{const L=(h==null?void 0:h.kind)==="rule"&&h.groupIndex===I&&h.ruleIndex===te;return i.jsxs("button",{type:"button",className:`tree-item${L?" is-selected":""}${Q.enable?"":" tree-item--disabled"}`,onClick:()=>b({kind:"rule",groupIndex:I,ruleIndex:te}),title:`规则: ${Q.rule}${Q.comments.trim()?`
 注释: ${Q.comments.trim()}`:""}
-状态: ${Q.enable?"启用":"停用"}`,children:[i.jsx("span",{className:"tree-item__label",children:pl(Q)}),i.jsx("span",{className:`tree-item__status${Q.enable?" tree-item__status--on":" tree-item__status--off"}`,children:Q.enable?"启用":"停用"})]},`${R.role}-${Q.rule}-${te}`)})})]},`${R.role}-${I}`)})]})]}),i.jsxs("div",{className:"list-editor__detail",children:[h?h.kind==="group"?i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"职责组"}),ge("职责名称",i.jsx("input",{className:"input",value:P,onChange:R=>B(R.target.value),onKeyDown:R=>{R.key==="Enter"&&(R.preventDefault(),ae())},placeholder:"输入职责名称"}),"重命名后会直接替换该组对应的 key。"),i.jsx(xd,{value:D.rule,userConfig:m,onChange:R=>{K(I=>({...I,rule:R.rule||I.rule,comments:R.comments||I.comments}))},onEnterDown:xe}),ge("是否启用",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:D.enable,onChange:R=>K(I=>({...I,enable:R.target.checked}))}),i.jsx("span",{children:"启用"})]})),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:D.comments,onChange:R=>K(I=>({...I,comments:R.target.value})),placeholder:"可选，填写后优先展示这段文字"}),"新增规则时可以直接录入说明。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:ae,children:"重命名职责组"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:xe,children:"添加规则"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:ue,children:"删除职责组"})]})]}):i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"规则"}),i.jsx(xd,{value:X.rule,userConfig:m,onChange:R=>{oe(I=>({...I,rule:R.rule||I.rule,comments:R.comments||I.comments}))},onEnterDown:Y}),ge("是否启用",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:X.enable,onChange:R=>oe(I=>({...I,enable:R.target.checked}))}),i.jsx("span",{children:"启用"})]})),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:X.comments,onChange:R=>oe(I=>({...I,comments:R.target.value})),placeholder:"如果填写，列表中会优先显示这段注释"}),"注释优先显示，便于区分规则用途。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:Y,children:"保存规则"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:de,children:"删除规则"})]})]}):i.jsxs("div",{className:"empty-state",children:[i.jsx("strong",{children:"尚未选择节点"}),i.jsx("span",{children:"先在左侧选择一个职责组或规则，再在这里编辑。"})]}),J?i.jsx("div",{className:"form-error",children:J}):null]})]})})}function mf({label:l,hint:s,children:a}){return i.jsxs("div",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control field-control--stack",children:a}),s?i.jsx("span",{className:"field-hint",children:s}):null]})}const hf=[{value:"<",label:"<"},{value:"<=",label:"<="},{value:"==",label:"=="},{value:">=",label:">="},{value:">",label:">"},{value:"!=",label:"!="}];function jg(l){var s;return l==="~="?"!=":((s=hf.find(a=>a.value===l))==null?void 0:s.value)??">="}function _g(l){const s=l.trim();if(!s)return{resource:"",comparator:">=",amount:"0"};const a=s.match(/^(.+?)\s*([<>=!~]+)\s*(.*?)$/);if(!a)return{resource:s,comparator:">=",amount:"0"};const c=jg(a[2]);return{resource:a[1].trim(),comparator:c,amount:(a[3].trim()||"0").replace(/^0+/g,"")||"0"}}function Sg(l,s,a){const c=l.trim(),p=a.trim();return[c,s,p].filter(Boolean).join(" ")}function ca(l,s,a,c,p="id"){return({value:f,onChange:m,userConfig:v})=>{const w=kr(l.kind,p==="id",s,v.lang);return i.jsxs(mf,{label:s,hint:c,children:[i.jsx(df,{spec:l,value:f,onChange:m,valueMode:p,placeholder:a,actionLabel:"选择"}),w&&i.jsx("span",{className:"chip chip--soft",children:`当前填入的为: ${w.localizedName}`})]})}}function da(l,s,a,c,p="id"){return({value:f,onChange:m,userConfig:v})=>{const w=_g(f),h=C=>{const E=C.resource??w.resource,P=C.comparator??w.comparator,B=((C.amount??w.amount)||"0").replace(/^0+/,"")||"0";m(Sg(E,P,B))},b=kr(l.kind,p==="id",w.resource,v.lang);return i.jsx(mf,{label:s,hint:c,children:i.jsxs("div",{className:"resource-comparison",children:[i.jsxs("div",{className:"resource-comparison__resource",children:[i.jsx("span",{className:"resource-comparison__label",children:l.kind==="item"?"物品":"流体"}),i.jsx(df,{spec:l,value:w.resource,onChange:C=>h({resource:C}),valueMode:p,placeholder:a,actionLabel:"选择"}),b&&i.jsx("span",{className:"chip chip--soft",children:`当前填入的为: ${b.localizedName}`})]}),i.jsxs("div",{className:"resource-comparison__operators",children:[i.jsxs("div",{className:"resource-comparison__operator",children:[i.jsx("span",{className:"resource-comparison__label",children:"比较符号"}),i.jsx("select",{className:"input",value:w.comparator,onChange:C=>h({comparator:C.target.value}),children:hf.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))})]}),i.jsxs("div",{className:"resource-comparison__operator",children:[i.jsx("span",{className:"resource-comparison__label",children:"数量"}),i.jsx("input",{className:"input",type:"number",inputMode:"decimal",step:"any",value:w.amount,onChange:C=>h({amount:C.target.value}),placeholder:"0"})]})]})]})})}}const Cg={name:"check-fluid",label:"检查流体数量",aliases:["CF"],category:"检查",description:"读取 ME 网络中的流体数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"water >= 1000",argsHint:"",renderArgsField:da(ff,"比较表达式","water","输入流体文本值，例如 `steam`，也可以直接手动输入自定义文本。","id")},Eg={name:"check-item",label:"检查物品 ID",aliases:["CI"],category:"检查",description:"读取指定物品 ID 在 ME 网络中的总数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"minecraft:stone:0 >= 64",argsHint:"",renderArgsField:da(vl,"比较表达式","minecraft:stone:0","输入物品文本值，例如 `minecraft:stone:0`，也可以直接手动输入自定义文本。","id")},Mg={name:"check-item-label",label:"检查物品名",aliases:["CIL"],category:"检查",description:"读取指定物品名称在 ME 网络中的总数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"Iron Ingot >= 32",argsHint:"",renderArgsField:da(vl,"比较表达式","Iron Ingot","输入物品名称文本值，例如 `Iron Ingot`，也可以直接手动输入自定义文本。","label")},Rg={name:"mark-fluid",label:"标记流体",aliases:["MF"],category:"标记",description:"将该流体标记到 cache 中。",argsLabel:"流体",argsPlaceholder:"water",argsHint:"",renderArgsField:ca(ff,"流体","water","输入流体的ID，或使用右侧按钮从数据库中选择。")},bg={name:"mark-item",label:"标记物品 ID",aliases:["MI"],category:"标记",description:"把指定物品文本值加入缓存中的 markedItems，后续交给筛选流程使用。",argsLabel:"物品 ID",argsPlaceholder:"minecraft:stone:0",argsHint:"",renderArgsField:ca(vl,"物品 ID","minecraft:stone:0","输入物品ID，或使用右侧按钮从数据库中选择。")},Ig={name:"mark-item-label",label:"标记物品名",aliases:["MIL"],category:"标记",description:"把指定物品名称文本值加入缓存中的 markedItems 数组表中，后续交给筛选流程使用。",argsLabel:"物品名",argsPlaceholder:"Iron Ingot",argsHint:"",renderArgsField:ca(vl,"物品名","Iron Ingot","输入物品名称文本值，或使用右侧按钮从数据库中选择。","label")};function gf({label:l,hint:s,children:a}){return i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control",children:a}),s?i.jsx("span",{className:"field-hint",children:s}):null]})}function Dg(l,s,a){return({value:c,onChange:p})=>i.jsx(gf,{label:l,hint:a,children:i.jsx("input",{className:"input",value:c,placeholder:s,onChange:f=>p(f.target.value)})})}function Lg(l,s,a,c=5){return({value:p,onChange:f})=>i.jsx(gf,{label:l,hint:a,children:i.jsx("textarea",{className:"input",rows:c,value:p,placeholder:s,onChange:m=>f(m.target.value)})})}const Pg={name:"print",label:"打印日志",aliases:["P"],category:"调试",description:"打印一条消息到终端并返回 true。",argsLabel:"日志内容",argsPlaceholder:"hello world",argsHint:"适合调试表达式执行路径，参数会原样打印。",renderArgsField:Dg("日志内容","hello world","适合调试表达式执行路径，参数会原样打印。")},Tg={name:"eval-lua",label:"执行 Lua",aliases:["L"],category:"脚本",description:"执行一段 Lua 代码，可直接读取 cache 并决定返回 true / false。",argsLabel:"Lua 代码",argsPlaceholder:"return cache.count > 0",argsHint:"代码可以访问 cache 变量，适合高级自定义逻辑。",renderArgsField:Lg("Lua 代码","return cache.count > 0","代码会在 sandbox 环境中执行，适合高级自定义逻辑。")},vf=[Cg,Eg,Mg,Rg,bg,Ig,Pg,Tg],zg=24,yf="oc-ore-processing-editor.logical-command-cache.v1",Os=new Map,kd=[];for(const l of vf){Os.set(l.name,l),kd.push({value:l.name,label:`${l.label} (${l.name})`,description:l.description});for(const s of l.aliases)Os.set(s,l),kd.push({value:s,label:`${l.label} (${s})`,description:l.description})}function xl(l="logical"){return`${l}_${Math.random().toString(36).slice(2,10)}${Date.now().toString(36).slice(-4)}`}function Og(l){const s=l.trim(),a=Os.get(s);return a?a.name:s}function $g(l){return l.trim().replace(/\s+/g," ")}function kl(l){return Os.get(l.trim())??null}function Fg(){const l=new Map;for(const s of vf){const a=l.get(s.category)??[];a.push(s),l.set(s.category,a)}return Array.from(l.entries()).map(([s,a])=>({category:s,items:a}))}function Ag(l){const s=kl(l);if(!s){const p=l.trim();return p?[{value:p,label:p}]:[]}const a=new Set,c=[];for(const p of[s.name,...s.aliases]){const f=p.trim();!f||a.has(f)||(a.add(f),c.push({value:f,label:f===s.name?`${f}`:`${f}`}))}return c}function wl(l){return Og(l)}function Zo(l,s="",a){return{id:xl("cmd"),type:"command",name:l.trim(),args:s,cacheId:a}}function xf(l){return{id:xl("op"),type:"operator",value:l}}function kf(l){return{id:xl("par"),type:"paren",value:l}}function Fs(l,s){const a=kl(l.name),c=(a==null?void 0:a.label)??l.name;let p=null;if(a){const m=l.args.split(/>=|<=|==|~=|!=|>|</)[0].trim();let v="item",w=!0;"check-item|mark-item".includes(a.name)?v="item":"check-item-label".includes(a.name)?(v="item",w=!1):"check-fluid|mark-fluid".includes(a.name)&&(v="fluid");const h=kr(v,w,m,s);h&&(p=l.args.replace(m,h.localizedName))}const f=p||$g(l.args);return f?`${c} · ${f.length>42?`${f.slice(0,42)}…`:f}`:c}function Ug(l){const s=kl(l.name),a=[`命令: ${(s==null?void 0:s.name)??l.name}`,s?`别名: ${s.aliases.join(", ")||"无"}`:"别名: 无",`参数: ${l.args||"（空）"}`];return s&&a.push(`说明: ${s.description}`),a.join(`
-`)}function Bg(l){return l.type==="command"?`{${l.name}: ${l.args.trim()}}`:l.value}function wd(l){return l.map(s=>Bg(s)).join(" ")}function wf(l){const s=[];let a=0;for(;a<l.length;){const c=l[a];if(/\s/.test(c)){a+=1;continue}if(c==="("||c===")"||c==="!"){c==="!"?s.push({type:"operator",value:"!"}):s.push({type:"paren",value:c}),a+=1;continue}if(l.slice(a,a+2)==="&&"){s.push({type:"operator",value:"&&"}),a+=2;continue}if(l.slice(a,a+2)==="||"){s.push({type:"operator",value:"||"}),a+=2;continue}if(c==="{"){const p=l.indexOf("}",a+1);if(p<0)throw new Error("语法错误：缺少闭合括号 '}'");const f=l.slice(a+1,p),m=f.match(/^\s*([a-zA-Z0-9_%\-]+)\s*:(.*)$/);if(!m)throw new Error(`语法错误：命令项格式不正确 {${f}}`);s.push({type:"command",name:wl(m[1]),args:m[2]}),a=p+1;continue}throw new Error(`语法错误：未知的字符 '${c}'`)}return s}function Wg(l){let s=0;const a=()=>l[s],c=()=>{const h=l[s];return s+=1,h},p=()=>f(),f=()=>{for(m();;){const h=a();if(!h||h.type!=="operator"||h.value!=="||")break;c(),m()}},m=()=>{for(v();;){const h=a();if(!h||h.type!=="operator"||h.value!=="&&")break;c(),v()}},v=()=>{const h=a();if(h&&h.type==="operator"&&h.value==="!"){c(),v();return}w()},w=()=>{const h=a();if(!h)throw new Error("语法错误：表达式意外结束");if(h.type==="paren"&&h.value==="("){c(),p();const b=c();if(!b||b.type!=="paren"||b.value!==")")throw new Error("语法错误：缺少右括号 ')'");return}if(h.type==="command"){c();return}throw new Error(`语法错误：不期望的 Token '${h.value}'`)};if(p(),s<l.length)throw new Error("语法错误：表达式尾部存在多余字符")}function Nf(l){const s=wf(l);Wg(s)}function Vg(l){return l.map(s=>s.type==="command"?Zo(s.name,s.args):s.type==="operator"?xf(s.value):kf(s.value))}function Ls(l,s){return Fs(l,s)}function Jo(l){return[...l].sort((s,a)=>s.pinned!==a.pinned?s.pinned?-1:1:a.updatedAt!==s.updatedAt?a.updatedAt-s.updatedAt:a.createdAt-s.createdAt)}function Hg(l,s){s<0&&(s=0);const a=l.filter(m=>m.pinned),c=l.filter(m=>!m.pinned);if(s===0)return Jo(a);const f=[...c].sort((m,v)=>v.updatedAt!==m.updatedAt?v.updatedAt-m.updatedAt:v.createdAt-m.createdAt).slice(0,s);return Jo([...a,...f])}function Jt(l){const s=l==null?void 0:l.maxItems,a=typeof s=="number"&&Number.isFinite(s)?Math.max(0,Math.floor(s)):zg,p=(Array.isArray(l==null?void 0:l.items)?l.items:[]).filter(v=>!!(v&&typeof v=="object")).map(v=>({id:String(v.id??xl("cache")),name:wl(String(v.name??"")),args:String(v.args??""),pinned:!!v.pinned,createdAt:typeof v.createdAt=="number"&&Number.isFinite(v.createdAt)?v.createdAt:Date.now(),updatedAt:typeof v.updatedAt=="number"&&Number.isFinite(v.updatedAt)?v.updatedAt:Date.now()})).filter(v=>!!v.name),f=[],m=new Set;for(const v of Jo(p)){const w=`${v.name}\0${v.args}`;m.has(w)||(m.add(w),f.push(v))}return{maxItems:a,items:Hg(f,a)}}function Nd(){if(typeof window>"u")return Jt(null);try{const l=window.localStorage.getItem(yf);return Jt(l?JSON.parse(l):null)}catch{return Jt(null)}}function Kg(l){typeof window>"u"||window.localStorage.setItem(yf,JSON.stringify(Jt(l)))}function jd(l,s){return Jt({...l,maxItems:s})}function $s(l,s){return l.items.find(a=>a.id===s)??null}function ea(l,s){const a=wl(s.name);return l.items.find(c=>c.name===a&&c.args===s.args)??null}function Gg(l,s){const a=Date.now(),c=wl(s.name),p=l.items.find(h=>h.id===s.id)??null,m=l.items.find(h=>h.name===c&&h.args===s.args)??null??p,v=(m==null?void 0:m.id)??s.id,w=l.items.filter(h=>h.id!==v&&!(h.name===c&&h.args===s.args));return w.unshift({id:v,name:c,args:s.args,pinned:m?m.pinned:s.pinned,createdAt:(m==null?void 0:m.createdAt)??s.createdAt??a,updatedAt:a}),Jt({...l,items:w})}function Qg(l,s,a={}){var h;const c=wl(s.name),p=ea(l,s),f=a.id?$s(l,a.id):null,m=p??f,v=(m==null?void 0:m.id)??a.id??xl("cache"),w=Gg(l,{id:v,name:c,args:s.args,pinned:(m==null?void 0:m.pinned)??!!a.pinned,createdAt:(m==null?void 0:m.createdAt)??Date.now(),updatedAt:(m==null?void 0:m.updatedAt)??Date.now()});return{state:w,id:((h=ea(w,s))==null?void 0:h.id)??v}}function _d(l,s){return Jt({...l,items:l.items.filter(a=>a.id!==s)})}function Sd(l,s){const a=l.items.map(c=>c.id===s?{...c,pinned:!c.pinned,updatedAt:Date.now()}:c);return Jt({...l,items:a})}function Yg({open:l,token:s,cacheState:a,onClose:c}){const p=It(),f=j.useMemo(()=>s?kl(s.name):null,[s]),m=j.useMemo(()=>s!=null&&s.cacheId?$s(a,s.cacheId):null,[a,s]);if(!l||!s)return null;const v=i.jsx("button",{type:"button",className:"button button--filled",onClick:c,children:"关闭"});return i.jsx(Dt,{open:l,title:"命令信息",subtitle:"查看当前命令节点的定义、参数和缓存关联。",sheetClassName:"modal-sheet--logical-token",onClose:c,footer:v,children:i.jsxs("div",{className:"logical-command-token-editor",children:[ge("命令名称",i.jsx("code",{className:"logical-rule-editor__preview mono",children:s.name}),f?"这里显示当前节点保存的名称，可能是全名或别名。":"自定义命令只显示当前保存的名称。"),ge((f==null?void 0:f.argsLabel)??"参数",i.jsx("code",{className:"logical-rule-editor__preview mono",children:s.args||"(无参数)"}),(f==null?void 0:f.argsHint)??"参数会原样传给执行器。"),i.jsxs("div",{className:"logical-command-token-editor__summary",children:[i.jsx("span",{className:"chip chip--soft",children:(f==null?void 0:f.label)??"自定义命令"}),i.jsx("span",{className:"logical-command-token-editor__summary-text",children:Fs(s,p.lang)})]}),f?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"命令说明"}),i.jsx("p",{children:f.description}),i.jsxs("p",{children:["分类: ",f.category]}),i.jsxs("p",{children:["别名: ",f.aliases.join(" / ")||"无"]})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"自定义命令"}),i.jsx("p",{children:"当前节点没有匹配到内置命令定义，只会展示原始名称和参数。"})]}),m?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"缓存关联"}),i.jsx("p",{children:m.pinned?"已固定缓存":"自动缓存"}),i.jsx("p",{className:"mono",children:m.id}),i.jsx("p",{children:Ls(m,p.lang)})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"缓存关联"}),i.jsx("p",{children:"当前节点没有链接到本地缓存实例。"})]})]})})}function Xg({open:l,token:s,onClose:a,onSave:c}){const p=It(),[f,m]=j.useState((s==null?void 0:s.name)??""),[v,w]=j.useState((s==null?void 0:s.args)??""),[h,b]=j.useState("");j.useEffect(()=>{!l||!s||(m(s.name),w(s.args),b(""))},[l,s]);const C=j.useMemo(()=>kl(f),[f]),E=j.useMemo(()=>Ag(f),[f]),P=()=>{const D=f.trim();if(!D){b("命令名不能为空");return}c({name:D,args:v})};if(!l||!s)return null;const B=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:a,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:P,children:"保存命令"})]});return i.jsx(Dt,{open:l,title:"编辑命令单元",sheetClassName:"modal-sheet--logical-token",onClose:a,footer:B,children:i.jsxs("div",{className:"logical-command-token-editor",children:[ge("命令名称",i.jsx("select",{className:"input",value:f,onChange:D=>m(D.target.value),children:E.map(D=>i.jsx("option",{value:D.value,children:D.label},D.value))}),"可在本名和别名之间切换，保存时会保留当前选择。"),C?C.renderArgsField({value:v,onChange:w,userConfig:p}):ge("参数",i.jsx("input",{className:"input",value:v,onChange:D=>w(D.target.value)}),"参数会原样传给执行器。"),i.jsxs("div",{className:"logical-command-token-editor__summary",children:[i.jsx("span",{className:"chip chip--soft",children:(C==null?void 0:C.label)??"自定义命令"}),i.jsx("span",{className:"logical-command-token-editor__summary-text",children:Fs({name:f,args:v},p.lang)})]}),C?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"命令说明"}),i.jsx("p",{children:C.description}),i.jsxs("p",{children:["别名: ",C.aliases.join(" / ")||"无"]})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"自定义命令"}),i.jsx("p",{children:"只要命令名符合执行器的命名规则，就可以保存。"})]}),h?i.jsx("div",{className:"form-error",children:h}):null]})})}const qg=[{id:"metadata",label:"规则元数据编辑",description:"启用状态和规则注释"},{id:"visual",label:"可视化编辑规则",description:"命令库、缓存库和工作台"},{id:"manual",label:"手动设置规则",description:"直接编辑规则文本"}];function Zg(){return{rule:"",enable:!0,comments:""}}function Cd(l){try{return{tokens:Vg(wf(l)),error:""}}catch(s){return{tokens:[],error:s instanceof Error?s.message:String(s)}}}function Jg(l){return l.type!=="command"?null:{name:l.name,args:l.args}}function ev(l){return l.type==="command"?{...l,id:`cmd_${Math.random().toString(36).slice(2,10)}`}:l.type==="operator"?{...l,id:`op_${Math.random().toString(36).slice(2,10)}`}:{...l,id:`par_${Math.random().toString(36).slice(2,10)}`}}function tv(l,s){return s?[l.name,l.label,l.category,l.description,l.argsLabel,l.argsPlaceholder,l.argsHint,...l.aliases].join(" ").toLowerCase().includes(s):!0}function Ed({index:l,active:s,onDropAt:a,onDragEnterAt:c,onActivate:p}){return i.jsx("button",{type:"button",className:`logical-flow-slot${s?" is-active":""}`,onClick:()=>p(l),onDragOver:f=>{f.preventDefault(),c(l)},onDragEnter:f=>{f.preventDefault(),c(l)},onDrop:f=>{f.preventDefault(),a(l)},"aria-label":`插入位置 ${l+1}`,title:"点击设定插入位置，或把命令拖到这里",children:"+"})}function nv({token:l,active:s,userConfig:a,onSelect:c,onDelete:p,onDragStart:f,onDragEnd:m,onEdit:v,onContextMenu:w}){const h=l.type==="command"?Ug(l):l.type==="operator"?`运算符: ${l.value}`:`括号: ${l.value}`,b=l.type==="command"?Fs(l,a.lang):(l.type==="operator",l.value),C=l.type==="command"?"命令":l.type==="operator"?"运算符":"括号";return i.jsxs("div",{className:`logical-token${l.type==="operator"?" logical-token--operator":""}${l.type==="paren"?" logical-token--paren":""}${s?" is-active":""}`,role:"button",tabIndex:0,draggable:!0,onClick:c,onDoubleClick:E=>{l.type!=="command"||!v||(E.preventDefault(),E.stopPropagation(),v())},onKeyDown:E=>{(E.key==="Enter"||E.key===" ")&&(E.preventDefault(),c())},onDragStart:f,onDragEnd:m,onContextMenu:E=>{l.type!=="command"||!w||(E.preventDefault(),E.stopPropagation(),w(E))},title:h,children:[i.jsx("span",{className:"logical-token__meta",children:C}),i.jsx("span",{className:"logical-token__label",children:b}),i.jsx("button",{type:"button",className:"logical-token__delete","aria-label":"删除 token",onClick:E=>{E.stopPropagation(),p()},children:"×"})]})}function rv({definition:l,onInsert:s,onDragStart:a,onDragEnd:c}){return i.jsxs("button",{type:"button",className:"palette-card logical-command-card",draggable:!0,onDragStart:a,onDragEnd:c,onClick:s,title:l.description,children:[i.jsx("span",{className:"logical-command-card__title",children:l.label}),i.jsx("span",{className:"logical-command-card__name",children:l.name}),i.jsx("span",{className:"logical-command-card__aliases",children:l.aliases.length>0?l.aliases.join(" / "):"无别名"})]})}function lv({open:l,mode:s,groupRole:a,initialRule:c,onClose:p,onSave:f}){const m=It(),[v,w]=j.useState(Zg()),[h,b]=j.useState([]),[C,E]=j.useState(null),[P,B]=j.useState(()=>Nd()),[D,K]=j.useState(""),[X,oe]=j.useState(""),[J,T]=j.useState("metadata"),[q,ee]=j.useState(0),[we,ae]=j.useState(null),[xe,Y]=j.useState(null),[ue,de]=j.useState(null),R=j.useRef(null),I=j.useMemo(()=>Fg(),[]),A=D.trim().toLowerCase(),Q=j.useMemo(()=>I.map(k=>({...k,items:k.items.filter(O=>tv(O,A))})).filter(k=>k.items.length>0),[I,A]),te=j.useMemo(()=>({maxItems:P.maxItems,items:P.items.filter(k=>A?[k.name,k.args,Ls(k,m.lang)].join(" ").toLowerCase().includes(A):!0)}),[P,A]);j.useEffect(()=>{var W;if(!l)return;const k={rule:c.rule??"",enable:c.enable,comments:c.comments},O=Cd(k.rule);w(k),b(O.tokens),E(((W=O.tokens[0])==null?void 0:W.id)??null),ee(O.tokens.length>0?null:0),K(""),oe(O.error),R.current=null,B(Nd()),T("metadata")},[l,c]),j.useEffect(()=>{typeof window>"u"||Kg(P)},[P]),j.useEffect(()=>{if(!ue)return;const k=O=>{O.key==="Escape"&&(O.preventDefault(),O.stopPropagation(),de(null))};return window.addEventListener("keydown",k,!0),()=>window.removeEventListener("keydown",k,!0)},[ue]);const L=h.find(k=>k.id===C)??null,se=we?h.find(k=>k.id===we)??null:null,G=se&&se.type==="command"?se:null,N=xe?h.find(k=>k.id===xe)??null:null,z=N&&N.type==="command"?N:null;j.useEffect(()=>{we&&!G&&ae(null)},[we,G]),j.useEffect(()=>{xe&&!N&&Y(null)},[xe,N]);const ve=wd(h),ye=P.items.filter(k=>k.pinned).length,_e=P.items.length-ye,je=`固定 ${ye} · 自动 ${_e}/${P.maxItems}`,ke=(k,O)=>{const W=wd(k),ce=O!==null?k.findIndex(Se=>Se.id===O):-1;b(k),E(O),ee(ce>=0?ce+1:k.length>0?null:0),w(Se=>({...Se,rule:W})),oe("")},Ce=k=>{var W;w(ce=>({...ce,rule:k})),R.current=null,de(null),ae(null),Y(null);const O=Cd(k);if(O.error){E(null),ee(null),oe(O.error);return}b(O.tokens),E(((W=O.tokens[0])==null?void 0:W.id)??null),ee(O.tokens.length>0?null:0),oe("")},Re=(k,O)=>{const W=ea(P,k),ce=O?$s(P,O):null,Se=W??ce;if(!Se&&P.maxItems<=0)return;const{state:He,id:ct}=Qg(P,k,{id:(ce==null?void 0:ce.id)??O,pinned:Se==null?void 0:Se.pinned});return B(He),ct},Ve=(k,O="",W)=>{const ce=Math.max(0,Math.min(W??q??h.length,h.length)),Se=Re({name:k,args:O}),He=Zo(k,O,Se),ct=[...h];ct.splice(ce,0,He),ke(ct,He.id)},ht=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=Re(k),Se=Zo(k.name,k.args,ce),He=[...h];He.splice(W,0,Se),ke(He,Se.id)},Cn=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=xf(k),Se=[...h];Se.splice(W,0,ce),ke(Se,ce.id)},At=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=kf(k),Se=[...h];Se.splice(W,0,ce),ke(Se,ce.id)},En=(k,O)=>{const W=h.findIndex(ct=>ct.id===k);if(W<0)return;const ce=[...h],[Se]=ce.splice(W,1);let He=O;W<O&&(He-=1),He=Math.max(0,Math.min(He,ce.length)),ce.splice(He,0,Se),ke(ce,Se.id)},Mn=k=>{const O=R.current;if(O){if(O.kind==="token")En(O.tokenId,k);else if(O.kind==="template")Ve(O.commandName,"",k);else if(O.kind==="cache"){const W=$s(P,O.cacheId);W&&ht({name:W.name,args:W.args},k)}else O.kind==="operator"?Cn(O.value,k):O.kind==="paren"&&At(O.value,k);R.current=null,ee(null)}},Rn=k=>{const O=h.find(W=>W.id===k);!O||O.type!=="command"||(E(k),Y(null),ae(k),de(null))},tn=k=>{const O=h.find(W=>W.id===k);!O||O.type!=="command"||(E(k),ae(null),Y(k),de(null))},Hn=(k,O,W)=>{const ce=h.find(As=>As.id===k);if(!ce||ce.type!=="command")return;const Se=184,He=74,ct=Math.max(12,Math.min(O,window.innerWidth-Se-12)),Lt=Math.max(12,Math.min(W,window.innerHeight-He-12));E(k),de({tokenId:k,x:ct,y:Lt})},bn=()=>{de(null)},Ut=(k,O,W)=>{const ce=h.find(Lt=>Lt.id===k);if(!ce||ce.type!=="command")return;const Se=O.trim(),He=Re({name:Se,args:W},ce.cacheId),ct=h.map(Lt=>Lt.id===k?{...Lt,name:Se,args:W,cacheId:He}:Lt);ke(ct,k)},Nt=()=>{if(!L)return;const k=ev(L);if(k.type==="command"){const ce=Jg(k),Se=ce?Re(ce):void 0;Se?k.cacheId=Se:delete k.cacheId}const O=C?h.findIndex(ce=>ce.id===C)+1:h.length,W=[...h];W.splice(O,0,k),ke(W,k.id)},H=()=>{if(!L)return;const k=h.findIndex(ce=>ce.id===L.id);if(k<0)return;const O=h.filter(ce=>ce.id!==L.id),W=O[k]??O[k-1]??null;ke(O,(W==null?void 0:W.id)??null)},he=k=>{if(!L||L.type!=="operator")return;const O=h.map(W=>W.id===L.id?{...W,value:k}:W);ke(O,L.id)},Pe=k=>{if(!L||L.type!=="paren")return;const O=h.map(W=>W.id===L.id?{...W,value:k}:W);ke(O,L.id)},nn=()=>{const k=v.rule.trim();if(!k){oe("规则不能为空");return}try{Nf(k)}catch(O){oe(O instanceof Error?O.message:String(O));return}f({rule:k,enable:v.enable,comments:v.comments.trim()})},In=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:p,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:nn,children:s==="create"?"添加规则":"保存规则"})]});return i.jsxs(Dt,{open:l,title:s==="create"?"新建规则":"编辑规则",subtitle:`角色组：${a||"未命名角色组"} · 使用标签页切换可视化、元数据和文本编辑。`,wide:!0,sheetClassName:"modal-sheet--logical-rule",closeOnEscape:!(G||N||ue),onClose:p,footer:In,children:[i.jsxs("div",{className:"logical-rule-tabs",children:[i.jsx("div",{className:"logical-rule-tabs__list",role:"tablist","aria-label":"规则编辑方式",children:qg.map(k=>i.jsxs("button",{type:"button",role:"tab","aria-selected":J===k.id,"aria-controls":`logical-rule-panel-${k.id}`,id:`logical-rule-tab-${k.id}`,className:`logical-rule-tabs__tab${J===k.id?" is-active":""}`,onClick:()=>T(k.id),children:[i.jsx("span",{className:"logical-rule-tabs__tab-label",children:k.label}),i.jsx("span",{className:"logical-rule-tabs__tab-desc",children:k.description})]},k.id))}),X?i.jsx("div",{className:"form-error",children:X}):null,i.jsxs("div",{className:"logical-rule-tabs__panels",children:[i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-visual","aria-labelledby":"logical-rule-tab-visual",hidden:J!=="visual",className:"logical-rule-tab-panel logical-rule-tab-panel--visual",children:i.jsxs("div",{className:"logical-rule-workbench",children:[i.jsxs("section",{className:"editor-card logical-rule-workbench__library",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"命令库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"点击或拖拽命令、运算符和括号到表达式里。"})]}),i.jsxs("span",{className:"chip chip--soft",children:[Q.length," 类"]})]}),i.jsx("div",{className:"logical-operator-palette",children:["!","&&","||","(",")"].map(k=>i.jsxs("button",{type:"button",className:"palette-card logical-operator-card",draggable:!0,onDragStart:O=>{k==="!"||k==="&&"||k==="||"?R.current={kind:"operator",value:k}:R.current={kind:"paren",value:k},O.dataTransfer.effectAllowed="copyMove",O.dataTransfer.setData("text/plain",k)},onDragEnd:()=>{R.current=null,ee(null)},onClick:()=>{k==="!"||k==="&&"||k==="||"?Cn(k):At(k)},children:[i.jsx("span",{className:"logical-operator-card__symbol",children:k}),i.jsx("span",{className:"logical-operator-card__tip",children:k==="!"?"非":k==="&&"?"与":k==="||"?"或":k==="("?"左括号":"右括号"})]},k))}),ge("搜索命令",i.jsx("input",{className:"input input--compact",value:D,onChange:k=>K(k.target.value),placeholder:"按命令名、别名或说明筛选"}),"搜索结果会同步影响顶部命令库与底部缓存分组的可见内容。"),i.jsx("div",{className:"logical-command-palette",children:Q.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"没有找到匹配的命令。"})}):Q.map(k=>i.jsxs("section",{className:"logical-command-group",children:[i.jsxs("div",{className:"logical-command-group__header",children:[i.jsxs("h3",{children:[k.category,"命令"]}),i.jsx("span",{children:"点击或拖拽"})]}),i.jsx("div",{className:"logical-command-group__items",children:k.items.map(O=>i.jsx(rv,{definition:O,onInsert:()=>Ve(O.name),onDragStart:W=>{R.current={kind:"template",commandName:O.name},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",O.name)},onDragEnd:()=>{R.current=null,ee(null)}},O.name))})]},k.category))}),i.jsxs("section",{className:"logical-rule-workbench__cache",children:[i.jsx("div",{className:"logical-rule-workbench__section-header",children:i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"缓存库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:je})]})}),i.jsx("div",{className:"logical-cache-list",children:te.items.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无缓存的命令实例。"}):te.items.map(k=>{const O=(L==null?void 0:L.type)==="command"&&L.cacheId===k.id;return i.jsxs("div",{className:`logical-cache-item${k.pinned?" is-pinned":""}${O?" is-linked":""}`,role:"button",tabIndex:0,draggable:!0,onClick:()=>ht({name:k.name,args:k.args}),onKeyDown:W=>{(W.key==="Enter"||W.key===" ")&&(W.preventDefault(),ht({name:k.name,args:k.args}))},onDragStart:W=>{R.current={kind:"cache",cacheId:k.id},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},children:[i.jsx("span",{className:"logical-cache-item__title",children:Ls(k,m.lang)}),i.jsxs("span",{className:"logical-cache-item__meta",children:[k.pinned?"已固定":"自动缓存",O?" · 当前使用中":""]}),i.jsxs("div",{className:"logical-cache-item__actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:W=>{W.stopPropagation(),B(ce=>Sd(ce,k.id))},children:k.pinned?"取消固定":"固定"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:W=>{W.stopPropagation(),B(ce=>_d(ce,k.id))},children:"删除"})]})]},k.id)})}),i.jsx("div",{className:"logical-rule-workbench__cache-settings",children:ge("自动缓存上限",i.jsx("input",{className:"input input--compact",type:"number",min:0,value:P.maxItems,onChange:k=>{const O=Number(k.target.value);B(W=>jd(W,Number.isFinite(O)?O:0))}}),"未固定的缓存项会按最近使用顺序保留。")})]})]}),i.jsxs("div",{className:"logical-rule-workbench__right",children:[i.jsxs("section",{className:"editor-card logical-rule-workbench__workspace",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsx("div",{children:i.jsx("h3",{className:"editor-card__title",children:"规则工作台"})}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),i.jsx("div",{className:"logical-rule-workbench__meta",children:ge("表达式预览",i.jsx("code",{className:"logical-rule-editor__preview mono",children:ve||"(空表达式)"}),"下方工作区会实时生成这里的字符串。")}),i.jsxs("div",{className:"logical-flow-rail",children:[i.jsx(Ed,{index:0,active:q===0,onDropAt:Mn,onDragEnterAt:k=>ee(k),onActivate:k=>ee(k)}),h.map((k,O)=>i.jsxs(j.Fragment,{children:[i.jsx(nv,{userConfig:m,token:k,active:C===k.id,onSelect:()=>{E(k.id),ee(O+1)},onDragStart:W=>{R.current={kind:"token",tokenId:k.id},W.dataTransfer.effectAllowed="move",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},onEdit:()=>Rn(k.id),onContextMenu:W=>Hn(k.id,W.clientX,W.clientY),onDelete:()=>{E(k.id),H()}}),i.jsx(Ed,{index:O+1,active:q===O+1,onDropAt:Mn,onDragEnterAt:W=>ee(W),onActivate:W=>ee(W)})]},k.id))]}),h.length===0?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"表达式还是空的"}),i.jsx("span",{children:"从命令库点击、拖拽，或者从底部缓存分组拖入一个命令实例。"})]}):null,i.jsx("div",{className:"logical-token-editor",children:L?L.type==="command"?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"节点编辑"}),i.jsx("span",{children:"右击节点点“信息”查看详情，双击节点或使用“编辑”继续修改命令名和参数。"})]}):L.type==="operator"?i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"运算符"}),ge("运算符类型",i.jsxs("select",{className:"input",value:L.value,onChange:k=>he(k.target.value),children:[i.jsx("option",{value:"!",children:"!"}),i.jsx("option",{value:"&&",children:"&&"}),i.jsx("option",{value:"||",children:"||"})]}),"运算符会按 Lua 语法优先级参与求值。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:Nt,children:"复制运算符"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:H,children:"删除运算符"})]})]}):i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"括号"}),ge("括号类型",i.jsxs("select",{className:"input",value:L.value,onChange:k=>Pe(k.target.value),children:[i.jsx("option",{value:"(",children:"("}),i.jsx("option",{value:")",children:")"})]}),"括号可以把一段表达式单独分组。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:Nt,children:"复制括号"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:H,children:"删除括号"})]})]}):i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"点击一个 token 开始编辑参数、运算符或括号。"})})})]}),i.jsxs("section",{className:"editor-card logical-rule-workbench__cache logical-rule-workbench__cache--hidden",children:[i.jsx("div",{className:"logical-rule-workbench__section-header",children:i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"缓存库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:je})]})}),i.jsx("div",{className:"logical-cache-list",children:P.items.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无缓存的命令实例。"}):P.items.map(k=>{const O=(L==null?void 0:L.type)==="command"&&L.cacheId===k.id;return i.jsxs("div",{className:`logical-cache-item${k.pinned?" is-pinned":""}${O?" is-linked":""}`,role:"button",tabIndex:0,draggable:!0,onClick:()=>ht({name:k.name,args:k.args}),onKeyDown:W=>{(W.key==="Enter"||W.key===" ")&&(W.preventDefault(),ht({name:k.name,args:k.args}))},onDragStart:W=>{R.current={kind:"cache",cacheId:k.id},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},children:[i.jsx("span",{className:"logical-cache-item__title",children:Ls(k,m.lang)}),i.jsxs("span",{className:"logical-cache-item__meta",children:[k.pinned?"已固定":"自动缓存",O?" · 当前使用中":""]}),i.jsxs("div",{className:"logical-cache-item__actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:W=>{W.stopPropagation(),B(ce=>Sd(ce,k.id))},children:k.pinned?"取消固定":"固定"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:W=>{W.stopPropagation(),B(ce=>_d(ce,k.id))},children:"删除"})]})]},k.id)})}),i.jsx("div",{className:"logical-rule-workbench__cache-settings",children:ge("自动缓存上限",i.jsx("input",{className:"input input--compact",type:"number",min:0,value:P.maxItems,onChange:k=>{const O=Number(k.target.value);B(W=>jd(W,Number.isFinite(O)?O:0))}}),"未固定的缓存项会按最近使用顺序保留。")})]})]})]})}),i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-metadata","aria-labelledby":"logical-rule-tab-metadata",hidden:J!=="metadata",className:"logical-rule-tab-panel logical-rule-tab-panel--metadata",children:i.jsxs("div",{className:"editor-card logical-rule-metadata-panel",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"规则元数据编辑"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"调整启用状态和规则注释。"})]}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),i.jsxs("div",{className:"logical-rule-workbench__meta",children:[ge("启用状态",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:v.enable,onChange:k=>w(O=>({...O,enable:k.target.checked}))}),i.jsx("span",{children:"启用这条规则"})]}),"关闭后规则仍会保留，但不会参与判断。"),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:v.comments,onChange:k=>w(O=>({...O,comments:k.target.value})),placeholder:"可选，填写后会在列表里优先显示"}),"注释不会影响逻辑判断，只是帮助后续维护。")]})]})}),i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-manual","aria-labelledby":"logical-rule-tab-manual",hidden:J!=="manual",className:"logical-rule-tab-panel logical-rule-tab-panel--manual",children:i.jsxs("div",{className:"editor-card logical-rule-manual-panel",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"手动设置规则"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"直接编辑完整逻辑表达式，保存前会做语法校验。"})]}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),ge("规则文本",i.jsx("textarea",{className:"input logical-rule-manual-panel__textarea",rows:18,value:v.rule,onChange:k=>Ce(k.target.value),placeholder:"例如：{check-item: minecraft:stone#0 >= 64} && !{print: debug}"}),"可以直接输入完整逻辑规则文本。")]})})]})]}),ue?i.jsx("div",{className:"logical-token-context-scrim",onClick:bn,onContextMenu:k=>k.preventDefault(),children:i.jsxs("div",{className:"logical-token-context-menu",role:"menu",style:{left:ue.x,top:ue.y},onClick:k=>k.stopPropagation(),onContextMenu:k=>{k.preventDefault(),k.stopPropagation()},children:[i.jsx("button",{type:"button",className:"logical-token-context-menu__item",onClick:()=>{tn(ue.tokenId)},children:"信息"}),i.jsx("button",{type:"button",className:"logical-token-context-menu__item",onClick:()=>{Rn(ue.tokenId)},children:"编辑"})]})}):null,i.jsx(Yg,{open:!!z,token:z,cacheState:P,onClose:()=>Y(null)}),i.jsx(Xg,{open:!!G,token:G,onClose:()=>ae(null),onSave:k=>{we&&(Ut(we,k.name,k.args),ae(null))}})]})}function sv(){return{rule:"",enable:!0,comments:""}}function Md(l,s){const a=l.trim();return a.length<=s?a:`${a.slice(0,s)}...`}function iv({open:l,groups:s,availableRoles:a,onClose:c,onSave:p}){const[f,m]=j.useState([]),[v,w]=j.useState(null),[h,b]=j.useState(""),[C,E]=j.useState(""),[P,B]=j.useState(null),D=j.useMemo(()=>a,[a]);j.useEffect(()=>{if(!l)return;const Y=Yo(s);m(Y),w(Y.length>0?0:null),b(D[0]??""),E(""),B(null)},[l,s,D]);const K=v!==null?f[v]??null:null,X=Y=>{f[Y]&&(w(Y),E(""))},oe=()=>{if(a.length===0){E("当前没有可用角色");return}const Y=h.trim();if(!Y){E("请选择角色");return}if(!a.includes(Y)){E("角色必须来自当前配置");return}if(f.some(de=>de.role===Y)){E(`角色组 "${Y}" 已存在`);return}const ue=[...f,{role:Y,rules:[]}];m(ue),w(ue.length-1),E("")},J=()=>{if(v===null)return;const Y=f[v];if(!Y||!window.confirm(`确定删除角色组 "${Y.role}" 吗？`))return;const ue=f.filter((de,R)=>R!==v);m(ue),w(ue.length===0?null:Math.min(v,ue.length-1)),E("")},T=Y=>{f[Y]&&(w(Y),B({groupIndex:Y,ruleIndex:null,mode:"create",initialRule:sv()}),E(""))},q=(Y,ue)=>{var R;const de=(R=f[Y])==null?void 0:R.rules[ue];de&&(w(Y),B({groupIndex:Y,ruleIndex:ue,mode:"edit",initialRule:{rule:de.rule,enable:de.enable,comments:de.comments}}),E(""))},ee=(Y,ue)=>{const de=f[Y],R=de==null?void 0:de.rules[ue];if(!de||!R||!window.confirm(`确定删除逻辑规则 "${pl(R)}" 吗？`))return;const I=f.map((A,Q)=>Q===Y?{...A,rules:A.rules.filter((te,L)=>L!==ue)}:A);m(I),w(Y),E("")},we=Y=>{if(!P)return;const ue=f.map((de,R)=>R!==P.groupIndex?de:P.mode==="create"?{...de,rules:[...de.rules,Y]}:{...de,rules:de.rules.map((I,A)=>A===P.ruleIndex?Y:I)});m(ue),w(P.groupIndex),B(null)},ae=()=>{const Y=Yo(f);for(const ue of Y){const de=ue.role.trim();if(!de){E("角色组名称不能为空");return}if(!D.includes(de)){E(`角色 "${de}" 不在当前配置中`);return}ue.role=de;const R=new Set;for(const I of ue.rules){const A=I.rule.trim();if(!A){E(`角色组 "${de}" 中存在空规则`);return}try{Nf(A)}catch(Q){E(`角色组 "${de}" 中的表达式 "${Md(A,48)}" 无法保存: ${Q instanceof Error?Q.message:String(Q)}`);return}if(R.has(A)){E(`角色组 "${de}" 中存在重复表达式`);return}R.add(A),I.rule=A,I.comments=I.comments.trim()}}p(Y)},xe=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:c,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:ae,children:"保存"})]});return i.jsxs(i.Fragment,{children:[i.jsx(Dt,{open:l,title:"逻辑规则编辑器",subtitle:"这里只负责角色组和规则摘要。点击“新增规则”会再打开一个独立的规则编辑弹窗。",sheetClassName:"modal-sheet--logical-groups",closeOnEscape:!P,onClose:c,footer:xe,children:i.jsxs("div",{className:"logical-group-studio",children:[i.jsxs("div",{className:"editor-card logical-group-studio__toolbar",children:[i.jsxs("div",{className:"logical-group-studio__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"角色组"}),i.jsx("p",{className:"logical-group-studio__section-copy",children:"每个角色组对应一组逻辑规则。"})]}),i.jsxs("span",{className:"chip chip--soft",children:[f.length," 组"]})]}),ge("新增角色组",i.jsxs("div",{className:"field-control field-control--stack",children:[i.jsx("select",{className:"input input--compact",value:h,onChange:Y=>b(Y.target.value),disabled:D.length===0,children:D.length===0?i.jsx("option",{value:"",children:"暂无可用角色"}):i.jsxs(i.Fragment,{children:[i.jsx("option",{value:"",disabled:!0,children:"选择角色"}),D.map(Y=>i.jsx("option",{value:Y,children:Y},Y))]})}),i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:oe,disabled:D.length===0,children:"添加角色组"})]}),D.length===0?"当前没有可用角色，无法创建新的逻辑规则组。":"先选一个角色，再创建或编辑它对应的逻辑规则。")]}),i.jsx("div",{className:"logical-rule-studio__group-list",children:f.length===0?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"尚未创建任何角色组"}),i.jsx("span",{children:"先在上方选择一个角色并添加分组。"})]}):f.map((Y,ue)=>{const de=v===ue;return i.jsxs("div",{className:`logical-rule-studio__group-card${de?" is-selected":""}`,role:"button",tabIndex:0,onClick:()=>X(ue),onKeyDown:R=>{(R.key==="Enter"||R.key===" ")&&(R.preventDefault(),X(ue))},children:[i.jsx("div",{className:"logical-rule-studio__group-head",children:i.jsxs("div",{className:"logical-rule-studio__group-head-row",children:[i.jsxs("div",{className:"logical-rule-studio__group-title",children:[de?i.jsx("input",{className:"input input--compact logical-rule-studio__group-role",value:Y.role,onClick:R=>R.stopPropagation(),onChange:R=>{const I=R.target.value;m(A=>A.map((Q,te)=>te===ue?{...Q,role:I}:Q))},onKeyDown:R=>{R.key==="Enter"&&(R.preventDefault(),X(ue))}}):i.jsx("strong",{className:"record-card__title",children:Y.role}),i.jsxs("span",{className:"chip chip--meta",children:[Y.rules.length," 条"]})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:R=>{R.stopPropagation(),T(ue)},children:"新增规则"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:R=>{if(R.stopPropagation(),v===ue)J();else{if(!window.confirm(`确定删除角色组 "${Y.role}" 吗？`))return;const I=f.filter((A,Q)=>Q!==ue);m(I),w(I.length===0?null:Math.min(ue,I.length-1))}},children:"删除组"})]})]})}),i.jsx("div",{className:"logical-group-studio__rule-list",children:Y.rules.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"这个角色组还没有规则，点击“新增规则”开始编辑。"})}):Y.rules.map((R,I)=>i.jsxs("div",{className:"logical-group-studio__rule-item",role:"button",tabIndex:0,onClick:()=>q(ue,I),onKeyDown:A=>{(A.key==="Enter"||A.key===" ")&&(A.preventDefault(),q(ue,I))},children:[i.jsxs("div",{className:"logical-group-studio__rule-item-main",children:[i.jsx("div",{className:"logical-group-studio__rule-item-label",children:pl(R)}),i.jsxs("div",{className:"logical-group-studio__rule-item-badges",children:[i.jsx("span",{className:"logical-group-studio__badge",children:R.enable?"启用":"停用"}),R.comments.trim()?i.jsx("span",{className:"logical-group-studio__badge logical-group-studio__badge--soft",children:"注释"}):null]}),i.jsx("div",{className:"logical-group-studio__rule-item-preview",children:Md(R.rule,96)})]}),i.jsxs("div",{className:"logical-group-studio__rule-item-actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:A=>{A.stopPropagation(),q(ue,I)},children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:A=>{A.stopPropagation(),ee(ue,I)},children:"删除"})]})]},`${Y.role}-${I}-${R.rule}`))})]},Y.role)})}),C?i.jsx("div",{className:"form-error",children:C}):null]})}),P&&K?i.jsx(lv,{open:!0,mode:P.mode,groupRole:K.role,initialRule:P.initialRule,onClose:()=>B(null),onSave:we}):null]})}function Rd(l){return $d(l)}function ov({open:l,onClose:s,onSave:a}){const c=It(),p=Fm(),[f,m]=j.useState(()=>Rd(c)),[v,w]=j.useState("");j.useEffect(()=>{l&&(m(Rd(c)),w(""))},[l,c]);const h=()=>{m(il()),w("")},b=()=>{const C=f.lang.game.trim(),E=f.lang.display.trim();if(!C){w("游戏语言不能为空");return}if(!E){w("展示语言不能为空");return}const P={lang:{game:C,display:E},database:{autoLoadFluids:f.database.autoLoadFluids,autoLoadItems:f.database.autoLoadItems}};p({type:"replace",payload:P}),a==null||a(P),s()};return i.jsx(Dt,{open:l,title:"用户配置",subtitle:"修改网站中的设置",onClose:s,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:h,children:"恢复默认"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:s,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:b,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("游戏语言",i.jsx("select",{className:"input",value:f.lang.game,onChange:C=>m(E=>({...E,lang:{...E.lang,game:C.target.value}})),children:dl.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))}),"选择你游戏中使用的语言，所有规则和ID都以这个语言为准。如果你玩的服务器是英文的那么这里就需要选英文"),ge("展示语言",i.jsx("select",{className:"input",value:f.lang.display,onChange:C=>m(E=>({...E,lang:{...E.lang,display:C.target.value}})),children:dl.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))}),"选择你希望看见的本地化语言"),ge("自动加载流体数据库",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:f.database.autoLoadFluids,onChange:C=>m(E=>({...E,database:{...E.database,autoLoadFluids:C.target.checked}}))}),i.jsx("span",{children:"自动预加载流体数据库（≈60KB/每种语言）"})]}),"关闭后会按需加载，能减少首次打开的资源消耗。"),ge("自动加载物品数据库",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:f.database.autoLoadItems,onChange:C=>m(E=>({...E,database:{...E.database,autoLoadItems:C.target.checked}}))}),i.jsx("span",{children:"自动预加载物品数据库（≈3MB/每种语言）"})]}),"关闭后会按需加载，适合不常查询数据库的场景。"),v?i.jsx("div",{className:"form-error",children:v}):null]})})}function jf(l){return{id:`node_${Math.random().toString(36).slice(2,10)}`,step:l}}function av(l){return l.map(s=>jf(s))}function uv(l){return`${l} 个步骤`}function bd({index:l,active:s,onDropAt:a,onDragEnterAt:c}){return i.jsx("button",{type:"button",className:`flow-slot${s?" is-active":""}`,onDragOver:p=>p.preventDefault(),onDragEnter:()=>c(l),onDrop:p=>{p.preventDefault(),a(l)},"aria-label":`插入到位置 ${l+1}`,children:i.jsx("span",{children:s?"插入":"+"})})}function cv({open:l,mode:s,initialMineral:a,initialSteps:c,availableSteps:p,existingProcesses:f,onClose:m,onSave:v}){var R;const w=It(),[h,b]=j.useState(a),[C,E]=j.useState([]),[P,B]=j.useState(""),[D,K]=j.useState(null),[X,oe]=j.useState(null),J=j.useRef(null);j.useEffect(()=>{l&&(b(a),E(av(c)),B(""),K(null),oe(null),J.current=null)},[l,a,c]);const T=C.map(I=>I.step).filter(Boolean),q=h.trim(),ee=()=>{K(null)},we=(I,A)=>{ee(),E(Q=>{const te=[...Q];return te.splice(A,0,jf(I)),te})},ae=(I,A)=>{ee(),E(Q=>{const te=Q.findIndex(N=>N.id===I);if(te<0)return Q;const L=[...Q],[se]=L.splice(te,1);let G=A;return te<A&&(G-=1),G=Math.max(0,Math.min(G,L.length)),L.splice(G,0,se),L})},xe=I=>{const A=J.current;A&&(A.kind==="palette"?we(A.step,I):ae(A.id,I),J.current=null,oe(null))},Y=I=>{ee(),E(A=>A.filter(Q=>Q.id!==I))},ue=(I=!1)=>{const A=T;if(!q){B("矿物名称不能为空");return}if(A.length===0){B("至少需要一个处理步骤");return}const Q=f.find(te=>te.mineral===q&&te.mineral!==a);if(Q&&!I){B(""),K(Q);return}B(""),K(null),v({mineral:q,steps:A},{forceReplace:I})},de=D?i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:ee,children:"返回编辑"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:()=>ue(!0),children:"替换并保存"})]}):i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:m,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:()=>ue(!1),children:"保存"})]});return i.jsx(Dt,{open:l,title:s==="add"?"新增矿物流程":"编辑矿物流程",subtitle:"把左侧的职责卡片拖到右侧流程线里，或者直接点击添加。右侧卡片还能继续拖拽调整顺序。",wide:!0,onClose:m,footer:de,children:i.jsxs("div",{className:"process-builder",children:[P?i.jsx("div",{className:"form-error",children:P}):null,i.jsxs("label",{className:"field field--full",children:[i.jsx("span",{className:"field-label",children:"矿物名称"}),i.jsx("div",{className:"field-control",children:i.jsx("input",{className:"input",value:h,onChange:I=>{ee(),b(I.target.value)},onKeyDown:I=>{I.key==="Enter"&&(I.preventDefault(),ue(!1))},placeholder:"例如：Coal"})}),i.jsx("span",{className:"field-hint",children:h?`当前输入矿物为：${ua(h,w.lang)}`:`请输入矿物名称, 当前游戏语言为: ${((R=dl.find(I=>I.value===w.lang.game))==null?void 0:R.label)??w.lang.game}`})]}),i.jsxs("div",{className:"process-builder__meta",children:[i.jsx("span",{className:"chip chip--info",children:uv(C.length)}),i.jsx("span",{className:"process-builder__hint",children:"支持重复步骤，适合表示同一矿物的多阶段处理线路。"})]}),D?i.jsxs("section",{className:"conflict-panel","aria-live":"polite",children:[i.jsxs("div",{className:"conflict-panel__header",children:[i.jsxs("h3",{className:"conflict-panel__title",children:["矿物 “",D.mineral,"” 已存在"]}),i.jsx("p",{className:"conflict-panel__description",children:"请确认是否要用当前编辑内容替换已有流程。"})]}),i.jsxs("div",{className:"conflict-panel__grid",children:[i.jsxs("div",{className:"conflict-panel__card",children:[i.jsx("span",{className:"conflict-panel__label",children:"当前编辑流程"}),i.jsx(qo,{steps:T})]}),i.jsxs("div",{className:"conflict-panel__card",children:[i.jsx("span",{className:"conflict-panel__label",children:"已有流程"}),i.jsx(qo,{steps:D.steps})]})]})]}):null,i.jsxs("div",{className:"process-builder__grid",children:[i.jsxs("section",{className:"builder-panel",children:[i.jsxs("div",{className:"builder-panel__header",children:[i.jsx("h3",{children:"可用职责"}),i.jsx("span",{children:"从当前配置自动同步"})]}),i.jsx("div",{className:"palette",children:p.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无可用职责"}):p.map(I=>i.jsxs("button",{type:"button",className:"palette-card",draggable:!0,onDragStart:A=>{J.current={kind:"palette",step:I},A.dataTransfer.effectAllowed="copyMove",A.dataTransfer.setData("text/plain",I)},onDragEnd:()=>{J.current=null,oe(null)},onClick:()=>we(I,C.length),children:[i.jsx("span",{className:"palette-card__name",children:I}),i.jsx("span",{className:"palette-card__tip",children:"拖拽或点击添加"})]},I))})]}),i.jsxs("section",{className:"builder-panel builder-panel--sequence",children:[i.jsxs("div",{className:"builder-panel__header",children:[i.jsx("h3",{children:"流程线"}),i.jsx("span",{children:"拖拽卡片调整顺序"})]}),i.jsxs("div",{className:"flow-rail",children:[i.jsx(bd,{index:0,active:X===0,onDropAt:xe,onDragEnterAt:I=>oe(I)}),C.map((I,A)=>i.jsxs(j.Fragment,{children:[i.jsxs("div",{className:"flow-node",draggable:!0,onDragStart:Q=>{J.current={kind:"node",id:I.id},Q.dataTransfer.effectAllowed="move",Q.dataTransfer.setData("text/plain",I.id)},onDragEnd:()=>{J.current=null,oe(null)},children:[i.jsx("span",{className:"flow-node__name",children:I.step}),i.jsx("button",{type:"button",className:"flow-node__remove",onClick:()=>Y(I.id),"aria-label":`删除 ${I.step}`,children:"×"})]}),i.jsx(bd,{index:A+1,active:X===A+1,onDropAt:xe,onDragEnterAt:Q=>oe(Q)})]},I.id))]}),C.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"把职责拖到这里开始搭建流程。"}):null]})]})]})})}function _f(l,s,a=3e3){j.useEffect(()=>{if(!l)return;const c=window.setTimeout(()=>s(null),a);return()=>window.clearTimeout(c)},[l,s,a])}const dv={info:{icon:"i",title:"提示"},success:{icon:"OK",title:"已完成"},error:{icon:"!",title:"操作失败"}};function Sf({tone:l,children:s,floating:a=!1}){const c=dv[l],p=["notice",a?"notice--floating":"notice--panel",`notice--${l}`].join(" ");return i.jsxs("div",{className:p,role:l==="error"?"alert":"status","aria-live":l==="error"?"assertive":"polite",children:[i.jsx("div",{className:"notice__icon","aria-hidden":"true",children:c.icon}),i.jsxs("div",{className:"notice__content",children:[i.jsx("strong",{className:"notice__title",children:c.title}),i.jsx("div",{className:"notice__text",children:s})]})]})}function Id(l){return l instanceof Error?l.message:String(l)}function Dd(l){return Object.values(l).reduce((s,a)=>s+Object.keys(a).length,0)}function fv({config:l,fileName:s}){const[a,c]=j.useState(!1),[p,f]=j.useState(null),m=(P,B="info")=>{f({tone:B,text:P})},v=j.useMemo(()=>Vd(l,{compact:a}),[l,a]),w=j.useMemo(()=>Dd(l.idWhitelist),[l]),h=j.useMemo(()=>Dd(l.idBlacklist),[l]),b=s.trim()||"setting.new";_f(p,f,3e3);const C=async()=>{try{await navigator.clipboard.writeText(v),m("已复制文本","success")}catch(P){m(`复制失败: ${Id(P)}`,"error")}},E=()=>{try{const P=new Blob([v],{type:"text/plain;charset=utf-8"}),B=URL.createObjectURL(P),D=document.createElement("a");D.href=B,D.download=b,D.click(),URL.revokeObjectURL(B),m(`已下载 ${b}`,"success")}catch(P){m(`下载失败: ${Id(P)}`,"error")}};return i.jsxs("section",{className:"export-panel",children:[i.jsxs("div",{className:"export-panel__header",children:[i.jsxs("div",{children:[i.jsx("h2",{children:"配置预览"}),i.jsx("p",{children:"当前配置的 Lua 文本预览、复制和下载都在这里完成。"})]}),i.jsxs("div",{className:"meta-pills meta-pills--right",children:[i.jsxs("span",{className:"chip chip--meta",children:["白名单数量 ",w]}),i.jsxs("span",{className:"chip chip--meta",children:["黑名单数量 ",h]})]})]}),i.jsxs("div",{className:"export-panel__toolbar",children:[i.jsxs("label",{className:"export-panel__toggle",children:[i.jsx("input",{type:"checkbox",checked:a,onChange:P=>c(P.target.checked)}),i.jsx("span",{children:"单行显示"})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:C,children:"复制文本"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:E,children:"下载文件"})]})]}),p?i.jsx(Sf,{tone:p.tone,children:p.text}):null,i.jsx("textarea",{className:"export-textarea",value:v,readOnly:!0,spellCheck:!1})]})}function Wo({title:l,kindLabel:s,groups:a,onEdit:c}){return i.jsx(yl,{title:l,subtitle:s,className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:c,children:"编辑"}),children:i.jsx(wg,{title:l,groups:a})})}function pv({interfaces:l,availableRoles:s,onAddInterface:a,onEditInterface:c,onDeleteInterface:p}){return i.jsx(yl,{title:"ME 接口列表",subtitle:"是指游戏中适配器贴着的ME接口, 这里管理每个 ME 接口地址以及它对应的职责。",className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:a,children:"新增ME接口"}),children:i.jsxs("div",{className:"scroll-stack",children:[l.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无输出口。"}):i.jsx("div",{className:"table-wrap",children:i.jsxs("table",{className:"data-table",children:[i.jsx("thead",{children:i.jsxs("tr",{children:[i.jsx("th",{children:"ME接口地址"}),i.jsx("th",{children:"职责"}),i.jsx("th",{children:"操作"})]})}),i.jsx("tbody",{children:l.map(f=>i.jsxs("tr",{children:[i.jsx("td",{className:"mono",children:f.id}),i.jsx("td",{children:f.role}),i.jsx("td",{children:i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>c(f),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>p(f.id),children:"删除"})]})})]},f.id))})]})}),i.jsxs("section",{className:"subpanel",children:[i.jsxs("div",{className:"subpanel__header",children:[i.jsx("h3",{children:"ME接口可选职责"}),i.jsx("span",{children:"来自当前配置中的职责列表"})]}),s.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无可用职责。"}):i.jsx("div",{className:"tag-list",children:s.map(f=>i.jsx("span",{className:"chip chip--soft",children:f},f))})]})]})})}const Ld=new Intl.Collator("zh-Hans-CN",{numeric:!0,sensitivity:"base"});function mv({processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c}){const p=It(),[f,m]=j.useState(""),[v,w]=j.useState("length"),[h,b]=j.useState("default"),C=j.useMemo(()=>{const T=f.trim().toLowerCase();return T?l.filter(q=>`${q.mineral} ${q.steps.join(" ")}`.toLowerCase().includes(T)):l},[l,f]),E=j.useMemo(()=>h==="default"?[...C]:[...C].sort((T,q)=>{let ee=0;return v==="name"?(ee=Ld.compare(T.mineral,q.mineral),ee===0&&(ee=T.steps.length-q.steps.length)):(ee=T.steps.length-q.steps.length,ee===0&&(ee=Ld.compare(T.mineral,q.mineral))),h==="asc"?ee:-ee}),[C,h,v]),P=hl("item",p.lang.display),B=hl("item",p.lang.game),D=j.useMemo(()=>E.map(T=>({process:T,displayMineral:ua(T.mineral,p.lang)})),[B,P,p.lang.display,p.lang.game,E]),K=h==="default"?"asc":h==="asc"?"desc":"default",X=h==="default"?"↕":h==="asc"?"↑":"↓",oe=h==="default"?"默认排序":h==="asc"?"正序排序":"逆序排序",J=K==="default"?"默认排序":K==="asc"?"正序排序":"逆序排序";return i.jsx(yl,{title:"矿物处理流程",subtitle:"按矿物浏览每条处理线，并支持搜索、排序和编辑。",className:"panel--flow",actions:i.jsxs("div",{className:"panel-actions-row",children:[i.jsx("input",{className:"input input--search",value:f,onChange:T=>m(T.target.value),placeholder:"搜索矿物 / 步骤"}),i.jsxs("div",{className:"sort-controls",children:[i.jsxs("select",{className:"input input--compact input--sort",value:v,onChange:T=>w(T.target.value),children:[i.jsx("option",{value:"length",children:"按工序长度"}),i.jsx("option",{value:"name",children:"按矿物名称"})]}),i.jsx("button",{type:"button",className:"button button--tonal button--compact sort-direction-button","aria-label":`${oe}，点击切换为${J}`,title:`${oe}，点击切换为${J}`,onClick:()=>b(K),children:i.jsx("span",{"aria-hidden":"true",children:X})})]}),i.jsx("button",{type:"button",className:"button button--filled",onClick:s,children:"新增流程"})]}),children:i.jsx("div",{className:"scroll-stack",children:D.length===0?i.jsx("div",{className:"empty-state",children:"没有匹配的矿物流程。"}):D.map(({process:T,displayMineral:q})=>i.jsxs("article",{className:"record-card",children:[i.jsxs("div",{className:"record-card__header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"record-card__title",children:q}),i.jsxs("p",{className:"record-card__meta",children:[T.steps.length," 个步骤"]})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>a(T),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>c(T.mineral),children:"删除"})]})]}),i.jsx(qo,{steps:T.steps})]},T.mineral))})})}const Is=new Intl.Collator("zh-Hans-CN",{numeric:!0,sensitivity:"base"});function hv({groups:l,onReuseProcess:s}){const a=It(),[c,p]=j.useState(""),[f,m]=j.useState("length"),[v,w]=j.useState("default"),h=j.useMemo(()=>{const D=c.trim().toLowerCase();return D?l.filter(K=>`${K.signature} ${K.minerals.join(" ")}`.toLowerCase().includes(D)):l},[l,c]),b=j.useMemo(()=>v==="default"?[...h]:[...h].sort((D,K)=>{let X=0;return f==="count"?(X=D.minerals.length-K.minerals.length,X===0&&(X=Is.compare(D.signature,K.signature)),X===0&&(X=Is.compare(D.minerals.join(" / "),K.minerals.join(" / ")))):(X=D.steps.length-K.steps.length,X===0&&(X=Is.compare(D.signature,K.signature)),X===0&&(X=Is.compare(D.minerals.join(" / "),K.minerals.join(" / ")))),v==="asc"?X:-X}),[h,v,f]),C=v==="default"?"asc":v==="asc"?"desc":"default",E=v==="default"?"↕":v==="asc"?"↑":"↓",P=v==="default"?"默认排序":v==="asc"?"正序排序":"逆序排序",B=C==="default"?"默认排序":C==="asc"?"正序排序":"逆序排序";return i.jsx(yl,{title:"流程反查矿物",subtitle:"根据当前处理顺序反向查看有哪些矿物会走同一条线。",className:"panel--flow",actions:i.jsxs("div",{className:"panel-actions-row",children:[i.jsx("input",{className:"input input--search",value:c,onChange:D=>p(D.target.value),placeholder:"搜索流程 / 矿物"}),i.jsxs("div",{className:"sort-controls",children:[i.jsxs("select",{className:"input input--compact input--sort",value:f,onChange:D=>m(D.target.value),children:[i.jsx("option",{value:"length",children:"按工序长度"}),i.jsx("option",{value:"count",children:"按矿物数量"})]}),i.jsx("button",{type:"button",className:"button button--tonal button--compact sort-direction-button","aria-label":`${P}，点击切换为${B}`,title:`${P}，点击切换为${B}`,onClick:()=>w(C),children:i.jsx("span",{"aria-hidden":"true",children:E})})]})]}),children:i.jsx("div",{className:"scroll-stack",children:b.length===0?i.jsx("div",{className:"empty-state",children:"没有匹配的反查结果。"}):b.map(D=>i.jsxs("article",{className:"record-card record-card--compact",children:[i.jsxs("div",{className:"record-card__header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"record-card__title",children:D.signature?nh(D.steps):"空流程"}),i.jsxs("p",{className:"record-card__meta",children:[D.minerals.length," 个矿物"]})]}),i.jsx("div",{className:"button-row record-card__actions",children:i.jsx("button",{type:"button",className:"button button--filled button--compact",disabled:D.steps.length===0,title:D.steps.length===0?"空流程不可复用":"使用这条流程新增矿物",onClick:()=>s(D.steps),children:"新增矿物"})})]}),i.jsx("div",{className:"record-card__scroll",children:i.jsx(kg,{minerals:D.minerals,lang:a.lang})})]},D.signature||"empty"))})})}function gv({id:l,onDelete:s}){const[a,c]=j.useState(0),[p,f]=j.useState(!1),[m,v]=j.useState(!1),w=j.useRef(null),h=j.useRef(0),b=j.useRef(null),C=j.useRef(0),E=j.useRef(0),P=88;j.useEffect(()=>{var q;if(typeof window>"u")return;const J=window.matchMedia("(max-width: 640px)"),T=()=>v(J.matches);return T(),(q=J.addEventListener)==null||q.call(J,"change",T),()=>{var ee;(ee=J.removeEventListener)==null||ee.call(J,"change",T)}},[]);const B=J=>{const T=J>=P*.45?P:0;h.current=T,c(T)},D=J=>{var T;if(m&&!(J.pointerType==="mouse"&&J.button!==0)){b.current=J.pointerId,C.current=J.clientX,E.current=h.current,f(!0);try{(T=w.current)==null||T.setPointerCapture(J.pointerId)}catch{}}},K=J=>{if(!m||!p||b.current!==J.pointerId)return;const T=J.clientX-C.current,q=Math.max(0,Math.min(P,E.current+T));h.current=q,c(q)},X=J=>{var T;if(m){if(b.current===J.pointerId)try{(T=w.current)==null||T.releasePointerCapture(J.pointerId)}catch{}b.current=null,f(!1),B(h.current)}},oe=()=>{s(l),h.current=0,c(0)};return i.jsxs("div",{ref:w,className:"role-card__interface-item",style:{"--interface-swipe-offset":`${a}px`},onPointerDown:D,onPointerMove:K,onPointerUp:X,onPointerCancel:X,children:[i.jsx("div",{className:"role-card__interface-underlay",children:i.jsx("button",{type:"button",className:"button button--danger button--compact role-card__interface-delete-mobile",disabled:a===0,onPointerDown:J=>J.stopPropagation(),onClick:oe,children:"删除"})}),i.jsxs("div",{className:`role-card__interface-foreground${p?" is-dragging":""}`,children:[i.jsx("span",{className:"chip chip--soft role-card__interface-label",children:l}),i.jsx("button",{type:"button",className:"icon-button icon-button--inline role-card__interface-delete-desktop",onClick:oe,"aria-label":`删除ME接口 ${l}`,title:`删除ME接口 ${l}`,children:"×"})]})]})}function vv({roles:l,interfaces:s,onAddRole:a,onEditRole:c,onDeleteRole:p,onDeleteInterface:f}){const m=j.useMemo(()=>{const v=new Map;for(const w of s){const h=v.get(w.role);h?h.push(w):v.set(w.role,[w])}return v},[s]);return i.jsx(yl,{title:"职责列表",subtitle:"职责名称、机器和它绑定的ME接口都在这里单独维护。",className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:a,children:"新增职责"}),children:i.jsx("div",{className:"scroll-stack",children:l.length===0?i.jsx("div",{className:"empty-state",children:"暂无职责。"}):i.jsx("div",{className:"role-grid",children:l.map(v=>{const w=m.get(v.name)||[];return i.jsxs("article",{className:"role-card",children:[i.jsxs("div",{className:"role-card__header",children:[i.jsxs("div",{children:[i.jsx("h4",{className:"role-card__title",children:v.name}),i.jsx("p",{className:"role-card__meta",children:v.machine})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>c(v),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>p(v.name),children:"删除"})]})]}),i.jsxs("div",{className:"role-card__body",children:[i.jsx("span",{className:"role-card__label",children:"包含以下ME接口"}),i.jsx("div",{className:"role-card__interface-list",children:w.length===0?i.jsx("span",{className:"empty-chip",children:"无ME接口"}):w.map(h=>i.jsx(gv,{id:h.id,onDelete:f},h.id))})]})]},v.name)})})})})}function yv({processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c,reverseGroups:p,onReuseProcess:f,roles:m,interfaces:v,roleNames:w,onAddRole:h,onAddInterface:b,onEditRole:C,onDeleteRole:E,onEditInterface:P,onDeleteInterface:B,idWhitelist:D,idBlacklist:K,logicalRules:X,onEditWhitelist:oe,onEditBlacklist:J,onEditLogicalRules:T,config:q,fileName:ee}){return i.jsxs("main",{className:"dashboard",children:[i.jsxs("div",{className:"dashboard__grid",children:[i.jsxs("div",{className:"dashboard__column dashboard__column--primary",children:[i.jsx(mv,{processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c}),i.jsx(hv,{groups:p,onReuseProcess:f}),i.jsx(pv,{interfaces:v,availableRoles:w,onAddInterface:b,onEditInterface:P,onDeleteInterface:B})]}),i.jsxs("div",{className:"dashboard__column dashboard__column--secondary",children:[i.jsx(vv,{roles:m,interfaces:v,onAddRole:h,onEditRole:C,onDeleteRole:E,onDeleteInterface:B}),i.jsx(Wo,{title:"白名单",kindLabel:"按职责管理规则，支持启用状态和注释，显示时优先展示注释。",groups:D,onEdit:oe}),i.jsx(Wo,{title:"黑名单",kindLabel:"按职责管理规则，支持启用状态和注释，显示时优先展示注释。",groups:K,onEdit:J}),i.jsx(Wo,{title:"逻辑规则",kindLabel:"按角色管理逻辑表达式，支持拖拽命令单元、运算符和括号。",groups:X,onEdit:T})]})]}),i.jsx(fv,{config:q,fileName:ee})]})}const ta="oc-ore-processing-editor.config.v1",fa="oc-ore-processing-editor.config-name.v1";function qt(l){return l instanceof Error?l.message:String(l)}function xv(l){const s=[];if(!l.database.autoLoadFluids&&!l.database.autoLoadItems)return s;const a=new Set([l.lang.game,l.lang.display]);if(l.database.autoLoadItems)for(const c of a)s.push({kind:"item",locale:c});if(l.database.autoLoadFluids)for(const c of a)s.push({kind:"fluid",locale:c});return s}function kv(){if(typeof window<"u"){const l=window.localStorage.getItem(ta);if(l)try{return Qo(l)}catch{window.localStorage.removeItem(ta),window.localStorage.removeItem(fa)}}try{return Qo(Kd)}catch{return en(Km)}}function wv(){return typeof window<"u"&&window.localStorage.getItem(fa)||ol}function Nv(){const[l,s]=j.useState(()=>kv()),[a,c]=j.useState(()=>wv()),p=It(),[f,m]=j.useState(null),[v,w]=j.useState(null),[h,b]=j.useState(0),[C,E]=j.useState(!1),[P,B]=j.useState(""),[D,K]=j.useState(!1),[X,oe]=j.useState(!1),J=j.useRef(null),T=j.useCallback((H,he="info")=>{w({tone:he,text:H})},[]),q=j.useMemo(()=>Zm(l),[l]),ee=j.useMemo(()=>Jm(l),[l]),we=j.useMemo(()=>eh(l),[l]),ae=j.useMemo(()=>Ao(l,"idWhitelist"),[l]),xe=j.useMemo(()=>Ao(l,"idBlacklist"),[l]),Y=j.useMemo(()=>Ao(l,"logicalRules"),[l]),ue=j.useMemo(()=>Hd(l),[l]),de=j.useMemo(()=>th(l),[l]),R=j.useMemo(()=>ee.map(H=>H.id),[ee]),I=j.useMemo(()=>q.map(H=>H.name),[q]),A=j.useMemo(()=>({roles:q.length,interfaces:ee.length,processes:we.length,whitelistRules:ae.reduce((H,he)=>H+he.rules.length,0),blacklistRules:xe.reduce((H,he)=>H+he.rules.length,0),logicalRules:Y.reduce((H,he)=>H+he.rules.length,0)}),[xe,ae,ee,Y,we,q]),Q=j.useMemo(()=>xv(p),[p]);j.useEffect(()=>{if(!(typeof window>"u"))try{window.localStorage.setItem(ta,Vd(l)),window.localStorage.setItem(fa,a)}catch{}},[l,a]),j.useEffect(()=>{let H=!1;if(Q.length===0){E(!0),B("");return}return E(!1),B(""),Promise.all(Q.map(({kind:he,locale:Pe})=>Bh(he,Pe))).then(()=>{H||E(!0)}).catch(he=>{H||(B(qt(he)),E(!0))}),()=>{H=!0}},[Q]),_f(v,w,4e3),j.useEffect(()=>{if(typeof window>"u")return;const H=()=>{var In;const nn=((In=J.current)==null?void 0:In.getBoundingClientRect().height)??0;b(nn)};H();const he=J.current,Pe=typeof ResizeObserver<"u"&&he?new ResizeObserver(()=>{H()}):null;return Pe&&he&&Pe.observe(he),window.addEventListener("resize",H),()=>{Pe==null||Pe.disconnect(),window.removeEventListener("resize",H)}},[]),j.useEffect(()=>{var H;typeof document>"u"||C&&((H=document.getElementById("app-preloader"))==null||H.remove())},[C]),j.useEffect(()=>{P&&T(`资源数据库预加载失败: ${P}`,"error")},[T,P]);const te=()=>m(null),L=(H,he)=>{try{const Pe=Qo(H);s(Pe),c(he||ol),te(),K(!1),T(`已导入 ${he||ol}`,"success")}catch(Pe){T(`导入失败: ${qt(Pe)}`,"error")}},se=H=>{T("用户配置已保存","success")},G=()=>{L(Kd,ol)},N=()=>{m({type:"role",mode:"add",originalName:null,initial:{name:"",machine:""}})},z=H=>{m({type:"role",mode:"edit",originalName:H.name,initial:H})},ve=()=>{m({type:"interface",mode:"add",originalId:null,initial:{id:"",role:I[0]||""}})},ye=H=>{m({type:"interface",mode:"edit",originalId:H.id,initial:H})},_e=()=>{m({type:"process",mode:"add",originalMineral:null,initialMineral:"",initialSteps:[]})},je=H=>{m({type:"process",mode:"edit",originalMineral:H.mineral,initialMineral:H.mineral,initialSteps:H.steps})},ke=()=>{m({type:"list",kind:"idWhitelist"})},Ce=()=>{m({type:"list",kind:"idBlacklist"})},Re=()=>{m({type:"logicalRules"})},Ve=(H,he)=>{try{s(lh(l,H,he)),te(),T(`职责 "${he.name}" 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},ht=H=>{if(window.confirm(`确认删除职责 "${H}" 吗？这会同步移除相关流程、输出口和黑白名单。`))try{s(sh(l,H)),T(`职责 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},Cn=(H,he)=>{try{s(ih(l,H,he)),te(),T(`输出口 "${he.id}" 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},At=H=>{if(window.confirm(`确认删除输出口 "${H}" 吗？`))try{s(oh(l,H)),T(`输出口 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},En=(H,he,Pe)=>{try{s(ah(l,H,he,Pe)),te(),T(`矿物流程 "${he.mineral}" 已保存`,"success")}catch(nn){T(qt(nn),"error")}},Mn=H=>{if(window.confirm(`确认删除矿物流程 "${H}" 吗？`))try{s(uh(l,H)),T(`矿物流程 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},Rn=H=>{m({type:"process",mode:"add",originalMineral:null,initialMineral:"",initialSteps:H})},tn=(H,he)=>{try{s(fh(l,H,he)),te(),T(`${{idWhitelist:"白名单",idBlacklist:"黑名单",logicalRules:"逻辑规则"}[H]} 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},Hn=P?"资源数据库异常":C?"资源数据库就绪":"资源数据库加载中",bn=P?"overview-status overview-status--error":C?"overview-status overview-status--ready":"overview-status overview-status--loading",Ut=[{label:"矿物流程",value:A.processes,hint:"正在维护的处理线"},{label:"职责",value:A.roles,hint:"机器职责节点"},{label:"ME 接口",value:A.interfaces,hint:"已绑定地址"},{label:"白名单规则",value:A.whitelistRules,hint:"白名单总数"},{label:"黑名单规则",value:A.blacklistRules,hint:"屏蔽项总数"},{label:"逻辑规则",value:A.logicalRules,hint:"表达式单元总数"}],Nt=["整理矿物处理流程","绑定职责与 ME 接口","补齐黑白名单与逻辑规则","预览并导出 Lua 配置"];return i.jsxs("div",{className:"app-shell",style:{"--topbar-height":`${h}px`},children:[i.jsxs("header",{className:"topbar",ref:J,children:[i.jsxs("div",{className:"topbar__copy",children:[i.jsx("h1",{children:"GTNH OC 矿处配置编辑器"}),i.jsxs("div",{className:"topbar__summary",children:[i.jsxs("span",{className:"topbar__summary-item topbar__summary-item--file",title:a,children:["当前文件：",a]}),i.jsx("span",{className:"topbar__summary-separator","aria-hidden":"true",children:"·"}),i.jsxs("span",{className:"topbar__summary-item",children:["职责 ",A.roles]}),i.jsxs("span",{className:"topbar__summary-item",children:["输出口 ",A.interfaces]}),i.jsxs("span",{className:"topbar__summary-item",children:["矿物 ",A.processes]})]})]}),i.jsx("div",{className:"topbar__actions",children:i.jsxs("div",{className:"button-row button-row--wrap topbar__button-row",children:[i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:()=>oe(!0),title:`语言 ${p.lang.game} / ${p.lang.display}，数据库 ${p.database.autoLoadItems?"物品自动":"物品被动"}，${p.database.autoLoadFluids?"流体自动":"流体被动"}`,children:"用户配置"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>K(!0),children:"导入配置"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:G,children:"恢复示例"})]})})]}),v?i.jsx(Sf,{tone:v.tone,floating:!0,children:v.text}):null,i.jsxs("section",{className:"workspace-overview","aria-label":"当前配置概览",children:[i.jsxs("article",{className:"overview-card overview-card--hero",children:[i.jsxs("div",{className:"overview-card__header",children:[i.jsx("span",{className:"overview-card__eyebrow",children:"当前配置"}),i.jsx("span",{className:"chip chip--meta",children:"本地自动保存"})]}),i.jsx("h2",{className:"overview-card__title mono",title:a,children:a}),i.jsx("p",{className:"overview-card__copy",children:"这套工作台把矿物处理线、职责绑定、规则过滤和 Lua 导出收在同一个视图里，适合连续整理整份矿处配置。"}),i.jsxs("div",{className:"overview-card__meta",children:[i.jsxs("span",{className:"chip chip--path",children:["游戏语言 ",p.lang.game]}),i.jsxs("span",{className:"chip chip--soft",children:["显示语言 ",p.lang.display]}),i.jsxs("span",{className:"chip chip--soft",children:["物品数据库 ",p.database.autoLoadItems?"自动加载":"被动加载"]}),i.jsxs("span",{className:"chip chip--soft",children:["流体数据库 ",p.database.autoLoadFluids?"自动加载":"被动加载"]}),i.jsx("span",{className:bn,children:Hn})]})]}),i.jsxs("article",{className:"overview-card overview-card--deck",children:[i.jsx("div",{className:"overview-card__header",children:i.jsxs("div",{className:"overview-card__heading",children:[i.jsx("span",{className:"overview-card__eyebrow",children:"工作台指标"}),i.jsx("span",{className:"overview-card__caption",children:"围绕配置编辑链路重新排布视图"})]})}),i.jsx("div",{className:"overview-stat-grid",children:Ut.map(H=>i.jsxs("div",{className:"overview-stat",children:[i.jsx("span",{className:"overview-stat__value",children:H.value}),i.jsx("span",{className:"overview-stat__label",children:H.label}),i.jsx("span",{className:"overview-stat__hint",children:H.hint})]},H.label))}),i.jsx("div",{className:"overview-flow","aria-label":"编辑流程",children:Nt.map((H,he)=>i.jsxs("div",{className:"overview-flow__item",children:[i.jsx("span",{className:"overview-flow__index",children:he+1}),i.jsx("span",{className:"overview-flow__label",children:H})]},H))})]})]}),i.jsx(yv,{processes:we,onAddProcess:_e,onEditProcess:je,onDeleteProcess:Mn,reverseGroups:de,onReuseProcess:Rn,roles:q,interfaces:ee,roleNames:I,onAddRole:N,onAddInterface:ve,onEditRole:z,onDeleteRole:ht,onEditInterface:ye,onDeleteInterface:At,idWhitelist:ae,idBlacklist:xe,logicalRules:Y,onEditWhitelist:ke,onEditBlacklist:Ce,onEditLogicalRules:Re,config:l,fileName:a}),(f==null?void 0:f.type)==="role"?i.jsx(wh,{open:!0,mode:f.mode,initial:f.initial,existingNames:I,onClose:te,onSave:H=>Ve(f.originalName,H)}):null,(f==null?void 0:f.type)==="interface"?i.jsx(Nh,{open:!0,mode:f.mode,initial:f.initial,availableRoles:I,existingIds:R,onClose:te,onSave:H=>Cn(f.originalId,H)}):null,(f==null?void 0:f.type)==="process"?i.jsx(cv,{open:!0,mode:f.mode,initialMineral:f.initialMineral,initialSteps:f.initialSteps,availableSteps:ue,existingProcesses:we,onClose:te,onSave:(H,he)=>En(f.originalMineral,H,he)}):null,(f==null?void 0:f.type)==="list"?i.jsx(Ng,{open:!0,title:f.kind==="idWhitelist"?"白名单":"黑名单",groups:f.kind==="idWhitelist"?ae:xe,availableRoles:I,onClose:te,onSave:H=>tn(f.kind,H)}):null,(f==null?void 0:f.type)==="logicalRules"?i.jsx(iv,{open:!0,groups:Y,availableRoles:I,onClose:te,onSave:H=>tn("logicalRules",H)}):null,i.jsx(kh,{open:D,initialFileName:a,onClose:()=>K(!1),onImport:L}),i.jsx(ov,{open:X,onClose:()=>oe(!1),onSave:se})]})}Im.createRoot(document.getElementById("root")).render(i.jsx(Sm.StrictMode,{children:i.jsx($m,{children:i.jsx(bh,{children:i.jsx(Nv,{})})})}));
+状态: ${Q.enable?"启用":"停用"}`,children:[i.jsx("span",{className:"tree-item__label",children:pl(Q)}),i.jsx("span",{className:`tree-item__status${Q.enable?" tree-item__status--on":" tree-item__status--off"}`,children:Q.enable?"启用":"停用"})]},`${R.role}-${Q.rule}-${te}`)})})]},`${R.role}-${I}`)})]})]}),i.jsxs("div",{className:"list-editor__detail",children:[h?h.kind==="group"?i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"职责组"}),ge("职责名称",i.jsx("input",{className:"input",value:P,onChange:R=>B(R.target.value),onKeyDown:R=>{R.key==="Enter"&&(R.preventDefault(),ae())},placeholder:"输入职责名称"}),"重命名后会直接替换该组对应的 key。"),i.jsx(xd,{value:D.rule,userConfig:m,onChange:R=>{K(I=>({...I,rule:R.rule||I.rule,comments:R.comments||I.comments}))},onEnterDown:xe}),ge("是否启用",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:D.enable,onChange:R=>K(I=>({...I,enable:R.target.checked}))}),i.jsx("span",{children:"启用"})]})),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:D.comments,onChange:R=>K(I=>({...I,comments:R.target.value})),placeholder:"可选，填写后优先展示这段文字"}),"新增规则时可以直接录入说明。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:ae,children:"重命名职责组"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:xe,children:"添加规则"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:ue,children:"删除职责组"})]})]}):i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"规则"}),i.jsx(xd,{value:X.rule,userConfig:m,onChange:R=>{oe(I=>({...I,rule:R.rule||I.rule,comments:R.comments||I.comments}))},onEnterDown:Y}),ge("是否启用",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:X.enable,onChange:R=>oe(I=>({...I,enable:R.target.checked}))}),i.jsx("span",{children:"启用"})]})),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:X.comments,onChange:R=>oe(I=>({...I,comments:R.target.value})),placeholder:"如果填写，列表中会优先显示这段注释"}),"注释优先显示，便于区分规则用途。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:Y,children:"保存规则"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:de,children:"删除规则"})]})]}):i.jsxs("div",{className:"empty-state",children:[i.jsx("strong",{children:"尚未选择节点"}),i.jsx("span",{children:"先在左侧选择一个职责组或规则，再在这里编辑。"})]}),J?i.jsx("div",{className:"form-error",children:J}):null]})]})})}function mf({label:l,hint:s,children:a}){return i.jsxs("div",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control field-control--stack",children:a}),s?i.jsx("span",{className:"field-hint",children:s}):null]})}const hf=[{value:"<",label:"<"},{value:"<=",label:"<="},{value:"==",label:"=="},{value:">=",label:">="},{value:">",label:">"},{value:"!=",label:"!="}];function jg(l){var s;return l==="~="?"!=":((s=hf.find(a=>a.value===l))==null?void 0:s.value)??">="}function _g(l){const s=l.trim();if(!s)return{resource:"",comparator:">=",amount:"0"};const a=s.match(/^(.+?)\s*([<>=!~]+)\s*(.*?)$/);if(!a)return{resource:s,comparator:">=",amount:"0"};const c=jg(a[2]);return{resource:a[1].trim(),comparator:c,amount:(a[3].trim()||"0").replace(/^0+/g,"")||"0"}}function Sg(l,s,a){const c=l.trim(),p=a.trim();return[c,s,p].filter(Boolean).join(" ")}function ca(l,s,a,c,p="id"){return({value:f,onChange:m,userConfig:v})=>{const w=kr(l.kind,p==="id",s,v.lang);return i.jsxs(mf,{label:s,hint:c,children:[i.jsx(df,{spec:l,value:f,onChange:m,valueMode:p,placeholder:a,actionLabel:"选择"}),w&&i.jsx("span",{className:"chip chip--soft",children:`当前填入的为: ${w.localizedName}`})]})}}function da(l,s,a,c,p="id"){return({value:f,onChange:m,userConfig:v})=>{const w=_g(f),h=C=>{const E=C.resource??w.resource,P=C.comparator??w.comparator,B=((C.amount??w.amount)||"0").replace(/^0+/,"")||"0";m(Sg(E,P,B))},b=kr(l.kind,p==="id",w.resource,v.lang);return i.jsx(mf,{label:s,hint:c,children:i.jsxs("div",{className:"resource-comparison",children:[i.jsxs("div",{className:"resource-comparison__resource",children:[i.jsx("span",{className:"resource-comparison__label",children:l.kind==="item"?"物品":"流体"}),i.jsx(df,{spec:l,value:w.resource,onChange:C=>h({resource:C}),valueMode:p,placeholder:a,actionLabel:"选择"}),b&&i.jsx("span",{className:"chip chip--soft",children:`当前填入的为: ${b.localizedName}`})]}),i.jsxs("div",{className:"resource-comparison__operators",children:[i.jsxs("div",{className:"resource-comparison__operator",children:[i.jsx("span",{className:"resource-comparison__label",children:"比较符号"}),i.jsx("select",{className:"input",value:w.comparator,onChange:C=>h({comparator:C.target.value}),children:hf.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))})]}),i.jsxs("div",{className:"resource-comparison__operator",children:[i.jsx("span",{className:"resource-comparison__label",children:"数量"}),i.jsx("input",{className:"input",type:"number",inputMode:"decimal",step:"any",value:w.amount,onChange:C=>h({amount:C.target.value}),placeholder:"0"})]})]})]})})}}const Cg={name:"check-fluid",label:"检查流体数量",aliases:["CF"],category:"检查",description:"读取 ME 网络中的流体数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"water >= 1000",argsHint:"",renderArgsField:da(ff,"比较表达式","water","输入流体文本值，例如 `steam`，也可以直接手动输入自定义文本。","id")},Eg={name:"check-item",label:"检查物品 ID",aliases:["CI"],category:"检查",description:"读取指定物品 ID 在 ME 网络中的总数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"minecraft:stone:0 >= 64",argsHint:"",renderArgsField:da(vl,"比较表达式","minecraft:stone:0","输入物品文本值，例如 `minecraft:stone:0`，也可以直接手动输入自定义文本。","id")},Mg={name:"check-item-label",label:"检查物品名",aliases:["CIL"],category:"检查",description:"读取指定物品名称在 ME 网络中的总数量，并按比较表达式返回 true / false。",argsLabel:"比较表达式",argsPlaceholder:"Iron Ingot >= 32",argsHint:"",renderArgsField:da(vl,"比较表达式","Iron Ingot","输入物品名称文本值，例如 `Iron Ingot`，也可以直接手动输入自定义文本。","label")},Rg={name:"mark-fluid",label:"标记流体",aliases:["MF"],category:"标记",description:"将该流体标记到 cache 中。",argsLabel:"流体",argsPlaceholder:"water",argsHint:"",renderArgsField:ca(ff,"流体","water","输入流体的ID，或使用右侧按钮从数据库中选择。")},bg={name:"mark-item",label:"标记物品 ID",aliases:["MI"],category:"标记",description:"把指定物品文本值加入缓存中的 markedItems，后续交给筛选流程使用。",argsLabel:"物品 ID",argsPlaceholder:"minecraft:stone:0",argsHint:"",renderArgsField:ca(vl,"物品 ID","minecraft:stone:0","输入物品ID，或使用右侧按钮从数据库中选择。")},Ig={name:"mark-item-label",label:"标记物品名",aliases:["MIL"],category:"标记",description:"把指定物品名称文本值加入缓存中的 markedItems 数组表中，后续交给筛选流程使用。",argsLabel:"物品名",argsPlaceholder:"Iron Ingot",argsHint:"",renderArgsField:ca(vl,"物品名","Iron Ingot","输入物品名称文本值，或使用右侧按钮从数据库中选择。","label")};function gf({label:l,hint:s,children:a}){return i.jsxs("label",{className:"field",children:[i.jsx("span",{className:"field-label",children:l}),i.jsx("div",{className:"field-control",children:a}),s?i.jsx("span",{className:"field-hint",children:s}):null]})}function Dg(l,s,a){return({value:c,onChange:p})=>i.jsx(gf,{label:l,hint:a,children:i.jsx("input",{className:"input",value:c,placeholder:s,onChange:f=>p(f.target.value)})})}function Lg(l,s,a,c=5){return({value:p,onChange:f})=>i.jsx(gf,{label:l,hint:a,children:i.jsx("textarea",{className:"input",rows:c,value:p,placeholder:s,onChange:m=>f(m.target.value)})})}const Pg={name:"print",label:"打印日志",aliases:["P"],category:"调试",description:"打印一条消息到终端并返回 true。",argsLabel:"日志内容",argsPlaceholder:"hello world",argsHint:"适合调试表达式执行路径，参数会原样打印。",renderArgsField:Dg("日志内容","hello world","适合调试表达式执行路径，参数会原样打印。")},Tg={name:"eval-lua",label:"执行 Lua",aliases:["L"],category:"脚本",description:"执行一段 Lua 代码，可直接读取 cache 并决定返回 true / false。",argsLabel:"Lua 代码",argsPlaceholder:"return cache.count > 0",argsHint:"代码可以访问 cache 变量，适合高级自定义逻辑。",renderArgsField:Lg("Lua 代码","return cache.count > 0","代码会在 sandbox 环境中执行，适合高级自定义逻辑。")},zg={name:"clear-me-interface",label:"清空未使用ME接口配置",aliases:["CMI"],category:"标记",description:"为剩余未使用的ME接口未设置槽标记为清除。",argsLabel:"",argsPlaceholder:"",argsHint:"",renderArgsField:()=>i.jsx(i.Fragment,{})},vf=[Cg,Eg,Mg,Rg,bg,Ig,zg,Pg,Tg],Og=24,yf="oc-ore-processing-editor.logical-command-cache.v1",Os=new Map,kd=[];for(const l of vf){Os.set(l.name,l),kd.push({value:l.name,label:`${l.label} (${l.name})`,description:l.description});for(const s of l.aliases)Os.set(s,l),kd.push({value:s,label:`${l.label} (${s})`,description:l.description})}function xl(l="logical"){return`${l}_${Math.random().toString(36).slice(2,10)}${Date.now().toString(36).slice(-4)}`}function $g(l){const s=l.trim(),a=Os.get(s);return a?a.name:s}function Fg(l){return l.trim().replace(/\s+/g," ")}function kl(l){return Os.get(l.trim())??null}function Ag(){const l=new Map;for(const s of vf){const a=l.get(s.category)??[];a.push(s),l.set(s.category,a)}return Array.from(l.entries()).map(([s,a])=>({category:s,items:a}))}function Ug(l){const s=kl(l);if(!s){const p=l.trim();return p?[{value:p,label:p}]:[]}const a=new Set,c=[];for(const p of[s.name,...s.aliases]){const f=p.trim();!f||a.has(f)||(a.add(f),c.push({value:f,label:f===s.name?`${f}`:`${f}`}))}return c}function wl(l){return $g(l)}function Zo(l,s="",a){return{id:xl("cmd"),type:"command",name:l.trim(),args:s,cacheId:a}}function xf(l){return{id:xl("op"),type:"operator",value:l}}function kf(l){return{id:xl("par"),type:"paren",value:l}}function Fs(l,s){const a=kl(l.name),c=(a==null?void 0:a.label)??l.name;let p=null;if(a){const m=l.args.split(/>=|<=|==|~=|!=|>|</)[0].trim();let v="item",w=!0;"check-item|mark-item".includes(a.name)?v="item":"check-item-label".includes(a.name)?(v="item",w=!1):"check-fluid|mark-fluid".includes(a.name)&&(v="fluid");const h=kr(v,w,m,s);h&&(p=l.args.replace(m,h.localizedName))}const f=p||Fg(l.args);return f?`${c} · ${f.length>42?`${f.slice(0,42)}…`:f}`:c}function Bg(l){const s=kl(l.name),a=[`命令: ${(s==null?void 0:s.name)??l.name}`,s?`别名: ${s.aliases.join(", ")||"无"}`:"别名: 无",`参数: ${l.args||"（空）"}`];return s&&a.push(`说明: ${s.description}`),a.join(`
+`)}function Wg(l){return l.type==="command"?`{${l.name}: ${l.args.trim()}}`:l.value}function wd(l){return l.map(s=>Wg(s)).join(" ")}function wf(l){const s=[];let a=0;for(;a<l.length;){const c=l[a];if(/\s/.test(c)){a+=1;continue}if(c==="("||c===")"||c==="!"){c==="!"?s.push({type:"operator",value:"!"}):s.push({type:"paren",value:c}),a+=1;continue}if(l.slice(a,a+2)==="&&"){s.push({type:"operator",value:"&&"}),a+=2;continue}if(l.slice(a,a+2)==="||"){s.push({type:"operator",value:"||"}),a+=2;continue}if(c==="{"){const p=l.indexOf("}",a+1);if(p<0)throw new Error("语法错误：缺少闭合括号 '}'");const f=l.slice(a+1,p),m=f.match(/^\s*([a-zA-Z0-9_%\-]+)\s*:(.*)$/);if(!m)throw new Error(`语法错误：命令项格式不正确 {${f}}`);s.push({type:"command",name:wl(m[1]),args:m[2]}),a=p+1;continue}throw new Error(`语法错误：未知的字符 '${c}'`)}return s}function Vg(l){let s=0;const a=()=>l[s],c=()=>{const h=l[s];return s+=1,h},p=()=>f(),f=()=>{for(m();;){const h=a();if(!h||h.type!=="operator"||h.value!=="||")break;c(),m()}},m=()=>{for(v();;){const h=a();if(!h||h.type!=="operator"||h.value!=="&&")break;c(),v()}},v=()=>{const h=a();if(h&&h.type==="operator"&&h.value==="!"){c(),v();return}w()},w=()=>{const h=a();if(!h)throw new Error("语法错误：表达式意外结束");if(h.type==="paren"&&h.value==="("){c(),p();const b=c();if(!b||b.type!=="paren"||b.value!==")")throw new Error("语法错误：缺少右括号 ')'");return}if(h.type==="command"){c();return}throw new Error(`语法错误：不期望的 Token '${h.value}'`)};if(p(),s<l.length)throw new Error("语法错误：表达式尾部存在多余字符")}function Nf(l){const s=wf(l);Vg(s)}function Hg(l){return l.map(s=>s.type==="command"?Zo(s.name,s.args):s.type==="operator"?xf(s.value):kf(s.value))}function Ls(l,s){return Fs(l,s)}function Jo(l){return[...l].sort((s,a)=>s.pinned!==a.pinned?s.pinned?-1:1:a.updatedAt!==s.updatedAt?a.updatedAt-s.updatedAt:a.createdAt-s.createdAt)}function Kg(l,s){s<0&&(s=0);const a=l.filter(m=>m.pinned),c=l.filter(m=>!m.pinned);if(s===0)return Jo(a);const f=[...c].sort((m,v)=>v.updatedAt!==m.updatedAt?v.updatedAt-m.updatedAt:v.createdAt-m.createdAt).slice(0,s);return Jo([...a,...f])}function Jt(l){const s=l==null?void 0:l.maxItems,a=typeof s=="number"&&Number.isFinite(s)?Math.max(0,Math.floor(s)):Og,p=(Array.isArray(l==null?void 0:l.items)?l.items:[]).filter(v=>!!(v&&typeof v=="object")).map(v=>({id:String(v.id??xl("cache")),name:wl(String(v.name??"")),args:String(v.args??""),pinned:!!v.pinned,createdAt:typeof v.createdAt=="number"&&Number.isFinite(v.createdAt)?v.createdAt:Date.now(),updatedAt:typeof v.updatedAt=="number"&&Number.isFinite(v.updatedAt)?v.updatedAt:Date.now()})).filter(v=>!!v.name),f=[],m=new Set;for(const v of Jo(p)){const w=`${v.name}\0${v.args}`;m.has(w)||(m.add(w),f.push(v))}return{maxItems:a,items:Kg(f,a)}}function Nd(){if(typeof window>"u")return Jt(null);try{const l=window.localStorage.getItem(yf);return Jt(l?JSON.parse(l):null)}catch{return Jt(null)}}function Gg(l){typeof window>"u"||window.localStorage.setItem(yf,JSON.stringify(Jt(l)))}function jd(l,s){return Jt({...l,maxItems:s})}function $s(l,s){return l.items.find(a=>a.id===s)??null}function ea(l,s){const a=wl(s.name);return l.items.find(c=>c.name===a&&c.args===s.args)??null}function Qg(l,s){const a=Date.now(),c=wl(s.name),p=l.items.find(h=>h.id===s.id)??null,m=l.items.find(h=>h.name===c&&h.args===s.args)??null??p,v=(m==null?void 0:m.id)??s.id,w=l.items.filter(h=>h.id!==v&&!(h.name===c&&h.args===s.args));return w.unshift({id:v,name:c,args:s.args,pinned:m?m.pinned:s.pinned,createdAt:(m==null?void 0:m.createdAt)??s.createdAt??a,updatedAt:a}),Jt({...l,items:w})}function Yg(l,s,a={}){var h;const c=wl(s.name),p=ea(l,s),f=a.id?$s(l,a.id):null,m=p??f,v=(m==null?void 0:m.id)??a.id??xl("cache"),w=Qg(l,{id:v,name:c,args:s.args,pinned:(m==null?void 0:m.pinned)??!!a.pinned,createdAt:(m==null?void 0:m.createdAt)??Date.now(),updatedAt:(m==null?void 0:m.updatedAt)??Date.now()});return{state:w,id:((h=ea(w,s))==null?void 0:h.id)??v}}function _d(l,s){return Jt({...l,items:l.items.filter(a=>a.id!==s)})}function Sd(l,s){const a=l.items.map(c=>c.id===s?{...c,pinned:!c.pinned,updatedAt:Date.now()}:c);return Jt({...l,items:a})}function Xg({open:l,token:s,cacheState:a,onClose:c}){const p=It(),f=j.useMemo(()=>s?kl(s.name):null,[s]),m=j.useMemo(()=>s!=null&&s.cacheId?$s(a,s.cacheId):null,[a,s]);if(!l||!s)return null;const v=i.jsx("button",{type:"button",className:"button button--filled",onClick:c,children:"关闭"});return i.jsx(Dt,{open:l,title:"命令信息",subtitle:"查看当前命令节点的定义、参数和缓存关联。",sheetClassName:"modal-sheet--logical-token",onClose:c,footer:v,children:i.jsxs("div",{className:"logical-command-token-editor",children:[ge("命令名称",i.jsx("code",{className:"logical-rule-editor__preview mono",children:s.name}),f?"这里显示当前节点保存的名称，可能是全名或别名。":"自定义命令只显示当前保存的名称。"),ge((f==null?void 0:f.argsLabel)??"参数",i.jsx("code",{className:"logical-rule-editor__preview mono",children:s.args||"(无参数)"}),(f==null?void 0:f.argsHint)??"参数会原样传给执行器。"),i.jsxs("div",{className:"logical-command-token-editor__summary",children:[i.jsx("span",{className:"chip chip--soft",children:(f==null?void 0:f.label)??"自定义命令"}),i.jsx("span",{className:"logical-command-token-editor__summary-text",children:Fs(s,p.lang)})]}),f?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"命令说明"}),i.jsx("p",{children:f.description}),i.jsxs("p",{children:["分类: ",f.category]}),i.jsxs("p",{children:["别名: ",f.aliases.join(" / ")||"无"]})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"自定义命令"}),i.jsx("p",{children:"当前节点没有匹配到内置命令定义，只会展示原始名称和参数。"})]}),m?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"缓存关联"}),i.jsx("p",{children:m.pinned?"已固定缓存":"自动缓存"}),i.jsx("p",{className:"mono",children:m.id}),i.jsx("p",{children:Ls(m,p.lang)})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"缓存关联"}),i.jsx("p",{children:"当前节点没有链接到本地缓存实例。"})]})]})})}function qg({open:l,token:s,onClose:a,onSave:c}){const p=It(),[f,m]=j.useState((s==null?void 0:s.name)??""),[v,w]=j.useState((s==null?void 0:s.args)??""),[h,b]=j.useState("");j.useEffect(()=>{!l||!s||(m(s.name),w(s.args),b(""))},[l,s]);const C=j.useMemo(()=>kl(f),[f]),E=j.useMemo(()=>Ug(f),[f]),P=()=>{const D=f.trim();if(!D){b("命令名不能为空");return}c({name:D,args:v})};if(!l||!s)return null;const B=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:a,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:P,children:"保存命令"})]});return i.jsx(Dt,{open:l,title:"编辑命令单元",sheetClassName:"modal-sheet--logical-token",onClose:a,footer:B,children:i.jsxs("div",{className:"logical-command-token-editor",children:[ge("命令名称",i.jsx("select",{className:"input",value:f,onChange:D=>m(D.target.value),children:E.map(D=>i.jsx("option",{value:D.value,children:D.label},D.value))}),"可在本名和别名之间切换，保存时会保留当前选择。"),C?C.renderArgsField({value:v,onChange:w,userConfig:p}):ge("参数",i.jsx("input",{className:"input",value:v,onChange:D=>w(D.target.value)}),"参数会原样传给执行器。"),i.jsxs("div",{className:"logical-command-token-editor__summary",children:[i.jsx("span",{className:"chip chip--soft",children:(C==null?void 0:C.label)??"自定义命令"}),i.jsx("span",{className:"logical-command-token-editor__summary-text",children:Fs({name:f,args:v},p.lang)})]}),C?i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"命令说明"}),i.jsx("p",{children:C.description}),i.jsxs("p",{children:["别名: ",C.aliases.join(" / ")||"无"]})]}):i.jsxs("div",{className:"logical-token-editor__definition",children:[i.jsx("strong",{children:"自定义命令"}),i.jsx("p",{children:"只要命令名符合执行器的命名规则，就可以保存。"})]}),h?i.jsx("div",{className:"form-error",children:h}):null]})})}const Zg=[{id:"metadata",label:"规则元数据编辑",description:"启用状态和规则注释"},{id:"visual",label:"可视化编辑规则",description:"命令库、缓存库和工作台"},{id:"manual",label:"手动设置规则",description:"直接编辑规则文本"}];function Jg(){return{rule:"",enable:!0,comments:""}}function Cd(l){try{return{tokens:Hg(wf(l)),error:""}}catch(s){return{tokens:[],error:s instanceof Error?s.message:String(s)}}}function ev(l){return l.type!=="command"?null:{name:l.name,args:l.args}}function tv(l){return l.type==="command"?{...l,id:`cmd_${Math.random().toString(36).slice(2,10)}`}:l.type==="operator"?{...l,id:`op_${Math.random().toString(36).slice(2,10)}`}:{...l,id:`par_${Math.random().toString(36).slice(2,10)}`}}function nv(l,s){return s?[l.name,l.label,l.category,l.description,l.argsLabel,l.argsPlaceholder,l.argsHint,...l.aliases].join(" ").toLowerCase().includes(s):!0}function Ed({index:l,active:s,onDropAt:a,onDragEnterAt:c,onActivate:p}){return i.jsx("button",{type:"button",className:`logical-flow-slot${s?" is-active":""}`,onClick:()=>p(l),onDragOver:f=>{f.preventDefault(),c(l)},onDragEnter:f=>{f.preventDefault(),c(l)},onDrop:f=>{f.preventDefault(),a(l)},"aria-label":`插入位置 ${l+1}`,title:"点击设定插入位置，或把命令拖到这里",children:"+"})}function rv({token:l,active:s,userConfig:a,onSelect:c,onDelete:p,onDragStart:f,onDragEnd:m,onEdit:v,onContextMenu:w}){const h=l.type==="command"?Bg(l):l.type==="operator"?`运算符: ${l.value}`:`括号: ${l.value}`,b=l.type==="command"?Fs(l,a.lang):(l.type==="operator",l.value),C=l.type==="command"?"命令":l.type==="operator"?"运算符":"括号";return i.jsxs("div",{className:`logical-token${l.type==="operator"?" logical-token--operator":""}${l.type==="paren"?" logical-token--paren":""}${s?" is-active":""}`,role:"button",tabIndex:0,draggable:!0,onClick:c,onDoubleClick:E=>{l.type!=="command"||!v||(E.preventDefault(),E.stopPropagation(),v())},onKeyDown:E=>{(E.key==="Enter"||E.key===" ")&&(E.preventDefault(),c())},onDragStart:f,onDragEnd:m,onContextMenu:E=>{l.type!=="command"||!w||(E.preventDefault(),E.stopPropagation(),w(E))},title:h,children:[i.jsx("span",{className:"logical-token__meta",children:C}),i.jsx("span",{className:"logical-token__label",children:b}),i.jsx("button",{type:"button",className:"logical-token__delete","aria-label":"删除 token",onClick:E=>{E.stopPropagation(),p()},children:"×"})]})}function lv({definition:l,onInsert:s,onDragStart:a,onDragEnd:c}){return i.jsxs("button",{type:"button",className:"palette-card logical-command-card",draggable:!0,onDragStart:a,onDragEnd:c,onClick:s,title:l.description,children:[i.jsx("span",{className:"logical-command-card__title",children:l.label}),i.jsx("span",{className:"logical-command-card__name",children:l.name}),i.jsx("span",{className:"logical-command-card__aliases",children:l.aliases.length>0?l.aliases.join(" / "):"无别名"})]})}function sv({open:l,mode:s,groupRole:a,initialRule:c,onClose:p,onSave:f}){const m=It(),[v,w]=j.useState(Jg()),[h,b]=j.useState([]),[C,E]=j.useState(null),[P,B]=j.useState(()=>Nd()),[D,K]=j.useState(""),[X,oe]=j.useState(""),[J,T]=j.useState("metadata"),[q,ee]=j.useState(0),[we,ae]=j.useState(null),[xe,Y]=j.useState(null),[ue,de]=j.useState(null),R=j.useRef(null),I=j.useMemo(()=>Ag(),[]),A=D.trim().toLowerCase(),Q=j.useMemo(()=>I.map(k=>({...k,items:k.items.filter(O=>nv(O,A))})).filter(k=>k.items.length>0),[I,A]),te=j.useMemo(()=>({maxItems:P.maxItems,items:P.items.filter(k=>A?[k.name,k.args,Ls(k,m.lang)].join(" ").toLowerCase().includes(A):!0)}),[P,A]);j.useEffect(()=>{var W;if(!l)return;const k={rule:c.rule??"",enable:c.enable,comments:c.comments},O=Cd(k.rule);w(k),b(O.tokens),E(((W=O.tokens[0])==null?void 0:W.id)??null),ee(O.tokens.length>0?null:0),K(""),oe(O.error),R.current=null,B(Nd()),T("metadata")},[l,c]),j.useEffect(()=>{typeof window>"u"||Gg(P)},[P]),j.useEffect(()=>{if(!ue)return;const k=O=>{O.key==="Escape"&&(O.preventDefault(),O.stopPropagation(),de(null))};return window.addEventListener("keydown",k,!0),()=>window.removeEventListener("keydown",k,!0)},[ue]);const L=h.find(k=>k.id===C)??null,se=we?h.find(k=>k.id===we)??null:null,G=se&&se.type==="command"?se:null,N=xe?h.find(k=>k.id===xe)??null:null,z=N&&N.type==="command"?N:null;j.useEffect(()=>{we&&!G&&ae(null)},[we,G]),j.useEffect(()=>{xe&&!N&&Y(null)},[xe,N]);const ve=wd(h),ye=P.items.filter(k=>k.pinned).length,_e=P.items.length-ye,je=`固定 ${ye} · 自动 ${_e}/${P.maxItems}`,ke=(k,O)=>{const W=wd(k),ce=O!==null?k.findIndex(Se=>Se.id===O):-1;b(k),E(O),ee(ce>=0?ce+1:k.length>0?null:0),w(Se=>({...Se,rule:W})),oe("")},Ce=k=>{var W;w(ce=>({...ce,rule:k})),R.current=null,de(null),ae(null),Y(null);const O=Cd(k);if(O.error){E(null),ee(null),oe(O.error);return}b(O.tokens),E(((W=O.tokens[0])==null?void 0:W.id)??null),ee(O.tokens.length>0?null:0),oe("")},Re=(k,O)=>{const W=ea(P,k),ce=O?$s(P,O):null,Se=W??ce;if(!Se&&P.maxItems<=0)return;const{state:He,id:ct}=Yg(P,k,{id:(ce==null?void 0:ce.id)??O,pinned:Se==null?void 0:Se.pinned});return B(He),ct},Ve=(k,O="",W)=>{const ce=Math.max(0,Math.min(W??q??h.length,h.length)),Se=Re({name:k,args:O}),He=Zo(k,O,Se),ct=[...h];ct.splice(ce,0,He),ke(ct,He.id)},ht=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=Re(k),Se=Zo(k.name,k.args,ce),He=[...h];He.splice(W,0,Se),ke(He,Se.id)},Cn=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=xf(k),Se=[...h];Se.splice(W,0,ce),ke(Se,ce.id)},At=(k,O)=>{const W=Math.max(0,Math.min(O??q??h.length,h.length)),ce=kf(k),Se=[...h];Se.splice(W,0,ce),ke(Se,ce.id)},En=(k,O)=>{const W=h.findIndex(ct=>ct.id===k);if(W<0)return;const ce=[...h],[Se]=ce.splice(W,1);let He=O;W<O&&(He-=1),He=Math.max(0,Math.min(He,ce.length)),ce.splice(He,0,Se),ke(ce,Se.id)},Mn=k=>{const O=R.current;if(O){if(O.kind==="token")En(O.tokenId,k);else if(O.kind==="template")Ve(O.commandName,"",k);else if(O.kind==="cache"){const W=$s(P,O.cacheId);W&&ht({name:W.name,args:W.args},k)}else O.kind==="operator"?Cn(O.value,k):O.kind==="paren"&&At(O.value,k);R.current=null,ee(null)}},Rn=k=>{const O=h.find(W=>W.id===k);!O||O.type!=="command"||(E(k),Y(null),ae(k),de(null))},tn=k=>{const O=h.find(W=>W.id===k);!O||O.type!=="command"||(E(k),ae(null),Y(k),de(null))},Hn=(k,O,W)=>{const ce=h.find(As=>As.id===k);if(!ce||ce.type!=="command")return;const Se=184,He=74,ct=Math.max(12,Math.min(O,window.innerWidth-Se-12)),Lt=Math.max(12,Math.min(W,window.innerHeight-He-12));E(k),de({tokenId:k,x:ct,y:Lt})},bn=()=>{de(null)},Ut=(k,O,W)=>{const ce=h.find(Lt=>Lt.id===k);if(!ce||ce.type!=="command")return;const Se=O.trim(),He=Re({name:Se,args:W},ce.cacheId),ct=h.map(Lt=>Lt.id===k?{...Lt,name:Se,args:W,cacheId:He}:Lt);ke(ct,k)},Nt=()=>{if(!L)return;const k=tv(L);if(k.type==="command"){const ce=ev(k),Se=ce?Re(ce):void 0;Se?k.cacheId=Se:delete k.cacheId}const O=C?h.findIndex(ce=>ce.id===C)+1:h.length,W=[...h];W.splice(O,0,k),ke(W,k.id)},H=()=>{if(!L)return;const k=h.findIndex(ce=>ce.id===L.id);if(k<0)return;const O=h.filter(ce=>ce.id!==L.id),W=O[k]??O[k-1]??null;ke(O,(W==null?void 0:W.id)??null)},he=k=>{if(!L||L.type!=="operator")return;const O=h.map(W=>W.id===L.id?{...W,value:k}:W);ke(O,L.id)},Pe=k=>{if(!L||L.type!=="paren")return;const O=h.map(W=>W.id===L.id?{...W,value:k}:W);ke(O,L.id)},nn=()=>{const k=v.rule.trim();if(!k){oe("规则不能为空");return}try{Nf(k)}catch(O){oe(O instanceof Error?O.message:String(O));return}f({rule:k,enable:v.enable,comments:v.comments.trim()})},In=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:p,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:nn,children:s==="create"?"添加规则":"保存规则"})]});return i.jsxs(Dt,{open:l,title:s==="create"?"新建规则":"编辑规则",subtitle:`角色组：${a||"未命名角色组"} · 使用标签页切换可视化、元数据和文本编辑。`,wide:!0,sheetClassName:"modal-sheet--logical-rule",closeOnEscape:!(G||N||ue),onClose:p,footer:In,children:[i.jsxs("div",{className:"logical-rule-tabs",children:[i.jsx("div",{className:"logical-rule-tabs__list",role:"tablist","aria-label":"规则编辑方式",children:Zg.map(k=>i.jsxs("button",{type:"button",role:"tab","aria-selected":J===k.id,"aria-controls":`logical-rule-panel-${k.id}`,id:`logical-rule-tab-${k.id}`,className:`logical-rule-tabs__tab${J===k.id?" is-active":""}`,onClick:()=>T(k.id),children:[i.jsx("span",{className:"logical-rule-tabs__tab-label",children:k.label}),i.jsx("span",{className:"logical-rule-tabs__tab-desc",children:k.description})]},k.id))}),X?i.jsx("div",{className:"form-error",children:X}):null,i.jsxs("div",{className:"logical-rule-tabs__panels",children:[i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-visual","aria-labelledby":"logical-rule-tab-visual",hidden:J!=="visual",className:"logical-rule-tab-panel logical-rule-tab-panel--visual",children:i.jsxs("div",{className:"logical-rule-workbench",children:[i.jsxs("section",{className:"editor-card logical-rule-workbench__library",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"命令库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"点击或拖拽命令、运算符和括号到表达式里。"})]}),i.jsxs("span",{className:"chip chip--soft",children:[Q.length," 类"]})]}),i.jsx("div",{className:"logical-operator-palette",children:["!","&&","||","(",")"].map(k=>i.jsxs("button",{type:"button",className:"palette-card logical-operator-card",draggable:!0,onDragStart:O=>{k==="!"||k==="&&"||k==="||"?R.current={kind:"operator",value:k}:R.current={kind:"paren",value:k},O.dataTransfer.effectAllowed="copyMove",O.dataTransfer.setData("text/plain",k)},onDragEnd:()=>{R.current=null,ee(null)},onClick:()=>{k==="!"||k==="&&"||k==="||"?Cn(k):At(k)},children:[i.jsx("span",{className:"logical-operator-card__symbol",children:k}),i.jsx("span",{className:"logical-operator-card__tip",children:k==="!"?"非":k==="&&"?"与":k==="||"?"或":k==="("?"左括号":"右括号"})]},k))}),ge("搜索命令",i.jsx("input",{className:"input input--compact",value:D,onChange:k=>K(k.target.value),placeholder:"按命令名、别名或说明筛选"}),"搜索结果会同步影响顶部命令库与底部缓存分组的可见内容。"),i.jsx("div",{className:"logical-command-palette",children:Q.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"没有找到匹配的命令。"})}):Q.map(k=>i.jsxs("section",{className:"logical-command-group",children:[i.jsxs("div",{className:"logical-command-group__header",children:[i.jsxs("h3",{children:[k.category,"命令"]}),i.jsx("span",{children:"点击或拖拽"})]}),i.jsx("div",{className:"logical-command-group__items",children:k.items.map(O=>i.jsx(lv,{definition:O,onInsert:()=>Ve(O.name),onDragStart:W=>{R.current={kind:"template",commandName:O.name},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",O.name)},onDragEnd:()=>{R.current=null,ee(null)}},O.name))})]},k.category))}),i.jsxs("section",{className:"logical-rule-workbench__cache",children:[i.jsx("div",{className:"logical-rule-workbench__section-header",children:i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"缓存库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:je})]})}),i.jsx("div",{className:"logical-cache-list",children:te.items.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无缓存的命令实例。"}):te.items.map(k=>{const O=(L==null?void 0:L.type)==="command"&&L.cacheId===k.id;return i.jsxs("div",{className:`logical-cache-item${k.pinned?" is-pinned":""}${O?" is-linked":""}`,role:"button",tabIndex:0,draggable:!0,onClick:()=>ht({name:k.name,args:k.args}),onKeyDown:W=>{(W.key==="Enter"||W.key===" ")&&(W.preventDefault(),ht({name:k.name,args:k.args}))},onDragStart:W=>{R.current={kind:"cache",cacheId:k.id},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},children:[i.jsx("span",{className:"logical-cache-item__title",children:Ls(k,m.lang)}),i.jsxs("span",{className:"logical-cache-item__meta",children:[k.pinned?"已固定":"自动缓存",O?" · 当前使用中":""]}),i.jsxs("div",{className:"logical-cache-item__actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:W=>{W.stopPropagation(),B(ce=>Sd(ce,k.id))},children:k.pinned?"取消固定":"固定"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:W=>{W.stopPropagation(),B(ce=>_d(ce,k.id))},children:"删除"})]})]},k.id)})}),i.jsx("div",{className:"logical-rule-workbench__cache-settings",children:ge("自动缓存上限",i.jsx("input",{className:"input input--compact",type:"number",min:0,value:P.maxItems,onChange:k=>{const O=Number(k.target.value);B(W=>jd(W,Number.isFinite(O)?O:0))}}),"未固定的缓存项会按最近使用顺序保留。")})]})]}),i.jsxs("div",{className:"logical-rule-workbench__right",children:[i.jsxs("section",{className:"editor-card logical-rule-workbench__workspace",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsx("div",{children:i.jsx("h3",{className:"editor-card__title",children:"规则工作台"})}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),i.jsx("div",{className:"logical-rule-workbench__meta",children:ge("表达式预览",i.jsx("code",{className:"logical-rule-editor__preview mono",children:ve||"(空表达式)"}),"下方工作区会实时生成这里的字符串。")}),i.jsxs("div",{className:"logical-flow-rail",children:[i.jsx(Ed,{index:0,active:q===0,onDropAt:Mn,onDragEnterAt:k=>ee(k),onActivate:k=>ee(k)}),h.map((k,O)=>i.jsxs(j.Fragment,{children:[i.jsx(rv,{userConfig:m,token:k,active:C===k.id,onSelect:()=>{E(k.id),ee(O+1)},onDragStart:W=>{R.current={kind:"token",tokenId:k.id},W.dataTransfer.effectAllowed="move",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},onEdit:()=>Rn(k.id),onContextMenu:W=>Hn(k.id,W.clientX,W.clientY),onDelete:()=>{E(k.id),H()}}),i.jsx(Ed,{index:O+1,active:q===O+1,onDropAt:Mn,onDragEnterAt:W=>ee(W),onActivate:W=>ee(W)})]},k.id))]}),h.length===0?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"表达式还是空的"}),i.jsx("span",{children:"从命令库点击、拖拽，或者从底部缓存分组拖入一个命令实例。"})]}):null,i.jsx("div",{className:"logical-token-editor",children:L?L.type==="command"?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"节点编辑"}),i.jsx("span",{children:"右击节点点“信息”查看详情，双击节点或使用“编辑”继续修改命令名和参数。"})]}):L.type==="operator"?i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"运算符"}),ge("运算符类型",i.jsxs("select",{className:"input",value:L.value,onChange:k=>he(k.target.value),children:[i.jsx("option",{value:"!",children:"!"}),i.jsx("option",{value:"&&",children:"&&"}),i.jsx("option",{value:"||",children:"||"})]}),"运算符会按 Lua 语法优先级参与求值。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:Nt,children:"复制运算符"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:H,children:"删除运算符"})]})]}):i.jsxs("div",{className:"editor-card",children:[i.jsx("h3",{className:"editor-card__title",children:"括号"}),ge("括号类型",i.jsxs("select",{className:"input",value:L.value,onChange:k=>Pe(k.target.value),children:[i.jsx("option",{value:"(",children:"("}),i.jsx("option",{value:")",children:")"})]}),"括号可以把一段表达式单独分组。"),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:Nt,children:"复制括号"}),i.jsx("button",{type:"button",className:"button button--danger",onClick:H,children:"删除括号"})]})]}):i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"点击一个 token 开始编辑参数、运算符或括号。"})})})]}),i.jsxs("section",{className:"editor-card logical-rule-workbench__cache logical-rule-workbench__cache--hidden",children:[i.jsx("div",{className:"logical-rule-workbench__section-header",children:i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"缓存库"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:je})]})}),i.jsx("div",{className:"logical-cache-list",children:P.items.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无缓存的命令实例。"}):P.items.map(k=>{const O=(L==null?void 0:L.type)==="command"&&L.cacheId===k.id;return i.jsxs("div",{className:`logical-cache-item${k.pinned?" is-pinned":""}${O?" is-linked":""}`,role:"button",tabIndex:0,draggable:!0,onClick:()=>ht({name:k.name,args:k.args}),onKeyDown:W=>{(W.key==="Enter"||W.key===" ")&&(W.preventDefault(),ht({name:k.name,args:k.args}))},onDragStart:W=>{R.current={kind:"cache",cacheId:k.id},W.dataTransfer.effectAllowed="copyMove",W.dataTransfer.setData("text/plain",k.id)},onDragEnd:()=>{R.current=null,ee(null)},children:[i.jsx("span",{className:"logical-cache-item__title",children:Ls(k,m.lang)}),i.jsxs("span",{className:"logical-cache-item__meta",children:[k.pinned?"已固定":"自动缓存",O?" · 当前使用中":""]}),i.jsxs("div",{className:"logical-cache-item__actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:W=>{W.stopPropagation(),B(ce=>Sd(ce,k.id))},children:k.pinned?"取消固定":"固定"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:W=>{W.stopPropagation(),B(ce=>_d(ce,k.id))},children:"删除"})]})]},k.id)})}),i.jsx("div",{className:"logical-rule-workbench__cache-settings",children:ge("自动缓存上限",i.jsx("input",{className:"input input--compact",type:"number",min:0,value:P.maxItems,onChange:k=>{const O=Number(k.target.value);B(W=>jd(W,Number.isFinite(O)?O:0))}}),"未固定的缓存项会按最近使用顺序保留。")})]})]})]})}),i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-metadata","aria-labelledby":"logical-rule-tab-metadata",hidden:J!=="metadata",className:"logical-rule-tab-panel logical-rule-tab-panel--metadata",children:i.jsxs("div",{className:"editor-card logical-rule-metadata-panel",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"规则元数据编辑"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"调整启用状态和规则注释。"})]}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),i.jsxs("div",{className:"logical-rule-workbench__meta",children:[ge("启用状态",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:v.enable,onChange:k=>w(O=>({...O,enable:k.target.checked}))}),i.jsx("span",{children:"启用这条规则"})]}),"关闭后规则仍会保留，但不会参与判断。"),ge("注释",i.jsx("textarea",{className:"input",rows:3,value:v.comments,onChange:k=>w(O=>({...O,comments:k.target.value})),placeholder:"可选，填写后会在列表里优先显示"}),"注释不会影响逻辑判断，只是帮助后续维护。")]})]})}),i.jsx("section",{role:"tabpanel",id:"logical-rule-panel-manual","aria-labelledby":"logical-rule-tab-manual",hidden:J!=="manual",className:"logical-rule-tab-panel logical-rule-tab-panel--manual",children:i.jsxs("div",{className:"editor-card logical-rule-manual-panel",children:[i.jsxs("div",{className:"logical-rule-workbench__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"手动设置规则"}),i.jsx("p",{className:"logical-rule-workbench__section-copy",children:"直接编辑完整逻辑表达式，保存前会做语法校验。"})]}),i.jsxs("div",{className:"chip chip--path",children:[a||"未命名角色组",s==="create"?" / 新建规则":" / 编辑规则"]})]}),ge("规则文本",i.jsx("textarea",{className:"input logical-rule-manual-panel__textarea",rows:18,value:v.rule,onChange:k=>Ce(k.target.value),placeholder:"例如：{check-item: minecraft:stone#0 >= 64} && !{print: debug}"}),"可以直接输入完整逻辑规则文本。")]})})]})]}),ue?i.jsx("div",{className:"logical-token-context-scrim",onClick:bn,onContextMenu:k=>k.preventDefault(),children:i.jsxs("div",{className:"logical-token-context-menu",role:"menu",style:{left:ue.x,top:ue.y},onClick:k=>k.stopPropagation(),onContextMenu:k=>{k.preventDefault(),k.stopPropagation()},children:[i.jsx("button",{type:"button",className:"logical-token-context-menu__item",onClick:()=>{tn(ue.tokenId)},children:"信息"}),i.jsx("button",{type:"button",className:"logical-token-context-menu__item",onClick:()=>{Rn(ue.tokenId)},children:"编辑"})]})}):null,i.jsx(Xg,{open:!!z,token:z,cacheState:P,onClose:()=>Y(null)}),i.jsx(qg,{open:!!G,token:G,onClose:()=>ae(null),onSave:k=>{we&&(Ut(we,k.name,k.args),ae(null))}})]})}function iv(){return{rule:"",enable:!0,comments:""}}function Md(l,s){const a=l.trim();return a.length<=s?a:`${a.slice(0,s)}...`}function ov({open:l,groups:s,availableRoles:a,onClose:c,onSave:p}){const[f,m]=j.useState([]),[v,w]=j.useState(null),[h,b]=j.useState(""),[C,E]=j.useState(""),[P,B]=j.useState(null),D=j.useMemo(()=>a,[a]);j.useEffect(()=>{if(!l)return;const Y=Yo(s);m(Y),w(Y.length>0?0:null),b(D[0]??""),E(""),B(null)},[l,s,D]);const K=v!==null?f[v]??null:null,X=Y=>{f[Y]&&(w(Y),E(""))},oe=()=>{if(a.length===0){E("当前没有可用角色");return}const Y=h.trim();if(!Y){E("请选择角色");return}if(!a.includes(Y)){E("角色必须来自当前配置");return}if(f.some(de=>de.role===Y)){E(`角色组 "${Y}" 已存在`);return}const ue=[...f,{role:Y,rules:[]}];m(ue),w(ue.length-1),E("")},J=()=>{if(v===null)return;const Y=f[v];if(!Y||!window.confirm(`确定删除角色组 "${Y.role}" 吗？`))return;const ue=f.filter((de,R)=>R!==v);m(ue),w(ue.length===0?null:Math.min(v,ue.length-1)),E("")},T=Y=>{f[Y]&&(w(Y),B({groupIndex:Y,ruleIndex:null,mode:"create",initialRule:iv()}),E(""))},q=(Y,ue)=>{var R;const de=(R=f[Y])==null?void 0:R.rules[ue];de&&(w(Y),B({groupIndex:Y,ruleIndex:ue,mode:"edit",initialRule:{rule:de.rule,enable:de.enable,comments:de.comments}}),E(""))},ee=(Y,ue)=>{const de=f[Y],R=de==null?void 0:de.rules[ue];if(!de||!R||!window.confirm(`确定删除逻辑规则 "${pl(R)}" 吗？`))return;const I=f.map((A,Q)=>Q===Y?{...A,rules:A.rules.filter((te,L)=>L!==ue)}:A);m(I),w(Y),E("")},we=Y=>{if(!P)return;const ue=f.map((de,R)=>R!==P.groupIndex?de:P.mode==="create"?{...de,rules:[...de.rules,Y]}:{...de,rules:de.rules.map((I,A)=>A===P.ruleIndex?Y:I)});m(ue),w(P.groupIndex),B(null)},ae=()=>{const Y=Yo(f);for(const ue of Y){const de=ue.role.trim();if(!de){E("角色组名称不能为空");return}if(!D.includes(de)){E(`角色 "${de}" 不在当前配置中`);return}ue.role=de;const R=new Set;for(const I of ue.rules){const A=I.rule.trim();if(!A){E(`角色组 "${de}" 中存在空规则`);return}try{Nf(A)}catch(Q){E(`角色组 "${de}" 中的表达式 "${Md(A,48)}" 无法保存: ${Q instanceof Error?Q.message:String(Q)}`);return}if(R.has(A)){E(`角色组 "${de}" 中存在重复表达式`);return}R.add(A),I.rule=A,I.comments=I.comments.trim()}}p(Y)},xe=i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:c,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:ae,children:"保存"})]});return i.jsxs(i.Fragment,{children:[i.jsx(Dt,{open:l,title:"逻辑规则编辑器",subtitle:"这里只负责角色组和规则摘要。点击“新增规则”会再打开一个独立的规则编辑弹窗。",sheetClassName:"modal-sheet--logical-groups",closeOnEscape:!P,onClose:c,footer:xe,children:i.jsxs("div",{className:"logical-group-studio",children:[i.jsxs("div",{className:"editor-card logical-group-studio__toolbar",children:[i.jsxs("div",{className:"logical-group-studio__section-header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"editor-card__title",children:"角色组"}),i.jsx("p",{className:"logical-group-studio__section-copy",children:"每个角色组对应一组逻辑规则。"})]}),i.jsxs("span",{className:"chip chip--soft",children:[f.length," 组"]})]}),ge("新增角色组",i.jsxs("div",{className:"field-control field-control--stack",children:[i.jsx("select",{className:"input input--compact",value:h,onChange:Y=>b(Y.target.value),disabled:D.length===0,children:D.length===0?i.jsx("option",{value:"",children:"暂无可用角色"}):i.jsxs(i.Fragment,{children:[i.jsx("option",{value:"",disabled:!0,children:"选择角色"}),D.map(Y=>i.jsx("option",{value:Y,children:Y},Y))]})}),i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:oe,disabled:D.length===0,children:"添加角色组"})]}),D.length===0?"当前没有可用角色，无法创建新的逻辑规则组。":"先选一个角色，再创建或编辑它对应的逻辑规则。")]}),i.jsx("div",{className:"logical-rule-studio__group-list",children:f.length===0?i.jsxs("div",{className:"empty-state empty-state--compact",children:[i.jsx("strong",{children:"尚未创建任何角色组"}),i.jsx("span",{children:"先在上方选择一个角色并添加分组。"})]}):f.map((Y,ue)=>{const de=v===ue;return i.jsxs("div",{className:`logical-rule-studio__group-card${de?" is-selected":""}`,role:"button",tabIndex:0,onClick:()=>X(ue),onKeyDown:R=>{(R.key==="Enter"||R.key===" ")&&(R.preventDefault(),X(ue))},children:[i.jsx("div",{className:"logical-rule-studio__group-head",children:i.jsxs("div",{className:"logical-rule-studio__group-head-row",children:[i.jsxs("div",{className:"logical-rule-studio__group-title",children:[de?i.jsx("input",{className:"input input--compact logical-rule-studio__group-role",value:Y.role,onClick:R=>R.stopPropagation(),onChange:R=>{const I=R.target.value;m(A=>A.map((Q,te)=>te===ue?{...Q,role:I}:Q))},onKeyDown:R=>{R.key==="Enter"&&(R.preventDefault(),X(ue))}}):i.jsx("strong",{className:"record-card__title",children:Y.role}),i.jsxs("span",{className:"chip chip--meta",children:[Y.rules.length," 条"]})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:R=>{R.stopPropagation(),T(ue)},children:"新增规则"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:R=>{if(R.stopPropagation(),v===ue)J();else{if(!window.confirm(`确定删除角色组 "${Y.role}" 吗？`))return;const I=f.filter((A,Q)=>Q!==ue);m(I),w(I.length===0?null:Math.min(ue,I.length-1))}},children:"删除组"})]})]})}),i.jsx("div",{className:"logical-group-studio__rule-list",children:Y.rules.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:i.jsx("span",{children:"这个角色组还没有规则，点击“新增规则”开始编辑。"})}):Y.rules.map((R,I)=>i.jsxs("div",{className:"logical-group-studio__rule-item",role:"button",tabIndex:0,onClick:()=>q(ue,I),onKeyDown:A=>{(A.key==="Enter"||A.key===" ")&&(A.preventDefault(),q(ue,I))},children:[i.jsxs("div",{className:"logical-group-studio__rule-item-main",children:[i.jsx("div",{className:"logical-group-studio__rule-item-label",children:pl(R)}),i.jsxs("div",{className:"logical-group-studio__rule-item-badges",children:[i.jsx("span",{className:"logical-group-studio__badge",children:R.enable?"启用":"停用"}),R.comments.trim()?i.jsx("span",{className:"logical-group-studio__badge logical-group-studio__badge--soft",children:"注释"}):null]}),i.jsx("div",{className:"logical-group-studio__rule-item-preview",children:Md(R.rule,96)})]}),i.jsxs("div",{className:"logical-group-studio__rule-item-actions",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:A=>{A.stopPropagation(),q(ue,I)},children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:A=>{A.stopPropagation(),ee(ue,I)},children:"删除"})]})]},`${Y.role}-${I}-${R.rule}`))})]},Y.role)})}),C?i.jsx("div",{className:"form-error",children:C}):null]})}),P&&K?i.jsx(sv,{open:!0,mode:P.mode,groupRole:K.role,initialRule:P.initialRule,onClose:()=>B(null),onSave:we}):null]})}function Rd(l){return $d(l)}function av({open:l,onClose:s,onSave:a}){const c=It(),p=Fm(),[f,m]=j.useState(()=>Rd(c)),[v,w]=j.useState("");j.useEffect(()=>{l&&(m(Rd(c)),w(""))},[l,c]);const h=()=>{m(il()),w("")},b=()=>{const C=f.lang.game.trim(),E=f.lang.display.trim();if(!C){w("游戏语言不能为空");return}if(!E){w("展示语言不能为空");return}const P={lang:{game:C,display:E},database:{autoLoadFluids:f.database.autoLoadFluids,autoLoadItems:f.database.autoLoadItems}};p({type:"replace",payload:P}),a==null||a(P),s()};return i.jsx(Dt,{open:l,title:"用户配置",subtitle:"修改网站中的设置",onClose:s,footer:i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:h,children:"恢复默认"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:s,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:b,children:"保存"})]}),children:i.jsxs("div",{className:"modal-form",children:[ge("游戏语言",i.jsx("select",{className:"input",value:f.lang.game,onChange:C=>m(E=>({...E,lang:{...E.lang,game:C.target.value}})),children:dl.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))}),"选择你游戏中使用的语言，所有规则和ID都以这个语言为准。如果你玩的服务器是英文的那么这里就需要选英文"),ge("展示语言",i.jsx("select",{className:"input",value:f.lang.display,onChange:C=>m(E=>({...E,lang:{...E.lang,display:C.target.value}})),children:dl.map(C=>i.jsx("option",{value:C.value,children:C.label},C.value))}),"选择你希望看见的本地化语言"),ge("自动加载流体数据库",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:f.database.autoLoadFluids,onChange:C=>m(E=>({...E,database:{...E.database,autoLoadFluids:C.target.checked}}))}),i.jsx("span",{children:"自动预加载流体数据库（≈60KB/每种语言）"})]}),"关闭后会按需加载，能减少首次打开的资源消耗。"),ge("自动加载物品数据库",i.jsxs("label",{className:"export-panel__toggle rule-toggle",children:[i.jsx("input",{type:"checkbox",checked:f.database.autoLoadItems,onChange:C=>m(E=>({...E,database:{...E.database,autoLoadItems:C.target.checked}}))}),i.jsx("span",{children:"自动预加载物品数据库（≈3MB/每种语言）"})]}),"关闭后会按需加载，适合不常查询数据库的场景。"),v?i.jsx("div",{className:"form-error",children:v}):null]})})}function jf(l){return{id:`node_${Math.random().toString(36).slice(2,10)}`,step:l}}function uv(l){return l.map(s=>jf(s))}function cv(l){return`${l} 个步骤`}function bd({index:l,active:s,onDropAt:a,onDragEnterAt:c}){return i.jsx("button",{type:"button",className:`flow-slot${s?" is-active":""}`,onDragOver:p=>p.preventDefault(),onDragEnter:()=>c(l),onDrop:p=>{p.preventDefault(),a(l)},"aria-label":`插入到位置 ${l+1}`,children:i.jsx("span",{children:s?"插入":"+"})})}function dv({open:l,mode:s,initialMineral:a,initialSteps:c,availableSteps:p,existingProcesses:f,onClose:m,onSave:v}){var R;const w=It(),[h,b]=j.useState(a),[C,E]=j.useState([]),[P,B]=j.useState(""),[D,K]=j.useState(null),[X,oe]=j.useState(null),J=j.useRef(null);j.useEffect(()=>{l&&(b(a),E(uv(c)),B(""),K(null),oe(null),J.current=null)},[l,a,c]);const T=C.map(I=>I.step).filter(Boolean),q=h.trim(),ee=()=>{K(null)},we=(I,A)=>{ee(),E(Q=>{const te=[...Q];return te.splice(A,0,jf(I)),te})},ae=(I,A)=>{ee(),E(Q=>{const te=Q.findIndex(N=>N.id===I);if(te<0)return Q;const L=[...Q],[se]=L.splice(te,1);let G=A;return te<A&&(G-=1),G=Math.max(0,Math.min(G,L.length)),L.splice(G,0,se),L})},xe=I=>{const A=J.current;A&&(A.kind==="palette"?we(A.step,I):ae(A.id,I),J.current=null,oe(null))},Y=I=>{ee(),E(A=>A.filter(Q=>Q.id!==I))},ue=(I=!1)=>{const A=T;if(!q){B("矿物名称不能为空");return}if(A.length===0){B("至少需要一个处理步骤");return}const Q=f.find(te=>te.mineral===q&&te.mineral!==a);if(Q&&!I){B(""),K(Q);return}B(""),K(null),v({mineral:q,steps:A},{forceReplace:I})},de=D?i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:ee,children:"返回编辑"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:()=>ue(!0),children:"替换并保存"})]}):i.jsxs(i.Fragment,{children:[i.jsx("button",{type:"button",className:"button button--tonal",onClick:m,children:"取消"}),i.jsx("button",{type:"button",className:"button button--filled",onClick:()=>ue(!1),children:"保存"})]});return i.jsx(Dt,{open:l,title:s==="add"?"新增矿物流程":"编辑矿物流程",subtitle:"把左侧的职责卡片拖到右侧流程线里，或者直接点击添加。右侧卡片还能继续拖拽调整顺序。",wide:!0,onClose:m,footer:de,children:i.jsxs("div",{className:"process-builder",children:[P?i.jsx("div",{className:"form-error",children:P}):null,i.jsxs("label",{className:"field field--full",children:[i.jsx("span",{className:"field-label",children:"矿物名称"}),i.jsx("div",{className:"field-control",children:i.jsx("input",{className:"input",value:h,onChange:I=>{ee(),b(I.target.value)},onKeyDown:I=>{I.key==="Enter"&&(I.preventDefault(),ue(!1))},placeholder:"例如：Coal"})}),i.jsx("span",{className:"field-hint",children:h?`当前输入矿物为：${ua(h,w.lang)}`:`请输入矿物名称, 当前游戏语言为: ${((R=dl.find(I=>I.value===w.lang.game))==null?void 0:R.label)??w.lang.game}`})]}),i.jsxs("div",{className:"process-builder__meta",children:[i.jsx("span",{className:"chip chip--info",children:cv(C.length)}),i.jsx("span",{className:"process-builder__hint",children:"支持重复步骤，适合表示同一矿物的多阶段处理线路。"})]}),D?i.jsxs("section",{className:"conflict-panel","aria-live":"polite",children:[i.jsxs("div",{className:"conflict-panel__header",children:[i.jsxs("h3",{className:"conflict-panel__title",children:["矿物 “",D.mineral,"” 已存在"]}),i.jsx("p",{className:"conflict-panel__description",children:"请确认是否要用当前编辑内容替换已有流程。"})]}),i.jsxs("div",{className:"conflict-panel__grid",children:[i.jsxs("div",{className:"conflict-panel__card",children:[i.jsx("span",{className:"conflict-panel__label",children:"当前编辑流程"}),i.jsx(qo,{steps:T})]}),i.jsxs("div",{className:"conflict-panel__card",children:[i.jsx("span",{className:"conflict-panel__label",children:"已有流程"}),i.jsx(qo,{steps:D.steps})]})]})]}):null,i.jsxs("div",{className:"process-builder__grid",children:[i.jsxs("section",{className:"builder-panel",children:[i.jsxs("div",{className:"builder-panel__header",children:[i.jsx("h3",{children:"可用职责"}),i.jsx("span",{children:"从当前配置自动同步"})]}),i.jsx("div",{className:"palette",children:p.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无可用职责"}):p.map(I=>i.jsxs("button",{type:"button",className:"palette-card",draggable:!0,onDragStart:A=>{J.current={kind:"palette",step:I},A.dataTransfer.effectAllowed="copyMove",A.dataTransfer.setData("text/plain",I)},onDragEnd:()=>{J.current=null,oe(null)},onClick:()=>we(I,C.length),children:[i.jsx("span",{className:"palette-card__name",children:I}),i.jsx("span",{className:"palette-card__tip",children:"拖拽或点击添加"})]},I))})]}),i.jsxs("section",{className:"builder-panel builder-panel--sequence",children:[i.jsxs("div",{className:"builder-panel__header",children:[i.jsx("h3",{children:"流程线"}),i.jsx("span",{children:"拖拽卡片调整顺序"})]}),i.jsxs("div",{className:"flow-rail",children:[i.jsx(bd,{index:0,active:X===0,onDropAt:xe,onDragEnterAt:I=>oe(I)}),C.map((I,A)=>i.jsxs(j.Fragment,{children:[i.jsxs("div",{className:"flow-node",draggable:!0,onDragStart:Q=>{J.current={kind:"node",id:I.id},Q.dataTransfer.effectAllowed="move",Q.dataTransfer.setData("text/plain",I.id)},onDragEnd:()=>{J.current=null,oe(null)},children:[i.jsx("span",{className:"flow-node__name",children:I.step}),i.jsx("button",{type:"button",className:"flow-node__remove",onClick:()=>Y(I.id),"aria-label":`删除 ${I.step}`,children:"×"})]}),i.jsx(bd,{index:A+1,active:X===A+1,onDropAt:xe,onDragEnterAt:Q=>oe(Q)})]},I.id))]}),C.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"把职责拖到这里开始搭建流程。"}):null]})]})]})})}function _f(l,s,a=3e3){j.useEffect(()=>{if(!l)return;const c=window.setTimeout(()=>s(null),a);return()=>window.clearTimeout(c)},[l,s,a])}const fv={info:{icon:"i",title:"提示"},success:{icon:"OK",title:"已完成"},error:{icon:"!",title:"操作失败"}};function Sf({tone:l,children:s,floating:a=!1}){const c=fv[l],p=["notice",a?"notice--floating":"notice--panel",`notice--${l}`].join(" ");return i.jsxs("div",{className:p,role:l==="error"?"alert":"status","aria-live":l==="error"?"assertive":"polite",children:[i.jsx("div",{className:"notice__icon","aria-hidden":"true",children:c.icon}),i.jsxs("div",{className:"notice__content",children:[i.jsx("strong",{className:"notice__title",children:c.title}),i.jsx("div",{className:"notice__text",children:s})]})]})}function Id(l){return l instanceof Error?l.message:String(l)}function Dd(l){return Object.values(l).reduce((s,a)=>s+Object.keys(a).length,0)}function pv({config:l,fileName:s}){const[a,c]=j.useState(!1),[p,f]=j.useState(null),m=(P,B="info")=>{f({tone:B,text:P})},v=j.useMemo(()=>Vd(l,{compact:a}),[l,a]),w=j.useMemo(()=>Dd(l.idWhitelist),[l]),h=j.useMemo(()=>Dd(l.idBlacklist),[l]),b=s.trim()||"ore.config";_f(p,f,3e3);const C=async()=>{try{await navigator.clipboard.writeText(v),m("已复制文本","success")}catch(P){m(`复制失败: ${Id(P)}`,"error")}},E=()=>{try{const P=new Blob([v],{type:"text/plain;charset=utf-8"}),B=URL.createObjectURL(P),D=document.createElement("a");D.href=B,D.download=b,D.click(),URL.revokeObjectURL(B),m(`已下载 ${b}`,"success")}catch(P){m(`下载失败: ${Id(P)}`,"error")}};return i.jsxs("section",{className:"export-panel",children:[i.jsxs("div",{className:"export-panel__header",children:[i.jsxs("div",{children:[i.jsx("h2",{children:"配置预览"}),i.jsx("p",{children:"当前配置的 Lua 文本预览、复制和下载都在这里完成。"})]}),i.jsxs("div",{className:"meta-pills meta-pills--right",children:[i.jsxs("span",{className:"chip chip--meta",children:["白名单数量 ",w]}),i.jsxs("span",{className:"chip chip--meta",children:["黑名单数量 ",h]})]})]}),i.jsxs("div",{className:"export-panel__toolbar",children:[i.jsxs("label",{className:"export-panel__toggle",children:[i.jsx("input",{type:"checkbox",checked:a,onChange:P=>c(P.target.checked)}),i.jsx("span",{children:"单行显示"})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--filled",onClick:C,children:"复制文本"}),i.jsx("button",{type:"button",className:"button button--tonal",onClick:E,children:"下载文件"})]})]}),p?i.jsx(Sf,{tone:p.tone,children:p.text}):null,i.jsx("textarea",{className:"export-textarea",value:v,readOnly:!0,spellCheck:!1})]})}function Wo({title:l,kindLabel:s,groups:a,onEdit:c}){return i.jsx(yl,{title:l,subtitle:s,className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:c,children:"编辑"}),children:i.jsx(wg,{title:l,groups:a})})}function mv({interfaces:l,availableRoles:s,onAddInterface:a,onEditInterface:c,onDeleteInterface:p}){return i.jsx(yl,{title:"ME 接口列表",subtitle:"是指游戏中适配器贴着的ME接口, 这里管理每个 ME 接口地址以及它对应的职责。",className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:a,children:"新增ME接口"}),children:i.jsxs("div",{className:"scroll-stack",children:[l.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无输出口。"}):i.jsx("div",{className:"table-wrap",children:i.jsxs("table",{className:"data-table",children:[i.jsx("thead",{children:i.jsxs("tr",{children:[i.jsx("th",{children:"ME接口地址"}),i.jsx("th",{children:"职责"}),i.jsx("th",{children:"操作"})]})}),i.jsx("tbody",{children:l.map(f=>i.jsxs("tr",{children:[i.jsx("td",{className:"mono",children:f.id}),i.jsx("td",{children:f.role}),i.jsx("td",{children:i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>c(f),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>p(f.id),children:"删除"})]})})]},f.id))})]})}),i.jsxs("section",{className:"subpanel",children:[i.jsxs("div",{className:"subpanel__header",children:[i.jsx("h3",{children:"ME接口可选职责"}),i.jsx("span",{children:"来自当前配置中的职责列表"})]}),s.length===0?i.jsx("div",{className:"empty-state empty-state--compact",children:"暂无可用职责。"}):i.jsx("div",{className:"tag-list",children:s.map(f=>i.jsx("span",{className:"chip chip--soft",children:f},f))})]})]})})}const Ld=new Intl.Collator("zh-Hans-CN",{numeric:!0,sensitivity:"base"});function hv({processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c}){const p=It(),[f,m]=j.useState(""),[v,w]=j.useState("length"),[h,b]=j.useState("default"),C=j.useMemo(()=>{const T=f.trim().toLowerCase();return T?l.filter(q=>`${q.mineral} ${q.steps.join(" ")}`.toLowerCase().includes(T)):l},[l,f]),E=j.useMemo(()=>h==="default"?[...C]:[...C].sort((T,q)=>{let ee=0;return v==="name"?(ee=Ld.compare(T.mineral,q.mineral),ee===0&&(ee=T.steps.length-q.steps.length)):(ee=T.steps.length-q.steps.length,ee===0&&(ee=Ld.compare(T.mineral,q.mineral))),h==="asc"?ee:-ee}),[C,h,v]),P=hl("item",p.lang.display),B=hl("item",p.lang.game),D=j.useMemo(()=>E.map(T=>({process:T,displayMineral:ua(T.mineral,p.lang)})),[B,P,p.lang.display,p.lang.game,E]),K=h==="default"?"asc":h==="asc"?"desc":"default",X=h==="default"?"↕":h==="asc"?"↑":"↓",oe=h==="default"?"默认排序":h==="asc"?"正序排序":"逆序排序",J=K==="default"?"默认排序":K==="asc"?"正序排序":"逆序排序";return i.jsx(yl,{title:"矿物处理流程",subtitle:"按矿物浏览每条处理线，并支持搜索、排序和编辑。",className:"panel--flow",actions:i.jsxs("div",{className:"panel-actions-row",children:[i.jsx("input",{className:"input input--search",value:f,onChange:T=>m(T.target.value),placeholder:"搜索矿物 / 步骤"}),i.jsxs("div",{className:"sort-controls",children:[i.jsxs("select",{className:"input input--compact input--sort",value:v,onChange:T=>w(T.target.value),children:[i.jsx("option",{value:"length",children:"按工序长度"}),i.jsx("option",{value:"name",children:"按矿物名称"})]}),i.jsx("button",{type:"button",className:"button button--tonal button--compact sort-direction-button","aria-label":`${oe}，点击切换为${J}`,title:`${oe}，点击切换为${J}`,onClick:()=>b(K),children:i.jsx("span",{"aria-hidden":"true",children:X})})]}),i.jsx("button",{type:"button",className:"button button--filled",onClick:s,children:"新增流程"})]}),children:i.jsx("div",{className:"scroll-stack",children:D.length===0?i.jsx("div",{className:"empty-state",children:"没有匹配的矿物流程。"}):D.map(({process:T,displayMineral:q})=>i.jsxs("article",{className:"record-card",children:[i.jsxs("div",{className:"record-card__header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"record-card__title",children:q}),i.jsxs("p",{className:"record-card__meta",children:[T.steps.length," 个步骤"]})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>a(T),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>c(T.mineral),children:"删除"})]})]}),i.jsx(qo,{steps:T.steps})]},T.mineral))})})}const Is=new Intl.Collator("zh-Hans-CN",{numeric:!0,sensitivity:"base"});function gv({groups:l,onReuseProcess:s}){const a=It(),[c,p]=j.useState(""),[f,m]=j.useState("length"),[v,w]=j.useState("default"),h=j.useMemo(()=>{const D=c.trim().toLowerCase();return D?l.filter(K=>`${K.signature} ${K.minerals.join(" ")}`.toLowerCase().includes(D)):l},[l,c]),b=j.useMemo(()=>v==="default"?[...h]:[...h].sort((D,K)=>{let X=0;return f==="count"?(X=D.minerals.length-K.minerals.length,X===0&&(X=Is.compare(D.signature,K.signature)),X===0&&(X=Is.compare(D.minerals.join(" / "),K.minerals.join(" / ")))):(X=D.steps.length-K.steps.length,X===0&&(X=Is.compare(D.signature,K.signature)),X===0&&(X=Is.compare(D.minerals.join(" / "),K.minerals.join(" / ")))),v==="asc"?X:-X}),[h,v,f]),C=v==="default"?"asc":v==="asc"?"desc":"default",E=v==="default"?"↕":v==="asc"?"↑":"↓",P=v==="default"?"默认排序":v==="asc"?"正序排序":"逆序排序",B=C==="default"?"默认排序":C==="asc"?"正序排序":"逆序排序";return i.jsx(yl,{title:"流程反查矿物",subtitle:"根据当前处理顺序反向查看有哪些矿物会走同一条线。",className:"panel--flow",actions:i.jsxs("div",{className:"panel-actions-row",children:[i.jsx("input",{className:"input input--search",value:c,onChange:D=>p(D.target.value),placeholder:"搜索流程 / 矿物"}),i.jsxs("div",{className:"sort-controls",children:[i.jsxs("select",{className:"input input--compact input--sort",value:f,onChange:D=>m(D.target.value),children:[i.jsx("option",{value:"length",children:"按工序长度"}),i.jsx("option",{value:"count",children:"按矿物数量"})]}),i.jsx("button",{type:"button",className:"button button--tonal button--compact sort-direction-button","aria-label":`${P}，点击切换为${B}`,title:`${P}，点击切换为${B}`,onClick:()=>w(C),children:i.jsx("span",{"aria-hidden":"true",children:E})})]})]}),children:i.jsx("div",{className:"scroll-stack",children:b.length===0?i.jsx("div",{className:"empty-state",children:"没有匹配的反查结果。"}):b.map(D=>i.jsxs("article",{className:"record-card record-card--compact",children:[i.jsxs("div",{className:"record-card__header",children:[i.jsxs("div",{children:[i.jsx("h3",{className:"record-card__title",children:D.signature?nh(D.steps):"空流程"}),i.jsxs("p",{className:"record-card__meta",children:[D.minerals.length," 个矿物"]})]}),i.jsx("div",{className:"button-row record-card__actions",children:i.jsx("button",{type:"button",className:"button button--filled button--compact",disabled:D.steps.length===0,title:D.steps.length===0?"空流程不可复用":"使用这条流程新增矿物",onClick:()=>s(D.steps),children:"新增矿物"})})]}),i.jsx("div",{className:"record-card__scroll",children:i.jsx(kg,{minerals:D.minerals,lang:a.lang})})]},D.signature||"empty"))})})}function vv({id:l,onDelete:s}){const[a,c]=j.useState(0),[p,f]=j.useState(!1),[m,v]=j.useState(!1),w=j.useRef(null),h=j.useRef(0),b=j.useRef(null),C=j.useRef(0),E=j.useRef(0),P=88;j.useEffect(()=>{var q;if(typeof window>"u")return;const J=window.matchMedia("(max-width: 640px)"),T=()=>v(J.matches);return T(),(q=J.addEventListener)==null||q.call(J,"change",T),()=>{var ee;(ee=J.removeEventListener)==null||ee.call(J,"change",T)}},[]);const B=J=>{const T=J>=P*.45?P:0;h.current=T,c(T)},D=J=>{var T;if(m&&!(J.pointerType==="mouse"&&J.button!==0)){b.current=J.pointerId,C.current=J.clientX,E.current=h.current,f(!0);try{(T=w.current)==null||T.setPointerCapture(J.pointerId)}catch{}}},K=J=>{if(!m||!p||b.current!==J.pointerId)return;const T=J.clientX-C.current,q=Math.max(0,Math.min(P,E.current+T));h.current=q,c(q)},X=J=>{var T;if(m){if(b.current===J.pointerId)try{(T=w.current)==null||T.releasePointerCapture(J.pointerId)}catch{}b.current=null,f(!1),B(h.current)}},oe=()=>{s(l),h.current=0,c(0)};return i.jsxs("div",{ref:w,className:"role-card__interface-item",style:{"--interface-swipe-offset":`${a}px`},onPointerDown:D,onPointerMove:K,onPointerUp:X,onPointerCancel:X,children:[i.jsx("div",{className:"role-card__interface-underlay",children:i.jsx("button",{type:"button",className:"button button--danger button--compact role-card__interface-delete-mobile",disabled:a===0,onPointerDown:J=>J.stopPropagation(),onClick:oe,children:"删除"})}),i.jsxs("div",{className:`role-card__interface-foreground${p?" is-dragging":""}`,children:[i.jsx("span",{className:"chip chip--soft role-card__interface-label",children:l}),i.jsx("button",{type:"button",className:"icon-button icon-button--inline role-card__interface-delete-desktop",onClick:oe,"aria-label":`删除ME接口 ${l}`,title:`删除ME接口 ${l}`,children:"×"})]})]})}function yv({roles:l,interfaces:s,onAddRole:a,onEditRole:c,onDeleteRole:p,onDeleteInterface:f}){const m=j.useMemo(()=>{const v=new Map;for(const w of s){const h=v.get(w.role);h?h.push(w):v.set(w.role,[w])}return v},[s]);return i.jsx(yl,{title:"职责列表",subtitle:"职责名称、机器和它绑定的ME接口都在这里单独维护。",className:"panel--tall",actions:i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:a,children:"新增职责"}),children:i.jsx("div",{className:"scroll-stack",children:l.length===0?i.jsx("div",{className:"empty-state",children:"暂无职责。"}):i.jsx("div",{className:"role-grid",children:l.map(v=>{const w=m.get(v.name)||[];return i.jsxs("article",{className:"role-card",children:[i.jsxs("div",{className:"role-card__header",children:[i.jsxs("div",{children:[i.jsx("h4",{className:"role-card__title",children:v.name}),i.jsx("p",{className:"role-card__meta",children:v.machine})]}),i.jsxs("div",{className:"button-row",children:[i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>c(v),children:"编辑"}),i.jsx("button",{type:"button",className:"button button--danger button--compact",onClick:()=>p(v.name),children:"删除"})]})]}),i.jsxs("div",{className:"role-card__body",children:[i.jsx("span",{className:"role-card__label",children:"包含以下ME接口"}),i.jsx("div",{className:"role-card__interface-list",children:w.length===0?i.jsx("span",{className:"empty-chip",children:"无ME接口"}):w.map(h=>i.jsx(vv,{id:h.id,onDelete:f},h.id))})]})]},v.name)})})})})}function xv({processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c,reverseGroups:p,onReuseProcess:f,roles:m,interfaces:v,roleNames:w,onAddRole:h,onAddInterface:b,onEditRole:C,onDeleteRole:E,onEditInterface:P,onDeleteInterface:B,idWhitelist:D,idBlacklist:K,logicalRules:X,onEditWhitelist:oe,onEditBlacklist:J,onEditLogicalRules:T,config:q,fileName:ee}){return i.jsxs("main",{className:"dashboard",children:[i.jsxs("div",{className:"dashboard__grid",children:[i.jsxs("div",{className:"dashboard__column dashboard__column--primary",children:[i.jsx(hv,{processes:l,onAddProcess:s,onEditProcess:a,onDeleteProcess:c}),i.jsx(gv,{groups:p,onReuseProcess:f}),i.jsx(mv,{interfaces:v,availableRoles:w,onAddInterface:b,onEditInterface:P,onDeleteInterface:B})]}),i.jsxs("div",{className:"dashboard__column dashboard__column--secondary",children:[i.jsx(yv,{roles:m,interfaces:v,onAddRole:h,onEditRole:C,onDeleteRole:E,onDeleteInterface:B}),i.jsx(Wo,{title:"白名单",kindLabel:"按职责管理规则，支持启用状态和注释，显示时优先展示注释。",groups:D,onEdit:oe}),i.jsx(Wo,{title:"黑名单",kindLabel:"按职责管理规则，支持启用状态和注释，显示时优先展示注释。",groups:K,onEdit:J}),i.jsx(Wo,{title:"逻辑规则",kindLabel:"按角色管理逻辑表达式，支持拖拽命令单元、运算符和括号。",groups:X,onEdit:T})]})]}),i.jsx(pv,{config:q,fileName:ee})]})}const ta="oc-ore-processing-editor.config.v1",fa="oc-ore-processing-editor.config-name.v1";function qt(l){return l instanceof Error?l.message:String(l)}function kv(l){const s=[];if(!l.database.autoLoadFluids&&!l.database.autoLoadItems)return s;const a=new Set([l.lang.game,l.lang.display]);if(l.database.autoLoadItems)for(const c of a)s.push({kind:"item",locale:c});if(l.database.autoLoadFluids)for(const c of a)s.push({kind:"fluid",locale:c});return s}function wv(){if(typeof window<"u"){const l=window.localStorage.getItem(ta);if(l)try{return Qo(l)}catch{window.localStorage.removeItem(ta),window.localStorage.removeItem(fa)}}try{return Qo(Kd)}catch{return en(Km)}}function Nv(){return typeof window<"u"&&window.localStorage.getItem(fa)||ol}function jv(){const[l,s]=j.useState(()=>wv()),[a,c]=j.useState(()=>Nv()),p=It(),[f,m]=j.useState(null),[v,w]=j.useState(null),[h,b]=j.useState(0),[C,E]=j.useState(!1),[P,B]=j.useState(""),[D,K]=j.useState(!1),[X,oe]=j.useState(!1),J=j.useRef(null),T=j.useCallback((H,he="info")=>{w({tone:he,text:H})},[]),q=j.useMemo(()=>Zm(l),[l]),ee=j.useMemo(()=>Jm(l),[l]),we=j.useMemo(()=>eh(l),[l]),ae=j.useMemo(()=>Ao(l,"idWhitelist"),[l]),xe=j.useMemo(()=>Ao(l,"idBlacklist"),[l]),Y=j.useMemo(()=>Ao(l,"logicalRules"),[l]),ue=j.useMemo(()=>Hd(l),[l]),de=j.useMemo(()=>th(l),[l]),R=j.useMemo(()=>ee.map(H=>H.id),[ee]),I=j.useMemo(()=>q.map(H=>H.name),[q]),A=j.useMemo(()=>({roles:q.length,interfaces:ee.length,processes:we.length,whitelistRules:ae.reduce((H,he)=>H+he.rules.length,0),blacklistRules:xe.reduce((H,he)=>H+he.rules.length,0),logicalRules:Y.reduce((H,he)=>H+he.rules.length,0)}),[xe,ae,ee,Y,we,q]),Q=j.useMemo(()=>kv(p),[p]);j.useEffect(()=>{if(!(typeof window>"u"))try{window.localStorage.setItem(ta,Vd(l)),window.localStorage.setItem(fa,a)}catch{}},[l,a]),j.useEffect(()=>{let H=!1;if(Q.length===0){E(!0),B("");return}return E(!1),B(""),Promise.all(Q.map(({kind:he,locale:Pe})=>Bh(he,Pe))).then(()=>{H||E(!0)}).catch(he=>{H||(B(qt(he)),E(!0))}),()=>{H=!0}},[Q]),_f(v,w,4e3),j.useEffect(()=>{if(typeof window>"u")return;const H=()=>{var In;const nn=((In=J.current)==null?void 0:In.getBoundingClientRect().height)??0;b(nn)};H();const he=J.current,Pe=typeof ResizeObserver<"u"&&he?new ResizeObserver(()=>{H()}):null;return Pe&&he&&Pe.observe(he),window.addEventListener("resize",H),()=>{Pe==null||Pe.disconnect(),window.removeEventListener("resize",H)}},[]),j.useEffect(()=>{var H;typeof document>"u"||C&&((H=document.getElementById("app-preloader"))==null||H.remove())},[C]),j.useEffect(()=>{P&&T(`资源数据库预加载失败: ${P}`,"error")},[T,P]);const te=()=>m(null),L=(H,he)=>{try{const Pe=Qo(H);s(Pe),c(he||ol),te(),K(!1),T(`已导入 ${he||ol}`,"success")}catch(Pe){T(`导入失败: ${qt(Pe)}`,"error")}},se=H=>{T("用户配置已保存","success")},G=()=>{L(Kd,ol)},N=()=>{m({type:"role",mode:"add",originalName:null,initial:{name:"",machine:""}})},z=H=>{m({type:"role",mode:"edit",originalName:H.name,initial:H})},ve=()=>{m({type:"interface",mode:"add",originalId:null,initial:{id:"",role:I[0]||""}})},ye=H=>{m({type:"interface",mode:"edit",originalId:H.id,initial:H})},_e=()=>{m({type:"process",mode:"add",originalMineral:null,initialMineral:"",initialSteps:[]})},je=H=>{m({type:"process",mode:"edit",originalMineral:H.mineral,initialMineral:H.mineral,initialSteps:H.steps})},ke=()=>{m({type:"list",kind:"idWhitelist"})},Ce=()=>{m({type:"list",kind:"idBlacklist"})},Re=()=>{m({type:"logicalRules"})},Ve=(H,he)=>{try{s(lh(l,H,he)),te(),T(`职责 "${he.name}" 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},ht=H=>{if(window.confirm(`确认删除职责 "${H}" 吗？这会同步移除相关流程、输出口和黑白名单。`))try{s(sh(l,H)),T(`职责 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},Cn=(H,he)=>{try{s(ih(l,H,he)),te(),T(`输出口 "${he.id}" 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},At=H=>{if(window.confirm(`确认删除输出口 "${H}" 吗？`))try{s(oh(l,H)),T(`输出口 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},En=(H,he,Pe)=>{try{s(ah(l,H,he,Pe)),te(),T(`矿物流程 "${he.mineral}" 已保存`,"success")}catch(nn){T(qt(nn),"error")}},Mn=H=>{if(window.confirm(`确认删除矿物流程 "${H}" 吗？`))try{s(uh(l,H)),T(`矿物流程 "${H}" 已删除`,"success")}catch(he){T(qt(he),"error")}},Rn=H=>{m({type:"process",mode:"add",originalMineral:null,initialMineral:"",initialSteps:H})},tn=(H,he)=>{try{s(fh(l,H,he)),te(),T(`${{idWhitelist:"白名单",idBlacklist:"黑名单",logicalRules:"逻辑规则"}[H]} 已保存`,"success")}catch(Pe){T(qt(Pe),"error")}},Hn=P?"资源数据库异常":C?"资源数据库就绪":"资源数据库加载中",bn=P?"overview-status overview-status--error":C?"overview-status overview-status--ready":"overview-status overview-status--loading",Ut=[{label:"矿物流程",value:A.processes,hint:"正在维护的处理线"},{label:"职责",value:A.roles,hint:"机器职责节点"},{label:"ME 接口",value:A.interfaces,hint:"已绑定地址"},{label:"白名单规则",value:A.whitelistRules,hint:"白名单总数"},{label:"黑名单规则",value:A.blacklistRules,hint:"屏蔽项总数"},{label:"逻辑规则",value:A.logicalRules,hint:"表达式单元总数"}],Nt=["整理矿物处理流程","绑定职责与 ME 接口","补齐黑白名单与逻辑规则","预览并导出 Lua 配置"];return i.jsxs("div",{className:"app-shell",style:{"--topbar-height":`${h}px`},children:[i.jsxs("header",{className:"topbar",ref:J,children:[i.jsxs("div",{className:"topbar__copy",children:[i.jsx("h1",{children:"GTNH OC 矿处配置编辑器"}),i.jsxs("div",{className:"topbar__summary",children:[i.jsxs("span",{className:"topbar__summary-item topbar__summary-item--file",title:a,children:["当前文件：",a]}),i.jsx("span",{className:"topbar__summary-separator","aria-hidden":"true",children:"·"}),i.jsxs("span",{className:"topbar__summary-item",children:["职责 ",A.roles]}),i.jsxs("span",{className:"topbar__summary-item",children:["输出口 ",A.interfaces]}),i.jsxs("span",{className:"topbar__summary-item",children:["矿物 ",A.processes]})]})]}),i.jsx("div",{className:"topbar__actions",children:i.jsxs("div",{className:"button-row button-row--wrap topbar__button-row",children:[i.jsx("button",{type:"button",className:"button button--filled button--compact",onClick:()=>oe(!0),title:`语言 ${p.lang.game} / ${p.lang.display}，数据库 ${p.database.autoLoadItems?"物品自动":"物品被动"}，${p.database.autoLoadFluids?"流体自动":"流体被动"}`,children:"用户配置"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:()=>K(!0),children:"导入配置"}),i.jsx("button",{type:"button",className:"button button--tonal button--compact",onClick:G,children:"恢复示例"})]})})]}),v?i.jsx(Sf,{tone:v.tone,floating:!0,children:v.text}):null,i.jsxs("section",{className:"workspace-overview","aria-label":"当前配置概览",children:[i.jsxs("article",{className:"overview-card overview-card--hero",children:[i.jsxs("div",{className:"overview-card__header",children:[i.jsx("span",{className:"overview-card__eyebrow",children:"当前配置"}),i.jsx("span",{className:"chip chip--meta",children:"本地自动保存"})]}),i.jsx("h2",{className:"overview-card__title mono",title:a,children:a}),i.jsx("p",{className:"overview-card__copy",children:"这套工作台把矿物处理线、职责绑定、规则过滤和 Lua 导出收在同一个视图里，适合连续整理整份矿处配置。"}),i.jsxs("div",{className:"overview-card__meta",children:[i.jsxs("span",{className:"chip chip--path",children:["游戏语言 ",p.lang.game]}),i.jsxs("span",{className:"chip chip--soft",children:["显示语言 ",p.lang.display]}),i.jsxs("span",{className:"chip chip--soft",children:["物品数据库 ",p.database.autoLoadItems?"自动加载":"被动加载"]}),i.jsxs("span",{className:"chip chip--soft",children:["流体数据库 ",p.database.autoLoadFluids?"自动加载":"被动加载"]}),i.jsx("span",{className:bn,children:Hn})]})]}),i.jsxs("article",{className:"overview-card overview-card--deck",children:[i.jsx("div",{className:"overview-card__header",children:i.jsxs("div",{className:"overview-card__heading",children:[i.jsx("span",{className:"overview-card__eyebrow",children:"工作台指标"}),i.jsx("span",{className:"overview-card__caption",children:"围绕配置编辑链路重新排布视图"})]})}),i.jsx("div",{className:"overview-stat-grid",children:Ut.map(H=>i.jsxs("div",{className:"overview-stat",children:[i.jsx("span",{className:"overview-stat__value",children:H.value}),i.jsx("span",{className:"overview-stat__label",children:H.label}),i.jsx("span",{className:"overview-stat__hint",children:H.hint})]},H.label))}),i.jsx("div",{className:"overview-flow","aria-label":"编辑流程",children:Nt.map((H,he)=>i.jsxs("div",{className:"overview-flow__item",children:[i.jsx("span",{className:"overview-flow__index",children:he+1}),i.jsx("span",{className:"overview-flow__label",children:H})]},H))})]})]}),i.jsx(xv,{processes:we,onAddProcess:_e,onEditProcess:je,onDeleteProcess:Mn,reverseGroups:de,onReuseProcess:Rn,roles:q,interfaces:ee,roleNames:I,onAddRole:N,onAddInterface:ve,onEditRole:z,onDeleteRole:ht,onEditInterface:ye,onDeleteInterface:At,idWhitelist:ae,idBlacklist:xe,logicalRules:Y,onEditWhitelist:ke,onEditBlacklist:Ce,onEditLogicalRules:Re,config:l,fileName:a}),(f==null?void 0:f.type)==="role"?i.jsx(wh,{open:!0,mode:f.mode,initial:f.initial,existingNames:I,onClose:te,onSave:H=>Ve(f.originalName,H)}):null,(f==null?void 0:f.type)==="interface"?i.jsx(Nh,{open:!0,mode:f.mode,initial:f.initial,availableRoles:I,existingIds:R,onClose:te,onSave:H=>Cn(f.originalId,H)}):null,(f==null?void 0:f.type)==="process"?i.jsx(dv,{open:!0,mode:f.mode,initialMineral:f.initialMineral,initialSteps:f.initialSteps,availableSteps:ue,existingProcesses:we,onClose:te,onSave:(H,he)=>En(f.originalMineral,H,he)}):null,(f==null?void 0:f.type)==="list"?i.jsx(Ng,{open:!0,title:f.kind==="idWhitelist"?"白名单":"黑名单",groups:f.kind==="idWhitelist"?ae:xe,availableRoles:I,onClose:te,onSave:H=>tn(f.kind,H)}):null,(f==null?void 0:f.type)==="logicalRules"?i.jsx(ov,{open:!0,groups:Y,availableRoles:I,onClose:te,onSave:H=>tn("logicalRules",H)}):null,i.jsx(kh,{open:D,initialFileName:a,onClose:()=>K(!1),onImport:L}),i.jsx(av,{open:X,onClose:()=>oe(!1),onSave:se})]})}Im.createRoot(document.getElementById("root")).render(i.jsx(Sm.StrictMode,{children:i.jsx($m,{children:i.jsx(bh,{children:i.jsx(jv,{})})})}));
